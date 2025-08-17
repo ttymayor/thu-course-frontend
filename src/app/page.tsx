@@ -1,12 +1,21 @@
-import CourseScheduleList from "./CourseScheduleList";
+import CourseScheduleList from "@/components/CourseScheduleList";
+import CourseInfoList from "@/components/CourseInfoList";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <CourseScheduleList />
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6">
+        <main className="flex flex-col gap-8 sm:gap-[32px] items-center justify-center">
+          <div id="schedule" className="w-full flex justify-center">
+            <CourseScheduleList />
+          </div>
+          <div id="courses" className="w-full flex justify-center">
+            <CourseInfoList />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

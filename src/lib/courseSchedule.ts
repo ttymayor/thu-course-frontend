@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import connectMongoDB from "./mongodbConnection";
+import connectMongoDB from "./mongodb";
 
 const courseScheduleSchema = new mongoose.Schema({
   course_stage: String,

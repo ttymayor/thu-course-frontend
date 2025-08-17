@@ -53,15 +53,21 @@ export default function CourseScheduleList() {
                   key={item._id || idx}
                   className={item.status === "結束" ? "opacity-30" : ""}
                 >
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium text-center">
                     {item.course_stage}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Badge>{item.status}</Badge>
                   </TableCell>
-                  <TableCell>{formatDate(item.start_time)}</TableCell>
-                  <TableCell>{formatDate(item.end_time)}</TableCell>
-                  <TableCell>{formatDate(item.result_publish_time)}</TableCell>
+                  <TableCell className="text-center">
+                    {formatDate(item.start_time)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {formatDate(item.end_time)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {formatDate(item.result_publish_time)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
