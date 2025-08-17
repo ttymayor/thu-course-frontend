@@ -3,19 +3,24 @@ import { getCourseInfo } from "@/lib/courseInfo";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const code = searchParams.get("code") || "";
-  const name = searchParams.get("name") || "";
-  const dept = searchParams.get("dept") || "";
+  const course_code = searchParams.get("course_code") || "";
+  const course_name = searchParams.get("course_name") || "";
+  const department_code = searchParams.get("department_code") || "";
+  const department_name = searchParams.get("department_name") || "";
+  const academic_semester = searchParams.get("academic_semester") || "";
+  const academic_year = searchParams.get("academic_year") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+  const page_size = parseInt(searchParams.get("page_size") || "10", 10);
 
-  // 直接在 DB 層進行查詢與分頁
   const result = await getCourseInfo({
-    code,
-    name,
-    dept,
+    course_code,
+    course_name,
+    department_code,
+    department_name,
+    academic_semester,
+    academic_year,
     page,
-    pageSize,
+    page_size,
   });
 
   return NextResponse.json(result);

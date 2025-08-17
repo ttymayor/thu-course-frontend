@@ -26,40 +26,106 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 type CourseTypeMap = Record<number, string>;
+
+interface Department {
+  department_code: string;
+  department_name: string;
+}
 
 export default function CourseInfoList() {
   const [infos, setInfos] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [dept, setDept] = useState("");
+  const [courseCode, setCourseCode] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [deptCode, setDeptCode] = useState("");
+  const [selectedDept, setSelectedDept] = useState("");
+  const [departments, setDepartments] = useState<Department[]>([]);
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
     2: "必選",
     3: "選修",
   };
 
+  // 學院映射
+  const collegeMap = {
+    1: "文學院",
+    2: "理學院",
+    3: "工學院",
+    4: "管理學院",
+    5: "社會科學院",
+    6: "農學院",
+    7: "創藝學院",
+    8: "法律學院",
+    9: "國際學院",
+  };
+
+  // 根據系所代碼獲取學院
+  const getCollegeByDeptCode = (deptCode: string): number => {
+    const firstDigit = parseInt(deptCode.charAt(0), 10);
+    return firstDigit >= 1 && firstDigit <= 9 ? firstDigit : 0;
+  };
+
+  // 按學院分類系所
+  const departmentsByCollege = departments.reduce((acc, dept) => {
+    const collegeId = getCollegeByDeptCode(dept.department_code);
+    if (collegeId > 0) {
+      if (!acc[collegeId]) {
+        acc[collegeId] = [];
+      }
+      acc[collegeId].push(dept);
+    } else {
+      // 其他分類 (使用 0 作為 key)
+      if (!acc[0]) {
+        acc[0] = [];
+      }
+      acc[0].push(dept);
+    }
+    return acc;
+  }, {} as Record<number, Department[]>);
+
+  // 載入系所列表
   useEffect(() => {
+    axios.get("/api/departments").then((res) => {
+      if (res.data.success) {
+        setDepartments(res.data.data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    // 根據選擇的系所設定過濾條件
+    const deptFilter = selectedDept ? { department_code: selectedDept } : {};
+
     axios
       .get("/api/course-info", {
         params: {
           page,
-          pageSize,
-          code,
-          name,
-          dept,
+          page_size: pageSize,
+          course_code: courseCode,
+          course_name: courseName,
+          department_code: deptCode,
+          ...deptFilter,
         },
       })
       .then((res) => {
         setInfos(res.data.data);
         setTotal(res.data.total);
       });
-  }, [page, pageSize, code, name, dept]);
+  }, [page, pageSize, courseCode, courseName, deptCode, selectedDept]);
 
   return (
     <>
@@ -70,35 +136,79 @@ export default function CourseInfoList() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex gap-2 flex-wrap justify-end">
+            <Select
+              value={selectedDept}
+              onValueChange={(value) => {
+                setPage(1);
+                setSelectedDept(value === "all" ? "" : value);
+              }}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="選擇系所" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">所有系所</SelectItem>
+                {Object.entries(departmentsByCollege)
+                  .sort(([a], [b]) => {
+                    // 將其他分組(0)排在最後
+                    if (parseInt(a) === 0) return 1;
+                    if (parseInt(b) === 0) return -1;
+                    return parseInt(a) - parseInt(b);
+                  })
+                  .map(([collegeId, depts]) => (
+                    <SelectGroup key={collegeId}>
+                      <SelectLabel>
+                        {parseInt(collegeId) === 0
+                          ? "其他"
+                          : collegeMap[
+                              parseInt(collegeId) as keyof typeof collegeMap
+                            ]}
+                      </SelectLabel>
+                      {depts
+                        .sort((a, b) =>
+                          a.department_code.localeCompare(b.department_code)
+                        )
+                        .map((dept) => (
+                          <SelectItem
+                            key={dept.department_code}
+                            value={dept.department_code}
+                          >
+                            {dept.department_name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  ))}
+              </SelectContent>
+            </Select>
             <Input
               type="text"
               placeholder="課程代碼"
-              value={code}
+              value={courseCode}
               onChange={(e) => {
                 setPage(1);
-                setCode(e.target.value);
+                setCourseCode(e.target.value);
               }}
-              className="border rounded px-3 py-2 w-32"
+              className="border px-3 py-2 w-32"
             />
             <Input
               type="text"
               placeholder="課程名稱"
-              value={name}
+              value={courseName}
               onChange={(e) => {
                 setPage(1);
-                setName(e.target.value);
+                setCourseName(e.target.value);
               }}
-              className="border rounded px-3 py-2 w-32"
+              className="border px-3 py-2 w-32"
             />
             <Input
               type="text"
-              placeholder="系所名稱"
-              value={dept}
+              placeholder="系所代碼"
+              value={deptCode}
               onChange={(e) => {
                 setPage(1);
-                setDept(e.target.value);
+                setDeptCode(e.target.value);
               }}
-              className="border rounded px-3 py-2 w-32"
+              className="border px-3 py-2 w-32"
             />
           </div>
           <div className="overflow-x-auto">
