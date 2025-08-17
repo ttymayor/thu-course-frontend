@@ -17,6 +17,20 @@ const CourseInfo =
   mongoose.models.CourseInfo ||
   mongoose.model("CourseInfo", courseInfoSchema, "course_info");
 
+interface CourseInfoQuery {
+  course_code?: string | { $regex: string; $options: string };
+  course_name?: string | { $regex: string; $options: string };
+  department_code?: string | { $regex: string; $options: string };
+  department_name?: string | { $regex: string; $options: string };
+  academic_semester?: string | number;
+  academic_year?: string | number;
+  $or?: Array<{
+    course_code?: { $regex: string; $options: string };
+    course_name?: { $regex: string; $options: string };
+    department_code?: { $regex: string; $options: string };
+  }>;
+}
+
 export async function getCourseInfo(
   filters: {
     course_code?: string;
@@ -43,7 +57,7 @@ export async function getCourseInfo(
   } = filters;
 
   // 建構查詢條件
-  const query: any = {};
+  const query: CourseInfoQuery = {};
 
   // 檢查是否為統一搜尋 (當課程代碼、課程名稱、系所代碼都相同時)
   const isUnifiedSearch =

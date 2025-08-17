@@ -1,11 +1,10 @@
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import Link from "next/link";
 
 // 導航配置
 const NAVBAR_CONFIG = {
@@ -34,16 +33,16 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-14 items-center">
         {/* 手機版品牌 */}
         <div className="flex md:hidden">
-          <a className="flex items-center space-x-2" href="/">
+          <Link className="flex items-center space-x-2" href="/">
             <span className="font-bold text-sm">{NAVBAR_CONFIG.brand}</span>
-          </a>
+          </Link>
         </div>
 
         {/* 桌面版導航 */}
         <div className="mr-4 hidden md:flex">
-          <a className="mr-6 flex items-center space-x-2" href="/">
+          <Link className="mr-6 flex items-center space-x-2" href="/">
             <span className="font-bold">{NAVBAR_CONFIG.brand}</span>
-          </a>
+          </Link>
           <NavigationMenu>
             <NavigationMenuList>
               {NAVBAR_CONFIG.navigation.items.map((item, index) => (
@@ -76,21 +75,3 @@ export default function Navbar() {
     </div>
   );
 }
-
-const ListItem = ({ className, title, children, ...props }: any) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          className={`block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground ${className}`}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-};

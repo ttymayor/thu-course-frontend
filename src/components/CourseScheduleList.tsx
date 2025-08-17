@@ -19,8 +19,17 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+interface CourseScheduleData {
+  _id: string;
+  course_stage: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  result_publish_time: string;
+}
+
 export default function CourseScheduleList() {
-  const [schedules, setSchedules] = useState([]);
+  const [schedules, setSchedules] = useState<CourseScheduleData[]>([]);
 
   useEffect(() => {
     axios.get("/api/course-schedule").then((res) => {
@@ -48,7 +57,7 @@ export default function CourseScheduleList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {schedules.map((item: any, idx: number) => (
+              {schedules.map((item: CourseScheduleData, idx: number) => (
                 <TableRow
                   key={item._id || idx}
                   className={item.status === "結束" ? "opacity-30" : ""}

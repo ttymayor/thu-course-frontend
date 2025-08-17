@@ -44,6 +44,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 type CourseTypeMap = Record<number, string>;
 
 interface Department {
@@ -51,14 +52,24 @@ interface Department {
   department_name: string;
 }
 
+interface CourseInfoData {
+  _id: string;
+  academic_semester: string;
+  academic_year: string;
+  course_code: string;
+  course_name: string;
+  course_type: number;
+  credits_1: number;
+  credits_2: number;
+  department_code: string;
+  department_name: string;
+}
+
 export default function CourseInfoList() {
-  const [infos, setInfos] = useState([]);
+  const [infos, setInfos] = useState<CourseInfoData[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const [courseCode, setCourseCode] = useState("");
-  const [courseName, setCourseName] = useState("");
-  const [deptCode, setDeptCode] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
   const [open, setOpen] = useState(false);
@@ -263,7 +274,7 @@ export default function CourseInfoList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {infos.map((item: any, idx: number) => (
+                {infos.map((item, idx) => (
                   <TableRow key={item._id || idx}>
                     <TableCell className="text-center">
                       {item.academic_semester}
