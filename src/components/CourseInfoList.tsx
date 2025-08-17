@@ -27,16 +27,23 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 type CourseTypeMap = Record<number, string>;
 
 interface Department {
@@ -52,7 +59,9 @@ export default function CourseInfoList() {
   const [courseCode, setCourseCode] = useState("");
   const [courseName, setCourseName] = useState("");
   const [deptCode, setDeptCode] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
+  const [open, setOpen] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
@@ -97,6 +106,13 @@ export default function CourseInfoList() {
     return acc;
   }, {} as Record<number, Department[]>);
 
+  // 獲取當前選中的系所名稱
+  const getSelectedDeptName = () => {
+    if (!selectedDept || selectedDept === "all") return "所有系所";
+    const dept = departments.find((d) => d.department_code === selectedDept);
+    return dept ? dept.department_name : "所有系所";
+  };
+
   // 載入系所列表
   useEffect(() => {
     axios.get("/api/departments").then((res) => {
@@ -115,9 +131,9 @@ export default function CourseInfoList() {
         params: {
           page,
           page_size: pageSize,
-          course_code: courseCode,
-          course_name: courseName,
-          department_code: deptCode,
+          course_code: searchQuery, // 統一搜尋會同時搜尋課程代碼
+          course_name: searchQuery, // 課程名稱
+          department_code: searchQuery, // 和系所代碼
           ...deptFilter,
         },
       })
@@ -125,7 +141,7 @@ export default function CourseInfoList() {
         setInfos(res.data.data);
         setTotal(res.data.total);
       });
-  }, [page, pageSize, courseCode, courseName, deptCode, selectedDept]);
+  }, [page, pageSize, searchQuery, selectedDept]);
 
   return (
     <>
@@ -136,79 +152,99 @@ export default function CourseInfoList() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex gap-2 flex-wrap justify-end">
-            <Select
-              value={selectedDept}
-              onValueChange={(value) => {
-                setPage(1);
-                setSelectedDept(value === "all" ? "" : value);
-              }}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="選擇系所" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">所有系所</SelectItem>
-                {Object.entries(departmentsByCollege)
-                  .sort(([a], [b]) => {
-                    // 將其他分組(0)排在最後
-                    if (parseInt(a) === 0) return 1;
-                    if (parseInt(b) === 0) return -1;
-                    return parseInt(a) - parseInt(b);
-                  })
-                  .map(([collegeId, depts]) => (
-                    <SelectGroup key={collegeId}>
-                      <SelectLabel>
-                        {parseInt(collegeId) === 0
-                          ? "其他"
-                          : collegeMap[
-                              parseInt(collegeId) as keyof typeof collegeMap
-                            ]}
-                      </SelectLabel>
-                      {depts
-                        .sort((a, b) =>
-                          a.department_code.localeCompare(b.department_code)
-                        )
-                        .map((dept) => (
-                          <SelectItem
-                            key={dept.department_code}
-                            value={dept.department_code}
-                          >
-                            {dept.department_name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  ))}
-              </SelectContent>
-            </Select>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full md:w-[270px] justify-between sm"
+                >
+                  {getSelectedDeptName()}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full md:w-[270px] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="搜尋系所..." className="h-9" />
+                  <CommandList>
+                    <CommandEmpty>找不到系所。</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => {
+                          setPage(1);
+                          setSelectedDept("");
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "h-4 w-4",
+                            selectedDept === "" ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        所有系所
+                      </CommandItem>
+                    </CommandGroup>
+                    {Object.entries(departmentsByCollege)
+                      .sort(([a], [b]) => {
+                        // 將其他分組(0)排在最後
+                        if (parseInt(a) === 0) return 1;
+                        if (parseInt(b) === 0) return -1;
+                        return parseInt(a) - parseInt(b);
+                      })
+                      .map(([collegeId, depts]) => (
+                        <CommandGroup
+                          key={collegeId}
+                          heading={
+                            parseInt(collegeId) === 0
+                              ? "其他"
+                              : collegeMap[
+                                  parseInt(collegeId) as keyof typeof collegeMap
+                                ]
+                          }
+                        >
+                          {depts
+                            .sort((a, b) =>
+                              a.department_code.localeCompare(b.department_code)
+                            )
+                            .map((dept) => (
+                              <CommandItem
+                                key={dept.department_code}
+                                value={`${dept.department_name} ${dept.department_code}`}
+                                onSelect={() => {
+                                  setPage(1);
+                                  setSelectedDept(dept.department_code);
+                                  setOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "h-4 w-4",
+                                    selectedDept === dept.department_code
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {dept.department_name}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      ))}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             <Input
               type="text"
-              placeholder="課程代碼"
-              value={courseCode}
+              placeholder="搜尋課程代碼、課程名稱或系所代碼..."
+              value={searchQuery}
               onChange={(e) => {
                 setPage(1);
-                setCourseCode(e.target.value);
+                setSearchQuery(e.target.value);
               }}
-              className="border px-3 py-2 w-32"
-            />
-            <Input
-              type="text"
-              placeholder="課程名稱"
-              value={courseName}
-              onChange={(e) => {
-                setPage(1);
-                setCourseName(e.target.value);
-              }}
-              className="border px-3 py-2 w-32"
-            />
-            <Input
-              type="text"
-              placeholder="系所代碼"
-              value={deptCode}
-              onChange={(e) => {
-                setPage(1);
-                setDeptCode(e.target.value);
-              }}
-              className="border px-3 py-2 w-32"
+              className="border px-3 py-2 w-full md:w-[270px]"
             />
           </div>
           <div className="overflow-x-auto">
