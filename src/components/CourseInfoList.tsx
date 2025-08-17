@@ -134,19 +134,31 @@ export default function CourseInfoList() {
   }, []);
 
   useEffect(() => {
-    // 根據選擇的系所設定過濾條件
-    const deptFilter = selectedDept ? { department_code: selectedDept } : {};
+    const params: Record<string, string | number> = {
+      page,
+      page_size: pageSize,
+    };
+
+    // 如果選擇了特定系所，直接使用系所篩選
+    if (selectedDept) {
+      params.department_code = selectedDept;
+      // 在特定系所內搜尋時，只搜尋課程代碼和課程名稱
+      if (searchQuery) {
+        params.course_code = searchQuery;
+        params.course_name = searchQuery;
+      }
+    } else {
+      // 沒有選擇系所時，使用統一搜尋（包含系所代碼）
+      if (searchQuery) {
+        params.course_code = searchQuery;
+        params.course_name = searchQuery;
+        params.department_code = searchQuery;
+      }
+    }
 
     axios
       .get("/api/course-info", {
-        params: {
-          page,
-          page_size: pageSize,
-          course_code: searchQuery, // 統一搜尋會同時搜尋課程代碼
-          course_name: searchQuery, // 課程名稱
-          department_code: searchQuery, // 和系所代碼
-          ...deptFilter,
-        },
+        params,
       })
       .then((res) => {
         setInfos(res.data.data);
@@ -169,7 +181,7 @@ export default function CourseInfoList() {
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="w-full md:w-[270px] justify-between sm"
+                  className="w-full md:w-[270px] justify-between h-10 text-sm px-3 py-2"
                 >
                   {getSelectedDeptName()}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -177,7 +189,10 @@ export default function CourseInfoList() {
               </PopoverTrigger>
               <PopoverContent className="w-full md:w-[270px] p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="搜尋系所..." className="h-9" />
+                  <CommandInput
+                    placeholder="搜尋系所..."
+                    className="h-10 text-sm px-3"
+                  />
                   <CommandList>
                     <CommandEmpty>找不到系所。</CommandEmpty>
                     <CommandGroup>
@@ -248,6 +263,7 @@ export default function CourseInfoList() {
               </PopoverContent>
             </Popover>
             <Input
+              id="search"
               type="text"
               placeholder="搜尋課程代碼、課程名稱或系所代碼..."
               value={searchQuery}
@@ -255,7 +271,7 @@ export default function CourseInfoList() {
                 setPage(1);
                 setSearchQuery(e.target.value);
               }}
-              className="border px-3 py-2 w-full md:w-[270px]"
+              className="border w-full md:w-[270px] h-10 text-sm px-3 py-2"
             />
           </div>
           <div className="overflow-x-auto">

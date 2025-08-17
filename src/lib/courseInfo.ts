@@ -59,33 +59,59 @@ export async function getCourseInfo(
   // 建構查詢條件
   const query: CourseInfoQuery = {};
 
-  // 檢查是否為統一搜尋 (當課程代碼、課程名稱、系所代碼都相同時)
-  const isUnifiedSearch =
-    course_code === course_name &&
-    course_name === department_code &&
-    course_code;
+  // 如果department_code被明確指定且與其他搜尋參數不同，直接作為篩選條件
+  const isDeptFilter =
+    department_code &&
+    department_code !== course_code &&
+    department_code !== course_name;
 
-  if (isUnifiedSearch) {
-    // 統一搜尋：在課程代碼、課程名稱、系所代碼中任一匹配即可
-    query.$or = [
-      { course_code: { $regex: course_code, $options: "i" } },
-      { course_name: { $regex: course_code, $options: "i" } },
-      { department_code: { $regex: course_code, $options: "i" } },
-    ];
+  if (isDeptFilter) {
+    // 系所篩選模式
+    query.department_code = { $regex: department_code, $options: "i" };
+
+    // 在特定系所內搜尋課程
+    if (course_code && course_name && course_code === course_name) {
+      query.$or = [
+        { course_code: { $regex: course_code, $options: "i" } },
+        { course_name: { $regex: course_code, $options: "i" } },
+      ];
+    } else {
+      if (course_code) {
+        query.course_code = { $regex: course_code, $options: "i" };
+      }
+      if (course_name && course_name !== course_code) {
+        query.course_name = { $regex: course_name, $options: "i" };
+      }
+    }
   } else {
-    // 分別搜尋
-    if (course_code) {
-      query.course_code = { $regex: course_code, $options: "i" };
-    }
-    if (course_name && course_name !== course_code) {
-      query.course_name = { $regex: course_name, $options: "i" };
-    }
-    if (
-      department_code &&
-      department_code !== course_code &&
-      department_code !== course_name
-    ) {
-      query.department_code = { $regex: department_code, $options: "i" };
+    // 統一搜尋模式
+    const isUnifiedSearch =
+      course_code === course_name &&
+      course_name === department_code &&
+      course_code;
+
+    if (isUnifiedSearch) {
+      // 統一搜尋：在課程代碼、課程名稱、系所代碼中任一匹配即可
+      query.$or = [
+        { course_code: { $regex: course_code, $options: "i" } },
+        { course_name: { $regex: course_code, $options: "i" } },
+        { department_code: { $regex: course_code, $options: "i" } },
+      ];
+    } else {
+      // 分別搜尋
+      if (course_code) {
+        query.course_code = { $regex: course_code, $options: "i" };
+      }
+      if (course_name && course_name !== course_code) {
+        query.course_name = { $regex: course_name, $options: "i" };
+      }
+      if (
+        department_code &&
+        department_code !== course_code &&
+        department_code !== course_name
+      ) {
+        query.department_code = { $regex: department_code, $options: "i" };
+      }
     }
   }
 
