@@ -1,3 +1,5 @@
+"use client";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -5,6 +7,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
+import ModeToggle from "./ModeToggle";
 
 // 導航配置
 const NAVBAR_CONFIG = {
@@ -60,7 +63,7 @@ export default function Navbar() {
         </div>
 
         {/* 手機版快速連結 */}
-        <div className="ml-auto flex md:hidden gap-2">
+        <div className="ml-auto flex md:hidden gap-2 items-center">
           {NAVBAR_CONFIG.mobile.quickLinks.map((link, index) => (
             <a
               key={index}
@@ -70,6 +73,12 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
+          <ModeToggle />
+        </div>
+
+        {/* 桌面版右側區域 */}
+        <div className="ml-auto hidden md:flex">
+          <ModeToggle />
         </div>
       </div>
     </div>
