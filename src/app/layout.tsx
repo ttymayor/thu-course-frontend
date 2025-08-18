@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "東海選課資訊",
-  description: "一個更好的課程資訊網",
+  title: "東海課程資訊",
+  description: "一個更好的東海課程資訊網站",
 };
 
 export default function RootLayout({

@@ -17,9 +17,9 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* 品牌資訊 */}
           <div className="flex flex-col items-center md:items-start space-y-1">
-            <span className="font-bold text-foreground">東海選課資訊</span>
+            <span className="font-bold text-foreground">東海課程資訊</span>
             <span className="text-sm text-muted-foreground">
-              一個更好的課程資訊網
+              一個更好的東海課程資訊網站
             </span>
           </div>
 
