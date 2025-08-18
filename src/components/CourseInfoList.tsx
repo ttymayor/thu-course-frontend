@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
+
 import {
   Table,
   TableBody,
@@ -305,8 +307,8 @@ export default function CourseInfoList() {
               <TableCaption>課程資訊一覽</TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">學期</TableHead>
-                  <TableHead className="text-center">學年</TableHead>
+                  {/* <TableHead className="text-center">學期</TableHead>
+                  <TableHead className="text-center">學年</TableHead> */}
                   <TableHead className="text-center">課程代碼</TableHead>
                   <TableHead className="text-center">課程名稱</TableHead>
                   <TableHead className="text-center">類型</TableHead>
@@ -320,12 +322,12 @@ export default function CourseInfoList() {
                   ? // Loading skeleton rows
                     Array.from({ length: pageSize }).map((_, idx) => (
                       <TableRow key={`skeleton-${idx}`}>
-                        <TableCell className="text-center">
+                        {/* <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
                         <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
@@ -347,18 +349,23 @@ export default function CourseInfoList() {
                       </TableRow>
                     ))
                   : infos.map((item, idx) => (
-                      <TableRow key={item._id || idx}>
-                        <TableCell className="text-center">
+                      <TableRow key={idx}>
+                        {/* <TableCell className="text-center">
                           {item.academic_semester}
                         </TableCell>
                         <TableCell className="text-center">
                           {item.academic_year}
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell className="text-center">
                           {item.course_code}
                         </TableCell>
                         <TableCell className="text-center">
-                          {item.course_name}
+                          <Link
+                            href={`/course-detail/${item.course_code}`}
+                            className="underline"
+                          >
+                            {item.course_name}
+                          </Link>
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant={"secondary"} className="text-xs">
