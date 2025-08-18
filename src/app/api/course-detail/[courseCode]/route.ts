@@ -3,10 +3,10 @@ import { getCourseDetail } from "@/lib/courseDetail";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { courseCode: string } }
+  { params }: { params: Promise<{ courseCode: string }> }
 ) {
   try {
-    const courseCode = params.courseCode;
+    const { courseCode } = await params;
 
     if (!courseCode) {
       return NextResponse.json(
