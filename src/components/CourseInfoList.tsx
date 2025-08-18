@@ -42,6 +42,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -71,9 +72,11 @@ export default function CourseInfoList() {
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
   const [open, setOpen] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
     2: "必選",
@@ -126,12 +129,26 @@ export default function CourseInfoList() {
 
   // 載入系所列表
   useEffect(() => {
-    axios.get("/api/departments").then((res) => {
-      if (res.data.success) {
-        setDepartments(res.data.data);
-      }
-    });
+    axios
+      .get("/api/departments")
+      .then((res) => {
+        if (res.data.success) {
+          setDepartments(res.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load departments:", error);
+      });
   }, []);
+
+  // 搜尋延遲處理
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500); // 延遲 500ms
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     const params: Record<string, string | number> = {
@@ -143,19 +160,20 @@ export default function CourseInfoList() {
     if (selectedDept) {
       params.department_code = selectedDept;
       // 在特定系所內搜尋時，只搜尋課程代碼和課程名稱
-      if (searchQuery) {
-        params.course_code = searchQuery;
-        params.course_name = searchQuery;
+      if (debouncedSearchQuery) {
+        params.course_code = debouncedSearchQuery;
+        params.course_name = debouncedSearchQuery;
       }
     } else {
       // 沒有選擇系所時，使用統一搜尋（包含系所代碼）
-      if (searchQuery) {
-        params.course_code = searchQuery;
-        params.course_name = searchQuery;
-        params.department_code = searchQuery;
+      if (debouncedSearchQuery) {
+        params.course_code = debouncedSearchQuery;
+        params.course_name = debouncedSearchQuery;
+        params.department_code = debouncedSearchQuery;
       }
     }
 
+    setIsLoading(true);
     axios
       .get("/api/course-info", {
         params,
@@ -163,8 +181,14 @@ export default function CourseInfoList() {
       .then((res) => {
         setInfos(res.data.data);
         setTotal(res.data.total);
+      })
+      .catch((error) => {
+        console.error("Failed to load course info:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-  }, [page, pageSize, searchQuery, selectedDept]);
+  }, [page, pageSize, debouncedSearchQuery, selectedDept]);
 
   return (
     <>
@@ -181,7 +205,7 @@ export default function CourseInfoList() {
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="w-full md:w-[270px] justify-between h-10 text-sm px-3 py-2"
+                  className="w-full md:w-[270px] cursor-pointer justify-between h-10 text-sm px-3 py-2"
                 >
                   {getSelectedDeptName()}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -203,6 +227,7 @@ export default function CourseInfoList() {
                           setSelectedDept("");
                           setOpen(false);
                         }}
+                        className="cursor-pointer"
                       >
                         <Check
                           className={cn(
@@ -244,6 +269,7 @@ export default function CourseInfoList() {
                                   setSelectedDept(dept.department_code);
                                   setOpen(false);
                                 }}
+                                className="cursor-pointer"
                               >
                                 <Check
                                   className={cn(
@@ -290,36 +316,67 @@ export default function CourseInfoList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {infos.map((item, idx) => (
-                  <TableRow key={item._id || idx}>
-                    <TableCell className="text-center">
-                      {item.academic_semester}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.academic_year}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.course_code}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.course_name}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={"secondary"} className="text-xs">
-                        {courseTypeMap[item.course_type] || item.course_type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.credits_1}/{item.credits_2}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.department_code}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.department_name}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {isLoading
+                  ? // Loading skeleton rows
+                    Array.from({ length: pageSize }).map((_, idx) => (
+                      <TableRow key={`skeleton-${idx}`}>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-12 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-12 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-12 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-32 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-6 w-12 mx-auto rounded-full" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-12 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-12 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-24 mx-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : infos.map((item, idx) => (
+                      <TableRow key={item._id || idx}>
+                        <TableCell className="text-center">
+                          {item.academic_semester}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.academic_year}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.course_code}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.course_name}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant={"secondary"} className="text-xs">
+                            {courseTypeMap[item.course_type] ||
+                              item.course_type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.credits_1}/{item.credits_2}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.department_code}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.department_name}
+                        </TableCell>
+                      </TableRow>
+                    ))}
               </TableBody>
             </Table>
           </div>
@@ -332,8 +389,9 @@ export default function CourseInfoList() {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (page > 1) setPage(page - 1);
+                    if (page > 1 && !isLoading) setPage(page - 1);
                   }}
+                  className={isLoading ? "pointer-events-none opacity-50" : ""}
                 />
               </PaginationItem>
               {(() => {
@@ -348,8 +406,11 @@ export default function CourseInfoList() {
                         isActive={page === 1}
                         onClick={(e) => {
                           e.preventDefault();
-                          setPage(1);
+                          if (!isLoading) setPage(1);
                         }}
+                        className={
+                          isLoading ? "pointer-events-none opacity-50" : ""
+                        }
                       >
                         1
                       </PaginationLink>
@@ -373,8 +434,11 @@ export default function CourseInfoList() {
                         isActive={page === i}
                         onClick={(e) => {
                           e.preventDefault();
-                          setPage(i);
+                          if (!isLoading) setPage(i);
                         }}
+                        className={
+                          isLoading ? "pointer-events-none opacity-50" : ""
+                        }
                       >
                         {i}
                       </PaginationLink>
@@ -394,8 +458,11 @@ export default function CourseInfoList() {
                         isActive={page === totalPages}
                         onClick={(e) => {
                           e.preventDefault();
-                          setPage(totalPages);
+                          if (!isLoading) setPage(totalPages);
                         }}
+                        className={
+                          isLoading ? "pointer-events-none opacity-50" : ""
+                        }
                       >
                         {totalPages}
                       </PaginationLink>
@@ -409,8 +476,10 @@ export default function CourseInfoList() {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (page < Math.ceil(total / pageSize)) setPage(page + 1);
+                    if (page < Math.ceil(total / pageSize) && !isLoading)
+                      setPage(page + 1);
                   }}
+                  className={isLoading ? "pointer-events-none opacity-50" : ""}
                 />
               </PaginationItem>
             </PaginationContent>

@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CourseScheduleData {
   _id: string;
@@ -30,11 +31,21 @@ interface CourseScheduleData {
 
 export default function CourseScheduleList() {
   const [schedules, setSchedules] = useState<CourseScheduleData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("/api/course-schedule").then((res) => {
-      setSchedules(res.data);
-    });
+    setIsLoading(true);
+    axios
+      .get("/api/course-schedule")
+      .then((res) => {
+        setSchedules(res.data);
+      })
+      .catch((error) => {
+        console.error("Failed to load course schedules:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -57,28 +68,49 @@ export default function CourseScheduleList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {schedules.map((item: CourseScheduleData, idx: number) => (
-                <TableRow
-                  key={item._id || idx}
-                  className={item.status === "結束" ? "opacity-30" : ""}
-                >
-                  <TableCell className="font-medium text-center">
-                    {item.course_stage}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge>{item.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatDate(item.start_time)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatDate(item.end_time)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatDate(item.result_publish_time)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {isLoading
+                ? // Loading skeleton rows
+                  Array.from({ length: 5 }).map((_, idx) => (
+                    <TableRow key={`skeleton-${idx}`}>
+                      <TableCell className="font-medium text-center">
+                        <Skeleton className="h-4 w-16 mx-auto" />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Skeleton className="h-6 w-16 mx-auto rounded-full" />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Skeleton className="h-4 w-32 mx-auto" />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Skeleton className="h-4 w-32 mx-auto" />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Skeleton className="h-4 w-32 mx-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : schedules.map((item: CourseScheduleData, idx: number) => (
+                    <TableRow
+                      key={item._id || idx}
+                      className={item.status === "結束" ? "opacity-30" : ""}
+                    >
+                      <TableCell className="font-medium text-center">
+                        {item.course_stage}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge>{item.status}</Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatDate(item.start_time)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatDate(item.end_time)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatDate(item.result_publish_time)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
             </TableBody>
           </Table>
         </CardContent>
