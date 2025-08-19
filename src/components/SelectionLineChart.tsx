@@ -112,28 +112,22 @@ export default function SelectionLineChart({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>日期</TableHead>
-              <TableHead>已選課</TableHead>
-              <TableHead>登記</TableHead>
-              <TableHead>餘額</TableHead>
+              <TableHead className="w-1/3 text-center">日期</TableHead>
+              <TableHead className="w-1/3 text-center">
+                已選課/上課人數
+              </TableHead>
+              <TableHead className="w-1/3 text-center">登記人數</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {selectionRecords.map((record, index) => (
               <TableRow key={index}>
-                <TableCell>{record.date}</TableCell>
-                <TableCell>
-                  <span className="font-medium">{record.enrolled}</span>
+                <TableCell className="text-center">{record.date}</TableCell>
+                <TableCell className="text-center">
+                  {record.enrolled} / {record.remaining + record.enrolled}
                 </TableCell>
-                <TableCell>
-                  <span className="text-blue-600">{record.registered}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={record.remaining > 0 ? "default" : "destructive"}
-                  >
-                    {record.remaining}
-                  </Badge>
+                <TableCell className="text-center">
+                  <Badge variant={"outline"}>{record.registered}</Badge>
                 </TableCell>
               </TableRow>
             ))}

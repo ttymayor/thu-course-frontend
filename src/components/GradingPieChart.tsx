@@ -80,19 +80,21 @@ export default function GradingPieChart({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>評分方式</TableHead>
-              <TableHead>比例</TableHead>
-              <TableHead>說明</TableHead>
+              <TableHead className="w-1/3">評分方式</TableHead>
+              <TableHead className="w-1/3 text-center">比例</TableHead>
+              <TableHead className="w-1/3 text-center">說明</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {gradingItems.map((item, index) => (
               <TableRow key={index}>
-                <TableCell className="font-medium">{item.method}</TableCell>
-                <TableCell>
+                <TableCell className="">{item.method}</TableCell>
+                <TableCell className="text-center">
                   <Badge variant="outline">{item.percentage}%</Badge>
                 </TableCell>
-                <TableCell>{item.description || "-"}</TableCell>
+                <TableCell className="text-center">
+                  {item.description || "-"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
