@@ -72,7 +72,7 @@ export default function SelectionLineChart({
             axisLine={false}
             tickMargin={8}
           />
-          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+          <YAxis tickLine={false} axisLine={false} tickMargin={8} width={24} />
           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
           <Line
             type="monotone"
