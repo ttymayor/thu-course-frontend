@@ -66,6 +66,10 @@ interface CourseInfoData {
   credits_2: number;
   department_code: string;
   department_name: string;
+  class_time: string;
+  target_class: string;
+  target_grade: string;
+  teachers: string[];
 }
 
 export default function CourseInfoList() {
@@ -306,28 +310,22 @@ export default function CourseInfoList() {
             <Table className="min-w-full">
               <TableCaption>課程資訊一覽</TableCaption>
               <TableHeader>
-                <TableRow>
-                  {/* <TableHead className="text-center">學期</TableHead>
-                  <TableHead className="text-center">學年</TableHead> */}
+                <TableRow className="h-12">
                   <TableHead className="text-center">課程代碼</TableHead>
                   <TableHead className="text-center">課程名稱</TableHead>
-                  <TableHead className="text-center">類型</TableHead>
                   <TableHead className="text-center">學分</TableHead>
-                  <TableHead className="text-center">系所代碼</TableHead>
-                  <TableHead className="text-center">系所名稱</TableHead>
+                  <TableHead className="text-center">教師</TableHead>
+                  <TableHead className="text-center">時間地點</TableHead>
+                  <TableHead className="text-center">
+                    系所名稱 / 上課年級
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading
                   ? // Loading skeleton rows
                     Array.from({ length: pageSize }).map((_, idx) => (
-                      <TableRow key={`skeleton-${idx}`}>
-                        {/* <TableCell className="text-center">
-                          <Skeleton className="h-4 w-12 mx-auto" />
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Skeleton className="h-4 w-12 mx-auto" />
-                        </TableCell> */}
+                      <TableRow key={`skeleton-${idx}`} className="h-12">
                         <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
@@ -338,24 +336,12 @@ export default function CourseInfoList() {
                           <Skeleton className="h-6 w-12 mx-auto rounded-full" />
                         </TableCell>
                         <TableCell className="text-center">
-                          <Skeleton className="h-4 w-12 mx-auto" />
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Skeleton className="h-4 w-12 mx-auto" />
-                        </TableCell>
-                        <TableCell className="text-center">
                           <Skeleton className="h-4 w-24 mx-auto" />
                         </TableCell>
                       </TableRow>
                     ))
                   : infos.map((item, idx) => (
-                      <TableRow key={idx}>
-                        {/* <TableCell className="text-center">
-                          {item.academic_semester}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {item.academic_year}
-                        </TableCell> */}
+                      <TableRow key={idx} className="h-12">
                         <TableCell className="text-center">
                           {item.course_code}
                         </TableCell>
@@ -363,6 +349,8 @@ export default function CourseInfoList() {
                           <Link
                             href={`/course-detail/${item.course_code}`}
                             className="underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
                           >
                             {item.course_name}
                           </Link>
@@ -370,17 +358,18 @@ export default function CourseInfoList() {
                         <TableCell className="text-center">
                           <Badge variant={"secondary"} className="text-xs">
                             {courseTypeMap[item.course_type] ||
-                              item.course_type}
+                              item.course_type}{" "}
+                            {item.credits_1}-{item.credits_2}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          {item.credits_1}/{item.credits_2}
+                          {item.teachers ? item.teachers.join(", ") : "-"}
                         </TableCell>
                         <TableCell className="text-center">
-                          {item.department_code}
+                          {item.class_time || "-"}
                         </TableCell>
                         <TableCell className="text-center">
-                          {item.department_name}
+                          {item.department_name} / {item.target_class || "-"}
                         </TableCell>
                       </TableRow>
                     ))}

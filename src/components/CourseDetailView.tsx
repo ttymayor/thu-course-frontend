@@ -150,7 +150,7 @@ export default function CourseDetailPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl">
         <Card>
           <CardContent className="text-center py-8">
             <div className="text-red-500 text-lg font-medium">{error}</div>
@@ -168,20 +168,27 @@ export default function CourseDetailPage() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl">
       <div className="flex items-center gap-2">
-        {/* <BookOpen className="h-8 w-8" /> */}
-        <h1 className="text-3xl font-bold">
-          {courseDetail.course_name ? `${courseDetail.course_name} ` : " "}
-          課程資訊
-        </h1>
-        <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+        <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-lg font-semibold">
           {courseDetail.course_code}
         </code>
+        <h1 className="text-3xl font-bold">
+          {courseDetail.course_name ? `${courseDetail.course_name} ` : "-"}
+        </h1>
         <div className="h-1 w-10 bg-muted" />
         {courseDetail.teachers.map((teacher, index) => (
           <Badge key={index} variant="secondary" className="text-sm">
             {teacher}
           </Badge>
         ))}
+        <div className="flex-1" />
+        <a
+          href={`https://teacher.thu.edu.tw/102/teac2_desc/outline6/print_outline.php?setyear=114&setterm=1&curr_code=${courseDetail.course_code}&ss_sysid=otr`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-auto underline font-medium"
+        >
+          授課大綱
+        </a>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

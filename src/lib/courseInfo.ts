@@ -56,20 +56,15 @@ export async function getCourseInfo(
     page_size = 10,
   } = filters;
 
-  // 建構查詢條件
   const query: CourseInfoQuery = {};
 
-  // 如果department_code被明確指定且與其他搜尋參數不同，直接作為篩選條件
   const isDeptFilter =
     department_code &&
     department_code !== course_code &&
     department_code !== course_name;
 
   if (isDeptFilter) {
-    // 系所篩選模式
     query.department_code = { $regex: department_code, $options: "i" };
-
-    // 在特定系所內搜尋課程
     if (course_code && course_name && course_code === course_name) {
       query.$or = [
         { course_code: { $regex: course_code, $options: "i" } },
@@ -84,21 +79,18 @@ export async function getCourseInfo(
       }
     }
   } else {
-    // 統一搜尋模式
     const isUnifiedSearch =
       course_code === course_name &&
       course_name === department_code &&
       course_code;
 
     if (isUnifiedSearch) {
-      // 統一搜尋：在課程代碼、課程名稱、系所代碼中任一匹配即可
       query.$or = [
         { course_code: { $regex: course_code, $options: "i" } },
         { course_name: { $regex: course_code, $options: "i" } },
         { department_code: { $regex: course_code, $options: "i" } },
       ];
     } else {
-      // 分別搜尋
       if (course_code) {
         query.course_code = { $regex: course_code, $options: "i" };
       }
@@ -125,12 +117,50 @@ export async function getCourseInfo(
     query.academic_year = parseInt(academic_year, 10);
   }
 
-  // 計算總數
-  const total = await CourseInfo.countDocuments(query);
-
-  // 分頁查詢
   const skip = (page - 1) * page_size;
-  const data = await CourseInfo.find(query).skip(skip).limit(page_size).lean(); // 使用 lean() 提升效能
+
+  const aggregationPipeline = [
+    { $match: query },
+    {
+      $lookup: {
+        from: "course_detail",
+        localField: "course_code",
+        foreignField: "course_code",
+        as: "detail",
+      },
+    },
+    {
+      $unwind: {
+        path: "$detail",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        class_time: "$detail.basic_info.class_time",
+        target_class: "$detail.basic_info.target_class",
+        target_grade: "$detail.basic_info.target_grade",
+        teachers: "$detail.teachers",
+      },
+    },
+    {
+      $project: {
+        detail: 0,
+      },
+    },
+    {
+      $facet: {
+        paginatedResults: [{ $skip: skip }, { $limit: page_size }],
+        totalCount: [{ $count: "count" }],
+      },
+    },
+  ];
+
+  const results = await CourseInfo.aggregate(aggregationPipeline);
+
+  const data = results[0].paginatedResults;
+  const total =
+    results[0].totalCount.length > 0 ? results[0].totalCount[0].count : 0;
 
   return { data, total };
 }
