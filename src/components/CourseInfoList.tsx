@@ -47,6 +47,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { courseTimeParser } from "@/lib/courseTimeParser";
 
 type CourseTypeMap = Record<number, string>;
 
@@ -338,6 +339,12 @@ export default function CourseInfoList() {
                         <TableCell className="text-center">
                           <Skeleton className="h-4 w-24 mx-auto" />
                         </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-32 mx-auto" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Skeleton className="h-4 w-32 mx-auto" />
+                        </TableCell>
                       </TableRow>
                     ))
                   : infos.map((item, idx) => (
@@ -366,7 +373,18 @@ export default function CourseInfoList() {
                           {item.teachers ? item.teachers.join(", ") : "-"}
                         </TableCell>
                         <TableCell className="text-center">
-                          {item.class_time || "-"}
+                          {item.class_time && (
+                            <ul className="list-disc list-inside inline-block text-left">
+                              {courseTimeParser(item.class_time).map(
+                                (entry, index) => (
+                                  <li key={index}>
+                                    {entry.day} {entry.periods.join(", ")}{" "}
+                                    {entry.location && `［${entry.location}］`}
+                                  </li>
+                                )
+                              ) || "-"}
+                            </ul>
+                          )}
                         </TableCell>
                         <TableCell className="text-center">
                           {item.department_name} / {item.target_class || "-"}

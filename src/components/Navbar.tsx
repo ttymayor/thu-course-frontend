@@ -77,7 +77,7 @@ export default function Navbar() {
         </div>
 
         {/* 桌面版右側區域 */}
-        <div className="ml-auto hidden md:flex">
+        <div className="ml-auto hidden md:flex items-center gap-2">
           <ModeToggle />
         </div>
       </div>
