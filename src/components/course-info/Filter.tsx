@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import {
   Command,
@@ -18,14 +18,16 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Department } from "./types";
 import useSWR from "swr";
 import { Skeleton } from "../ui/skeleton";
+import { useDebounceTransition } from "@/lib/debounceTransition";
 
 export default function Filter() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const currentSearchQuery = searchParams.get("search") || "";
@@ -37,6 +39,7 @@ export default function Filter() {
   );
 
   const [open, setOpen] = useState(false);
+  const [isPending, debounceTransition] = useDebounceTransition();
 
   const { data: departments, isLoading } = useSWR(
     "/api/departments",
@@ -91,44 +94,49 @@ export default function Filter() {
     return dept ? dept.department_name : "所有系所";
   };
 
-  // 更新 URL search params
-  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const updateSearchParams = (params: Record<string, string | null>) => {
-    if (debounce.current) {
-      clearTimeout(debounce.current);
-    }
-    debounce.current = setTimeout(() => {
-      const current = new URLSearchParams(Array.from(searchParams.entries()));
-
-      Object.entries(params).forEach(([key, value]) => {
-        if (value === null || value === "") {
-          current.delete(key);
-        } else {
-          current.set(key, value);
-        }
-      });
-
-      const search = current.toString();
-      const query = search ? `?${search}` : "";
-      router.push(`/course-info${query}`);
-    }, 200);
+  const buildCleanSearchParams = () => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.delete("page");
+    return current;
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    updateSearchParams({ search: e.target.value, page: null });
+
+    debounceTransition(() => {
+      const current = buildCleanSearchParams();
+      if (e.target.value === "") {
+        current.delete("search");
+      } else {
+        current.set("search", e.target.value);
+      }
+
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+      router.push(`${pathname}${query}`);
+    });
   };
 
   const handleDepartmentChange = (deptCode: string) => {
     setSelectedDepartment(deptCode);
-    updateSearchParams({
-      department: deptCode === "" ? null : deptCode,
-      page: null,
+    debounceTransition(() => {
+      const current = buildCleanSearchParams();
+      if (deptCode === "") {
+        current.delete("department");
+      } else {
+        current.set("department", deptCode);
+      }
+
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+      router.push(`${pathname}${query}`);
     });
   };
 
   return (
-    <div className="mb-4 flex gap-2 flex-wrap justify-end">
+    <div className="mb-4 flex gap-2 flex-wrap justify-end items-center">
+      {isPending && <Loader className="w-4 h-4 animate-spin" />}
+
       {isLoading ? (
         <Skeleton className="w-full md:w-[270px] h-10" />
       ) : (
