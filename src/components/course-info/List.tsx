@@ -26,7 +26,6 @@ export default function List({ infos }: ListProps) {
   return (
     <div className="overflow-x-auto">
       <Table className="min-w-full">
-        <TableCaption>課程資訊一覽</TableCaption>
         <TableHeader>
           <TableRow className="h-12">
             <TableHead className="text-center">課程代碼</TableHead>
