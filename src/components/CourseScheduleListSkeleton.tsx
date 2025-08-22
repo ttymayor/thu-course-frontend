@@ -1,5 +1,3 @@
-"use cache";
-
 import {
   Table,
   TableBody,
@@ -16,21 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { getCourseSchedules } from "@/lib/courseSchedule";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface CourseScheduleData {
-  _id: string;
-  course_stage: string;
-  status: string;
-  start_time: string;
-  end_time: string;
-  result_publish_time: string;
-}
-
-export default async function CourseScheduleList() {
-  const schedules = await getCourseSchedules();
-
+export default function CourseScheduleListSkeleton() {
   return (
     <Card className="w-full max-w-5xl">
       <CardHeader>
@@ -50,25 +36,22 @@ export default async function CourseScheduleList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {schedules?.map((item: CourseScheduleData, idx: number) => (
-              <TableRow
-                key={item._id || idx}
-                className={item.status === "結束" ? "opacity-30" : ""}
-              >
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <TableRow key={`skeleton-${idx}`}>
                 <TableCell className="font-medium text-center">
-                  {item.course_stage}
+                  <Skeleton className="h-4 w-16 mx-auto" />
                 </TableCell>
                 <TableCell className="text-center">
-                  <Badge>{item.status}</Badge>
+                  <Skeleton className="h-6 w-16 mx-auto rounded-full" />
                 </TableCell>
                 <TableCell className="text-center">
-                  {formatDate(item.start_time)}
+                  <Skeleton className="h-4 w-32 mx-auto" />
                 </TableCell>
                 <TableCell className="text-center">
-                  {formatDate(item.end_time)}
+                  <Skeleton className="h-4 w-32 mx-auto" />
                 </TableCell>
                 <TableCell className="text-center">
-                  {formatDate(item.result_publish_time)}
+                  <Skeleton className="h-4 w-32 mx-auto" />
                 </TableCell>
               </TableRow>
             ))}
@@ -77,16 +60,4 @@ export default async function CourseScheduleList() {
       </CardContent>
     </Card>
   );
-}
-
-function formatDate(dateStr: string) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  const yyyy = d.getFullYear();
-  const MM = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const HH = String(d.getHours()).padStart(2, "0");
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  return `${yyyy}/${MM}/${dd} ${HH}:${mm}`;
 }

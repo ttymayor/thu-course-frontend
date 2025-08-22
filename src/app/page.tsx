@@ -1,6 +1,8 @@
 import CourseScheduleList from "@/components/CourseScheduleList";
+import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Megaphone } from "lucide-react";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -21,7 +23,9 @@ export default function Home() {
             </Alert>
 
             <div className="w-full max-w-4xl">
-              <CourseScheduleList />
+              <Suspense fallback={<CourseScheduleListSkeleton />}>
+                <CourseScheduleList />
+              </Suspense>
             </div>
           </div>
         </main>
