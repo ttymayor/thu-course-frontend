@@ -24,7 +24,7 @@ export default function Footer() {
           </div>
 
           {/* 開發者資訊 */}
-          <div className="flex items-center text-center">
+          <div className="flex flex-col items-center text-center space-y-1">
             <span className="text-sm text-muted-foreground">
               Developed by{" "}
               <Tooltip>
@@ -40,6 +40,26 @@ export default function Footer() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>我真的不是電神...</p>
+                </TooltipContent>
+              </Tooltip>
+            </span>
+
+            {/* contributor */}
+            <span className="text-sm text-muted-foreground">
+              Contributor:{" "}
+              <Tooltip>
+                <TooltipTrigger>
+                  <a
+                    href="https://github.com/pan93412"
+                    className="text-primary hover:text-primary/80 underline font-medium transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Pan
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>這才是真的電神...</p>
                 </TooltipContent>
               </Tooltip>
             </span>

@@ -5,21 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-
-interface GradingItem {
-  description: string;
-  method: string;
-  percentage: number;
-}
+import { GradingItem } from "@/lib/courseDetail";
 
 interface GradingPieChartProps {
   gradingItems: GradingItem[];
@@ -74,32 +60,6 @@ export default function GradingPieChart({
           />
         </PieChart>
       </ChartContainer>
-
-      {/* 表格備用顯示 */}
-      <div className="mt-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-1/3">評分方式</TableHead>
-              <TableHead className="w-1/3 text-center">比例</TableHead>
-              <TableHead className="w-1/3 text-center">說明</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {gradingItems.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className="">{item.method}</TableCell>
-                <TableCell className="text-center">
-                  <Badge variant="outline">{item.percentage}%</Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  {item.description || "-"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
     </>
   );
 }

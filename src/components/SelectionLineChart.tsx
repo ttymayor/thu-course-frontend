@@ -6,22 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-
-interface SelectionRecord {
-  date: string;
-  enrolled: number;
-  registered: number;
-  remaining: number;
-}
+import { SelectionRecord } from "@/lib/courseDetail";
 
 interface SelectionLineChartProps {
   selectionRecords: SelectionRecord[];
@@ -106,34 +91,6 @@ export default function SelectionLineChart({
           />
         </LineChart>
       </ChartContainer>
-
-      {/* 表格備用顯示 */}
-      <div className="mt-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-1/3 text-center">日期</TableHead>
-              <TableHead className="w-1/3 text-center">
-                已選課/上課人數
-              </TableHead>
-              <TableHead className="w-1/3 text-center">登記人數</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {selectionRecords.map((record, index) => (
-              <TableRow key={index}>
-                <TableCell className="text-center">{record.date}</TableCell>
-                <TableCell className="text-center">
-                  {record.enrolled} / {record.remaining + record.enrolled}
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge variant={"outline"}>{record.registered}</Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
     </>
   );
 }

@@ -12,32 +12,55 @@ import {
 import { CourseDetail } from "@/lib/courseDetail";
 import GradingPieChart from "@/components/GradingPieChart";
 import SelectionLineChart from "@/components/SelectionLineChart";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
-export default function CourseDetailView({ courseDetail }: { courseDetail: CourseDetail }) {
+export default function CourseDetailView({
+  courseDetail,
+}: {
+  courseDetail: CourseDetail;
+}) {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl">
-      <div className="flex items-center gap-2">
-        <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-lg font-semibold">
-          {courseDetail.course_code}
-        </code>
-        <h1 className="text-3xl font-bold">
-          {courseDetail.course_name ? `${courseDetail.course_name} ` : "-"}
-        </h1>
-        <div className="h-1 w-10 bg-muted" />
-        {courseDetail.teachers.map((teacher, index) => (
-          <Badge key={index} variant="secondary" className="text-sm">
-            {teacher}
-          </Badge>
-        ))}
-        <div className="flex-1" />
-        <a
-          href={`https://teacher.thu.edu.tw/102/teac2_desc/outline6/print_outline.php?setyear=114&setterm=1&curr_code=${courseDetail.course_code}&ss_sysid=otr`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto underline font-medium"
-        >
-          授課大綱
-        </a>
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+        <div className="flex items-center gap-2">
+          <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-lg font-semibold">
+            {courseDetail.course_code}
+          </code>
+          <h1 className="text-2xl font-bold sm:text-3xl">
+            {courseDetail.course_name ? `${courseDetail.course_name} ` : "-"}
+          </h1>
+          <div className="hidden h-1 w-10 bg-muted sm:block" />
+          {courseDetail.teachers.map((teacher, index) => (
+            <Badge key={index} variant="secondary" className="text-sm">
+              {teacher}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex gap-4 text-sm sm:ml-auto">
+          <a
+            href={`https://course.thu.edu.tw/view/114/1/${courseDetail.course_code}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline"
+          >
+            課程資訊網
+          </a>
+          <a
+            href={`http://desc.ithu.tw/114/1/${courseDetail.course_code}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline"
+          >
+            授課大綱
+          </a>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -51,10 +74,12 @@ export default function CourseDetailView({ courseDetail }: { courseDetail: Cours
           </CardHeader>
           <CardContent className="space-y-4">
             <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
-              <li>上課時間：{courseDetail.basic_info.class_time}</li>
-              <li>修課對象：{courseDetail.basic_info.target_class}</li>
-              <li>修課年級：{courseDetail.basic_info.target_grade}</li>
-              <li>選課說明：{courseDetail.basic_info.enrollment_notes}</li>
+              <li>上課時間：{courseDetail.basic_info.class_time || "-"}</li>
+              <li>修課對象：{courseDetail.basic_info.target_class || "-"}</li>
+              <li>修課年級：{courseDetail.basic_info.target_grade || "-"}</li>
+              <li>
+                選課說明：{courseDetail.basic_info.enrollment_notes || "-"}
+              </li>
             </ul>
           </CardContent>
         </Card>
@@ -69,6 +94,30 @@ export default function CourseDetailView({ courseDetail }: { courseDetail: Cours
           </CardHeader>
           <CardContent>
             <GradingPieChart gradingItems={courseDetail.grading_items} />
+            <div className="mt-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-1/3">評分方式</TableHead>
+                    <TableHead className="w-1/3 text-center">比例</TableHead>
+                    <TableHead className="w-1/3">說明</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {courseDetail.grading_items.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="">{item.method}</TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="outline">{item.percentage}%</Badge>
+                      </TableCell>
+                      <TableCell className="">
+                        {item.description || "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
@@ -84,6 +133,36 @@ export default function CourseDetailView({ courseDetail }: { courseDetail: Cours
             <SelectionLineChart
               selectionRecords={courseDetail.selection_records}
             />
+            <div className="mt-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-1/3 text-center">日期</TableHead>
+                    <TableHead className="w-1/3 text-center">
+                      已選課 / 上課人數
+                    </TableHead>
+                    <TableHead className="w-1/3 text-center">
+                      登記人數
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {courseDetail.selection_records.map((record, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="text-center">
+                        {record.date || "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {record.enrolled} / {record.remaining + record.enrolled}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant={"outline"}>{record.registered}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
