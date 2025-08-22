@@ -145,6 +145,7 @@ export async function getCourseInfo(
     },
     {
       $project: {
+        _id: 0,
         detail: 0,
       },
     },
