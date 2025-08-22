@@ -1,5 +1,6 @@
 export interface CourseInfoData {
   _id: string;
+  is_closed: boolean;
   academic_semester: string;
   academic_year: string;
   course_code: string;

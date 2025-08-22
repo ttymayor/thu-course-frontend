@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import connectMongoDB from "./mongodb";
 
 const courseInfoSchema = new mongoose.Schema({
+  is_closed: Boolean,
   academic_semester: Number,
   academic_year: Number,
   course_code: String,
@@ -137,6 +138,7 @@ export async function getCourseInfo(
     },
     {
       $addFields: {
+        is_closed: "$detail.is_closed",
         class_time: "$detail.basic_info.class_time",
         target_class: "$detail.basic_info.target_class",
         target_grade: "$detail.basic_info.target_grade",
