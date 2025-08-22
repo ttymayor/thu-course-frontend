@@ -71,13 +71,13 @@ function PaginationPrevious({
 }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
-      aria-label="Go to previous page"
+      aria-label="回到上一頁"
       size="default"
       className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
+      <span className="hidden sm:block">上一頁</span>
     </PaginationLink>
   )
 }
@@ -88,12 +88,12 @@ function PaginationNext({
 }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
-      aria-label="Go to next page"
+      aria-label="前往下一頁"
       size="default"
       className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
+      <span className="hidden sm:block">下一頁</span>
       <ChevronRightIcon />
     </PaginationLink>
   )
