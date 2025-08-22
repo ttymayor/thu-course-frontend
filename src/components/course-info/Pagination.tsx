@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Pagination as UIPagination,
   PaginationContent,
@@ -18,15 +17,12 @@ interface PaginationProps {
 }
 
 export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1");
   const totalPages = Math.ceil(total / pageSize);
 
-  // 更新 URL search params
-  const updateSearchParams = (page: number) => {
+  const buildSearchParams = (page: number) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
-    
     if (page === 1) {
       current.delete("page");
     } else {
@@ -35,8 +31,8 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
 
     const search = current.toString();
     const query = search ? `?${search}` : "";
-    router.push(`/course-info${query}`);
-  };
+    return query;
+  }
 
   if (totalPages <= 1) {
     return null;
@@ -48,15 +44,10 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
         <PaginationContent>
           <PaginationItem>
             {currentPage > 1 ? (
-              <PaginationPrevious
-                onClick={(e) => {
-                  e.preventDefault();
-                  updateSearchParams(currentPage - 1);
-                }}
-                aria-label={`前往第 ${currentPage - 1} 頁`}
-              />
+              <PaginationPrevious href={buildSearchParams(currentPage - 1)} aria-label={`前往第 ${currentPage - 1} 頁`} />
             ) : (
-              <PaginationPrevious 
+              <PaginationPrevious
+                href="#"
                 className="pointer-events-none opacity-50"
                 aria-label="目前已在第一頁"
               />
@@ -70,14 +61,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
             if (totalPages > 0) {
               items.push(
                 <PaginationItem key={1}>
-                  <PaginationLink
-                    onClick={(e) => {
-                      e.preventDefault();
-                      updateSearchParams(1);
-                    }}
-                    isActive={currentPage === 1}
-                    aria-label="前往第 1 頁"
-                  >
+                  <PaginationLink href={buildSearchParams(1)} isActive={currentPage === 1} aria-label="前往第 1 頁">
                     1
                   </PaginationLink>
                 </PaginationItem>
@@ -97,14 +81,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
             ) {
               items.push(
                 <PaginationItem key={i}>
-                  <PaginationLink
-                    onClick={(e) => {
-                      e.preventDefault();
-                      updateSearchParams(i);
-                    }}
-                    isActive={currentPage === i}
-                    aria-label={`前往第 ${i} 頁`}
-                  >
+                  <PaginationLink href={buildSearchParams(i)} isActive={currentPage === i} aria-label={`前往第 ${i} 頁`}>
                     {i}
                   </PaginationLink>
                 </PaginationItem>
@@ -120,14 +97,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
             if (totalPages > 1) {
               items.push(
                 <PaginationItem key={totalPages}>
-                  <PaginationLink
-                    onClick={(e) => {
-                      e.preventDefault();
-                      updateSearchParams(totalPages);
-                    }}
-                    isActive={currentPage === totalPages}
-                    aria-label={`前往第 ${totalPages} 頁`}
-                  >
+                  <PaginationLink href={buildSearchParams(totalPages)} isActive={currentPage === totalPages} aria-label={`前往第 ${totalPages} 頁`}>
                     {totalPages}
                   </PaginationLink>
                 </PaginationItem>
@@ -139,15 +109,10 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
           
           <PaginationItem>
             {currentPage < totalPages ? (
-              <PaginationNext
-                onClick={(e) => {
-                  e.preventDefault();
-                  updateSearchParams(currentPage + 1);
-                }}
-                aria-label={`前往第 ${currentPage + 1} 頁`}
-              />
+              <PaginationNext href={buildSearchParams(currentPage + 1)} aria-label={`前往第 ${currentPage + 1} 頁`} />
             ) : (
               <PaginationNext
+                href="#"
                 className="pointer-events-none opacity-50"
                 aria-label="目前已在最後一頁"
               />
