@@ -3,7 +3,7 @@ import { getAllDepartments } from "@/lib/courseInfo";
 
 export async function GET() {
   try {
-    const departments = await getAllDepartments();
+    const departments = await getCachedDepartments();
 
     return NextResponse.json({
       success: true,
@@ -16,4 +16,10 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+async function getCachedDepartments() {
+  "use cache";
+  const cachedDepartments = await getAllDepartments();
+  return cachedDepartments;
 }
