@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -17,7 +16,6 @@ export default function ListSkeleton({ pageSize = 10 }: ListSkeletonProps) {
   return (
     <div className="overflow-x-auto">
       <Table className="min-w-full">
-        <TableCaption>課程資訊一覽</TableCaption>
         <TableHeader>
           <TableRow className="h-12">
             <TableHead className="text-center">課程代碼</TableHead>

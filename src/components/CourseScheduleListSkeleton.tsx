@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -25,7 +24,6 @@ export default function CourseScheduleListSkeleton() {
       </CardHeader>
       <CardContent>
         <Table>
-          <TableCaption>選課時程一覽</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[120px] text-center">階段</TableHead>
