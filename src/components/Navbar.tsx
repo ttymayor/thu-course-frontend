@@ -18,6 +18,10 @@ const NAVBAR_CONFIG = {
         label: "課程查詢",
         href: "/course-info",
       },
+      {
+        label: "排課模擬器（實驗性功能）",
+        href: "/schedule-simulator",
+      },
     ],
   },
   mobile: {
