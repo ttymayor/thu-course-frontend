@@ -48,9 +48,39 @@ function CourseSelectorContent({
   useEffect(() => {
     const fetchCourses = async () => {
       setIsLoading(true);
-      const params = new URLSearchParams(searchParams.toString());
+
+      // 構建查詢參數，參考 course-info 的實作方式
+      const params: Record<string, string | number> = {
+        page: parseInt(searchParams.get("page") || "1"),
+        page_size: 10,
+      };
+
+      const search = searchParams.get("search");
+      const department = searchParams.get("department");
+
+      // 如果選擇了特定系所，直接使用系所篩選
+      if (department) {
+        params.department_code = department;
+        // 在特定系所內搜尋時，只搜尋課程代碼和課程名稱
+        if (search) {
+          params.course_code = search;
+          params.course_name = search;
+        }
+      } else {
+        // 沒有選擇系所時，使用統一搜尋（包含系所代碼）
+        if (search) {
+          params.course_code = search;
+          params.course_name = search;
+          params.department_code = search;
+        }
+      }
+
       try {
-        const response = await fetch(`/api/course-info?${params.toString()}`);
+        const queryString = new URLSearchParams(
+          Object.entries(params).map(([key, value]) => [key, String(value)])
+        ).toString();
+
+        const response = await fetch(`/api/course-info?${queryString}`);
         const result = await response.json();
         if (result.success) {
           setCourses(result.data);

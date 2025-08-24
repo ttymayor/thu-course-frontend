@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +42,12 @@ export default function SelectableCourseList({
     <TooltipProvider>
       <div className="overflow-x-auto">
         <Table className="min-w-full">
+          <TableHeader>
+            <TableRow className="h-12">
+              <TableHead className="text-center w-16">選擇</TableHead>
+              <TableHead className="text-center">課程資訊</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
             {infos.map((item: CourseInfoData) => (
               <TableRow
@@ -97,6 +110,11 @@ export default function SelectableCourseList({
                         {item.teachers?.length
                           ? `${item.teachers.join("、")}`
                           : "-"}
+                        {item.class_time && (
+                          <span className="ml-2">
+                            | {item.class_time.split("\n")[0]}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
