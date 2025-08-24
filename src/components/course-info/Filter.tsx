@@ -113,7 +113,7 @@ export default function Filter() {
 
       const search = current.toString();
       const query = search ? `?${search}` : "";
-      router.push(`${pathname}${query}`);
+      router.replace(`${pathname}${query}`);
     });
   };
 
@@ -129,7 +129,7 @@ export default function Filter() {
 
       const search = current.toString();
       const query = search ? `?${search}` : "";
-      router.push(`${pathname}${query}`);
+      router.replace(`${pathname}${query}`);
     });
   };
 
@@ -178,51 +178,52 @@ export default function Filter() {
                     所有系所
                   </CommandItem>
                 </CommandGroup>
-                {departmentsByCollege && Object.entries(departmentsByCollege)
-                  .sort(([a], [b]) => {
-                    // 將其他分組(0)排在最後
-                    if (parseInt(a) === 0) return 1;
-                    if (parseInt(b) === 0) return -1;
-                    return parseInt(a) - parseInt(b);
-                  })
-                  .map(([collegeId, depts]) => (
-                    <CommandGroup
-                      key={collegeId}
-                      heading={
-                        parseInt(collegeId) === 0
-                          ? "其他"
-                          : collegeMap[
-                              parseInt(collegeId) as keyof typeof collegeMap
-                            ]
-                      }
-                    >
-                      {depts
-                        .sort((a, b) =>
-                          a.department_code.localeCompare(b.department_code)
-                        )
-                        .map((dept) => (
-                          <CommandItem
-                            key={dept.department_code}
-                            value={`${dept.department_name} ${dept.department_code}`}
-                            onSelect={() => {
-                              handleDepartmentChange(dept.department_code);
-                              setOpen(false);
-                            }}
-                            className="cursor-pointer"
-                          >
-                            <Check
-                              className={cn(
-                                "h-4 w-4",
-                                selectedDepartment === dept.department_code
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {dept.department_name}
-                          </CommandItem>
-                        ))}
-                    </CommandGroup>
-                  ))}
+                {departmentsByCollege &&
+                  Object.entries(departmentsByCollege)
+                    .sort(([a], [b]) => {
+                      // 將其他分組(0)排在最後
+                      if (parseInt(a) === 0) return 1;
+                      if (parseInt(b) === 0) return -1;
+                      return parseInt(a) - parseInt(b);
+                    })
+                    .map(([collegeId, depts]) => (
+                      <CommandGroup
+                        key={collegeId}
+                        heading={
+                          parseInt(collegeId) === 0
+                            ? "其他"
+                            : collegeMap[
+                                parseInt(collegeId) as keyof typeof collegeMap
+                              ]
+                        }
+                      >
+                        {depts
+                          .sort((a, b) =>
+                            a.department_code.localeCompare(b.department_code)
+                          )
+                          .map((dept) => (
+                            <CommandItem
+                              key={dept.department_code}
+                              value={`${dept.department_name} ${dept.department_code}`}
+                              onSelect={() => {
+                                handleDepartmentChange(dept.department_code);
+                                setOpen(false);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <Check
+                                className={cn(
+                                  "h-4 w-4",
+                                  selectedDepartment === dept.department_code
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {dept.department_name}
+                            </CommandItem>
+                          ))}
+                      </CommandGroup>
+                    ))}
               </CommandList>
             </Command>
           </PopoverContent>
