@@ -19,7 +19,7 @@ const CourseInfo =
   mongoose.model("CourseInfo", courseInfoSchema, "course_info");
 
 interface CourseInfoQuery {
-  course_code?: string | { $regex: string; $options: string };
+  course_code?: string | { $regex: string; $options: string } | { $in: string[] };
   course_name?: string | { $regex: string; $options: string };
   department_code?: string | { $regex: string; $options: string };
   department_name?: string | { $regex: string; $options: string };
@@ -40,6 +40,7 @@ export async function getCourseInfo(
     department_name?: string;
     academic_semester?: string;
     academic_year?: string;
+    course_codes?: string[];
     page?: number;
     page_size?: number;
   } = {}
@@ -53,13 +54,19 @@ export async function getCourseInfo(
     department_name,
     academic_semester,
     academic_year,
+    course_codes,
     page = 1,
     page_size = 10,
   } = filters;
 
   const query: CourseInfoQuery = {};
 
-  const isDeptFilter =
+  // 如果提供了 course_codes 陣列，直接使用 $in 查詢
+  if (course_codes && course_codes.length > 0) {
+    query.course_code = { $in: course_codes };
+  } else {
+    // 原有的查詢邏輯
+    const isDeptFilter =
     department_code &&
     department_code !== course_code &&
     department_code !== course_name;
@@ -106,6 +113,7 @@ export async function getCourseInfo(
         query.department_code = { $regex: department_code, $options: "i" };
       }
     }
+  }
   }
 
   if (department_name) {

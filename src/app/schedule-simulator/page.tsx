@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CourseInfoData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
@@ -11,6 +11,40 @@ export default function ScheduleSimulatorPage() {
   const [hoveredCourse, setHoveredCourse] = useState<CourseInfoData | null>(
     null
   );
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true);
+
+  // 頁面載入時從 localStorage 初始化選中的課程
+  useEffect(() => {
+    const loadInitialSelectedCourses = async () => {
+      try {
+        const savedCourseCodes = localStorage.getItem("selectedCourseCodes");
+        if (savedCourseCodes) {
+          const parsedCourseCodes = JSON.parse(savedCourseCodes);
+
+          if (parsedCourseCodes.length > 0) {
+            // 使用 API 獲取完整的課程資訊
+            const courseParams = parsedCourseCodes
+              .map((code: string) => `course_codes=${code}`)
+              .join("&");
+            const response = await fetch(
+              `/api/course-info?${courseParams}&page_size=100`
+            );
+            const result = await response.json();
+
+            if (result.success && result.data.length > 0) {
+              setSelectedCourses(result.data);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load initial selected courses:", error);
+      } finally {
+        setIsLoadingInitialData(false);
+      }
+    };
+
+    loadInitialSelectedCourses();
+  }, []);
 
   const handleSelectionChange = (courses: CourseInfoData[]) => {
     setSelectedCourses(courses);
@@ -25,10 +59,11 @@ export default function ScheduleSimulatorPage() {
         (c) => c.course_code !== courseCode
       );
       setSelectedCourses(newSelectedCourses);
-      localStorage.setItem(
-        "selectedCourses",
-        JSON.stringify(newSelectedCourses)
-      );
+
+      // 只儲存 course_code 陣列到 localStorage
+      const courseCodes = newSelectedCourses.map((c) => c.course_code);
+      localStorage.setItem("selectedCourseCodes", JSON.stringify(courseCodes));
+
       toast.info("已移除課程", {
         description: `已將 ${courseToRemove.course_name} 從您的課表中移除。`,
       });
@@ -49,6 +84,7 @@ export default function ScheduleSimulatorPage() {
             selectedCourses={selectedCourses}
             onSelectionChange={handleSelectionChange}
             onCourseHover={handleCourseHover}
+            skipInitialLoad={!isLoadingInitialData}
           />
         </div>
 

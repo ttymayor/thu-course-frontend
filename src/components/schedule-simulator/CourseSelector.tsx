@@ -13,12 +13,14 @@ interface CourseSelectorProps {
   onSelectionChange: (selectedCourses: CourseInfoData[]) => void;
   onCourseHover: (hoveredCourse: CourseInfoData | null) => void;
   selectedCourses?: CourseInfoData[];
+  skipInitialLoad?: boolean;
 }
 
 function CourseSelectorContent({
   onSelectionChange,
   onCourseHover,
   selectedCourses: externalSelectedCourses,
+  skipInitialLoad,
 }: CourseSelectorProps) {
   const searchParams = useSearchParams();
   const [courses, setCourses] = useState<CourseInfoData[]>([]);
@@ -31,15 +33,9 @@ function CourseSelectorContent({
       // 如果有外部傳入的選中課程，優先使用外部狀態
       setSelectedCourses(externalSelectedCourses);
     } else {
-      // 否則從 localStorage 讀取
-      const savedCourses = localStorage.getItem("selectedCourses");
-      if (savedCourses) {
-        const parsedCourses = JSON.parse(savedCourses);
-        setSelectedCourses(parsedCourses);
-        onSelectionChange(parsedCourses);
-      }
+      // 否則等待從 localStorage 重建（在另一個 useEffect 中處理）
+      setSelectedCourses([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalSelectedCourses]);
 
   // 同步外部狀態變化
@@ -74,6 +70,50 @@ function CourseSelectorContent({
     fetchCourses();
   }, [searchParams]);
 
+  // 從 localStorage 重建選中課程列表（只在沒有跳過初始載入時執行）
+  useEffect(() => {
+    const loadSelectedCourses = async () => {
+      if (!externalSelectedCourses && !skipInitialLoad) {
+        const savedCourseCodes = localStorage.getItem("selectedCourseCodes");
+        if (savedCourseCodes) {
+          const parsedCourseCodes = JSON.parse(savedCourseCodes);
+
+          if (parsedCourseCodes.length > 0) {
+            try {
+              // 使用 API 獲取完整的課程資訊
+              const courseParams = parsedCourseCodes
+                .map((code: string) => `course_codes=${code}`)
+                .join("&");
+              const response = await fetch(
+                `/api/course-info?${courseParams}&page_size=100`
+              );
+              const result = await response.json();
+
+              if (result.success && result.data.length > 0) {
+                setSelectedCourses(result.data);
+                onSelectionChange(result.data);
+              }
+            } catch (error) {
+              console.error("Failed to load selected courses:", error);
+              // 如果 API 失敗，嘗試從當前課程列表中重建
+              if (courses.length > 0) {
+                const reconstructedCourses = courses.filter((course) =>
+                  parsedCourseCodes.includes(course.course_code)
+                );
+                if (reconstructedCourses.length > 0) {
+                  setSelectedCourses(reconstructedCourses);
+                  onSelectionChange(reconstructedCourses);
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    loadSelectedCourses();
+  }, [externalSelectedCourses, onSelectionChange, courses, skipInitialLoad]);
+
   const handleSelectionChange = (
     course: CourseInfoData,
     isSelected: boolean
@@ -83,7 +123,11 @@ function CourseSelectorContent({
       : selectedCourses.filter((c) => c.course_code !== course.course_code);
 
     setSelectedCourses(newSelectedCourses);
-    localStorage.setItem("selectedCourses", JSON.stringify(newSelectedCourses));
+
+    // 只儲存 course_code 陣列到 localStorage
+    const courseCodes = newSelectedCourses.map((c) => c.course_code);
+    localStorage.setItem("selectedCourseCodes", JSON.stringify(courseCodes));
+
     onSelectionChange(newSelectedCourses);
   };
 
