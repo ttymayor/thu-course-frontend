@@ -123,7 +123,7 @@ export default function ScheduleTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1"
+                          className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer"
                           onClick={() => onRemoveCourse(course.course_code)}
                         >
                           <X className="h-3 w-3" />
