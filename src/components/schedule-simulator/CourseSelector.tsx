@@ -7,7 +7,7 @@ import SelectableCourseList from "./SelectableCourseList";
 import Pagination from "@/components/course-info/Pagination";
 import ListSkeleton from "@/components/course-info/ListSkeleton";
 import { CourseInfoData } from "@/components/course-info/types";
-import { Card, CardContent, CardHeader } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface CourseSelectorProps {
   onSelectionChange: (selectedCourses: CourseInfoData[]) => void;
@@ -191,7 +191,9 @@ function CourseSelectorContent({
 export default function CourseSelector(props: CourseSelectorProps) {
   return (
     <Card>
-      <CardHeader>課程選擇</CardHeader>
+      <CardHeader>
+        <CardTitle>課程選擇</CardTitle>
+      </CardHeader>
       <CardContent>
         <Suspense fallback={<ListSkeleton />}>
           <CourseSelectorContent {...props} />
