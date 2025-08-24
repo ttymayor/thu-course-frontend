@@ -78,7 +78,7 @@ export default async function CourseScheduleList() {
 }
 
 function formatDate(dateStr: string) {
-  // If this is a valid date, return the original date
+  // If this is an invalid date, return the original date
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return dateStr;
 
