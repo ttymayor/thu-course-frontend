@@ -12,11 +12,13 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 interface CourseSelectorProps {
   onSelectionChange: (selectedCourses: CourseInfoData[]) => void;
   onCourseHover: (hoveredCourse: CourseInfoData | null) => void;
+  selectedCourses?: CourseInfoData[];
 }
 
 function CourseSelectorContent({
   onSelectionChange,
   onCourseHover,
+  selectedCourses: externalSelectedCourses,
 }: CourseSelectorProps) {
   const searchParams = useSearchParams();
   const [courses, setCourses] = useState<CourseInfoData[]>([]);
@@ -25,14 +27,27 @@ function CourseSelectorContent({
   const [selectedCourses, setSelectedCourses] = useState<CourseInfoData[]>([]);
 
   useEffect(() => {
-    const savedCourses = localStorage.getItem("selectedCourses");
-    if (savedCourses) {
-      const parsedCourses = JSON.parse(savedCourses);
-      setSelectedCourses(parsedCourses);
-      onSelectionChange(parsedCourses);
+    if (externalSelectedCourses) {
+      // 如果有外部傳入的選中課程，優先使用外部狀態
+      setSelectedCourses(externalSelectedCourses);
+    } else {
+      // 否則從 localStorage 讀取
+      const savedCourses = localStorage.getItem("selectedCourses");
+      if (savedCourses) {
+        const parsedCourses = JSON.parse(savedCourses);
+        setSelectedCourses(parsedCourses);
+        onSelectionChange(parsedCourses);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [externalSelectedCourses]);
+
+  // 同步外部狀態變化
+  useEffect(() => {
+    if (externalSelectedCourses) {
+      setSelectedCourses(externalSelectedCourses);
+    }
+  }, [externalSelectedCourses]);
 
   useEffect(() => {
     const fetchCourses = async () => {

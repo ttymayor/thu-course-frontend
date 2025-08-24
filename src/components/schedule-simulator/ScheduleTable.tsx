@@ -4,6 +4,14 @@ import { X } from "lucide-react";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import React from "react";
 
@@ -24,7 +32,7 @@ export default function ScheduleTable({
   hoveredCourse,
   onRemoveCourse,
 }: ScheduleTableProps) {
-  const days = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
+  const days = ["一", "二", "三", "四", "五", "六", "日"];
   const periods = [
     "A",
     "1",
@@ -61,7 +69,7 @@ export default function ScheduleTable({
   allCourses.forEach((course) => {
     const parsedTimes = courseTimeParser(course.class_time);
     parsedTimes.forEach((time) => {
-      const dayKey = time.day.replace("星期", "週");
+      const dayKey = time.day.replace("星期", "");
       if (days.includes(dayKey)) {
         time.periods.forEach((p) => {
           const periodKey = String(p);
@@ -80,61 +88,57 @@ export default function ScheduleTable({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto rounded-lg border">
-          <div className="grid grid-cols-[auto_repeat(7,1fr)] min-w-[56rem]">
-            {/* Header */}
-            <div className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-700"></div>
-            {days.map((day) => (
-              <div
-                key={day}
-                className="sticky top-0 z-10 px-4 py-3 text-center font-medium uppercase bg-gray-50 dark:bg-gray-700 border-l"
-              >
-                {day}
-              </div>
-            ))}
-
-            {/* Grid Content */}
-            {periods.map((period, periodIndex) => (
-              <React.Fragment key={period}>
-                {/* Time Slot Label */}
-                <div
-                  className={`px-4 py-4 font-medium content-center text-gray-700 dark:text-white dark:bg-gray-700 text-center border-t ${
-                    periodIndex === 0 ? "" : ""
-                  }`}
-                >
-                  {period}
-                </div>
-                {/* Cells */}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-20 text-center font-medium">
+                  時段
+                </TableHead>
                 {days.map((day) => (
-                  <div
-                    key={`${day}-${period}`}
-                    className="relative px-2 py-2 h-24 border-t border-l"
-                  >
-                    {grid[day]?.[period]?.map((course) => (
-                      <div
-                        key={course.course_code}
-                        className="relative bg-blue-100 dark:bg-blue-900 p-1 rounded-md mb-1 text-xs h-full flex flex-col justify-center"
-                      >
-                        <p className="font-semibold text-center">
-                          {course.course_name}
-                        </p>
-                        <p className="text-center">
-                          {course.teachers.join(", ")}
-                        </p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer"
-                          onClick={() => onRemoveCourse(course.course_code)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <TableHead key={day} className="w-32 text-center font-medium">
+                    {day}
+                  </TableHead>
                 ))}
-              </React.Fragment>
-            ))}
-          </div>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {periods.map((period) => (
+                <TableRow key={period}>
+                  <TableCell className="w-20 text-center font-medium py-4">
+                    {period}
+                  </TableCell>
+                  {days.map((day) => (
+                    <TableCell
+                      key={`${day}-${period}`}
+                      className="w-32 p-2 h-24 align-top"
+                    >
+                      {grid[day]?.[period]?.map((course) => (
+                        <div
+                          key={course.course_code}
+                          className="relative bg-indigo-100 dark:bg-indigo-900 p-2 rounded-md mb-1 text-xs h-full flex flex-col justify-center"
+                        >
+                          <code className="text-center">
+                            {course.course_code}
+                          </code>
+                          <p className="font-semibold text-center">
+                            {course.course_name}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer"
+                            onClick={() => onRemoveCourse(course.course_code)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>

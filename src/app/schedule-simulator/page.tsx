@@ -46,6 +46,7 @@ export default function ScheduleSimulatorPage() {
         {/* 左側：課程選擇，寬度較窄 */}
         <div className="md:w-1/3 w-full md:pr-4 min-w-0">
           <CourseSelector
+            selectedCourses={selectedCourses}
             onSelectionChange={handleSelectionChange}
             onCourseHover={handleCourseHover}
           />

@@ -54,7 +54,7 @@ export default function SelectableCourseList({
                   />
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
                     <div>
                       <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
                         {item.course_code}
@@ -87,6 +87,11 @@ export default function SelectableCourseList({
                           {courseTypeMap[item.course_type] || item.course_type}{" "}
                           {item.credits_1}-{item.credits_2}
                         </Badge>
+                        {!item.class_time ? (
+                          <Badge variant={"outline"} className="ml-2 text-xs">
+                            無時段
+                          </Badge>
+                        ) : null}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {item.teachers?.length
