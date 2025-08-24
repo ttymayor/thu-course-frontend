@@ -56,9 +56,8 @@ export default function Navbar() {
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
                     className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
-                    href={item.href}
                   >
-                    {item.label}
+                    <Link href={item.href}>{item.label}</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
@@ -69,13 +68,13 @@ export default function Navbar() {
         {/* 手機版快速連結 */}
         <div className="ml-auto flex md:hidden gap-2 items-center">
           {NAVBAR_CONFIG.mobile.quickLinks.map((link, index) => (
-            <a
+            <Link
               key={index}
               href={link.href}
               className="text-xs px-2 py-1 rounded hover:bg-accent"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <ModeToggle />
         </div>
