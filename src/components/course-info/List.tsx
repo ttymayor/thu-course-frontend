@@ -56,7 +56,7 @@ export default function List({ infos }: ListProps) {
               <TableCell className="text-center">
                 {item.is_closed ? (
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild>
                       <span>{item.course_name}</span>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -86,7 +86,7 @@ export default function List({ infos }: ListProps) {
                   : "-"}
                 {item.teachers?.length > 3 && (
                   <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild>
                       <span className="cursor-pointer">...</span>
                     </TooltipTrigger>
                     <TooltipContent>

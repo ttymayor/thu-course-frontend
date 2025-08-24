@@ -5,7 +5,7 @@ type ScheduleEntry = {
 };
 
 export function courseTimeParser(input: string): ScheduleEntry[] {
-  const lines = input.split("\n").filter((line) => line.trim() !== "");
+  const lines = (typeof input === "string" ? input : "").split("\n").filter((line) => line.trim() !== "");
   const results: ScheduleEntry[] = [];
   const daysMap: { [key: string]: string } = {
     一: "星期一",

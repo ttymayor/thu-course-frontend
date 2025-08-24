@@ -28,7 +28,7 @@ export default function Footer() {
             <span className="text-sm text-muted-foreground">
               Developed by{" "}
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <a
                     href={FOOTER_CONFIG.github}
                     className="text-primary hover:text-primary/80 underline font-medium transition-colors"
@@ -48,7 +48,7 @@ export default function Footer() {
             <span className="text-sm text-muted-foreground">
               Contributor:{" "}
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <a
                     href="https://github.com/pan93412"
                     className="text-primary hover:text-primary/80 underline font-medium transition-colors"

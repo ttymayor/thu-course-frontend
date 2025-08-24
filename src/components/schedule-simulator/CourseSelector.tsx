@@ -8,6 +8,11 @@ import Pagination from "@/components/course-info/Pagination";
 import ListSkeleton from "@/components/course-info/ListSkeleton";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  checkScheduleConflict,
+  formatConflictMessage,
+} from "@/lib/scheduleConflictChecker";
+import { toast } from "sonner";
 
 interface CourseSelectorProps {
   onSelectionChange: (selectedCourses: CourseInfoData[]) => void;
@@ -148,6 +153,27 @@ function CourseSelectorContent({
     course: CourseInfoData,
     isSelected: boolean
   ) => {
+    if (isSelected) {
+      // 檢查是否有時間衝突
+      const conflictInfo = checkScheduleConflict(selectedCourses, course);
+
+      if (conflictInfo.hasConflict) {
+        // 顯示衝突警告
+        const conflictMessage = formatConflictMessage(conflictInfo);
+        toast.warning("課程時間衝突", {
+          description: `無法新增「${course.course_name}」：${conflictMessage}`,
+          duration: 5000,
+        });
+        return; // 阻止新增有衝突的課程
+      }
+
+      // 沒有衝突，顯示成功訊息
+      toast.success("已新增課程", {
+        description: `已將「${course.course_name}」新增到您的課表中。`,
+        duration: 3000,
+      });
+    }
+
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
       : selectedCourses.filter((c) => c.course_code !== course.course_code);
@@ -178,6 +204,7 @@ function CourseSelectorContent({
             selectedCourseCodes={
               new Set(selectedCourses.map((c) => c.course_code))
             }
+            selectedCourses={selectedCourses}
             onSelectionChange={handleSelectionChange}
             onCourseHover={handleCourseHover}
           />
