@@ -57,7 +57,11 @@ export default async function CourseScheduleList() {
                   {item.course_stage}
                 </TableCell>
                 <TableCell className="text-center">
-                  <Badge>{item.status}</Badge>
+                  {item.status === "結束" || item.status === "關閉" ? (
+                    <Badge variant="outline">{item.status}</Badge>
+                  ) : (
+                    <Badge>{item.status}</Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-center">
                   {formatDate(item.start_time)}
@@ -82,7 +86,7 @@ function formatDate(dateStr: string) {
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return dateStr;
 
-  return date.toLocaleString('zh-TW', {
+  return date.toLocaleString("zh-TW", {
     timeZone: "Asia/Taipei",
     year: "numeric",
     month: "2-digit",
