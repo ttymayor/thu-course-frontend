@@ -3,7 +3,16 @@ import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton"
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Megaphone, ExternalLink, School, BookOpen, Users } from "lucide-react";
+import {
+  Megaphone,
+  ExternalLink,
+  School,
+  BookOpen,
+  Users,
+  Calendar,
+  Star,
+  LibraryBig,
+} from "lucide-react";
 import { Suspense } from "react";
 
 export default function Home() {
@@ -95,8 +104,40 @@ export default function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <BookOpen className="h-6 w-6" />
+                      <LibraryBig className="h-6 w-6" />
                       <span className="text-sm font-medium">東海 iLearn</span>
+                      <ExternalLink className="h-3 w-3 opacity-60" />
+                    </a>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
+                    asChild
+                  >
+                    <a
+                      href="https://www.thu.edu.tw/web/calendar/page.php?scid=23&sid=36"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Calendar className="h-6 w-6" />
+                      <span className="text-sm font-medium">東海行事曆</span>
+                      <ExternalLink className="h-3 w-3 opacity-60" />
+                    </a>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
+                    asChild
+                  >
+                    <a
+                      href="https://www.thu.edu.tw/web/pages/page.php?scid=66&sid=147"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Star className="h-6 w-6" />
+                      <span className="text-sm font-medium">新生入學網</span>
                       <ExternalLink className="h-3 w-3 opacity-60" />
                     </a>
                   </Button>
