@@ -33,7 +33,7 @@ const schoolLinks = [
     href: "https://fsis.thu.edu.tw/",
     icon: Users,
     title: "學生資訊系統",
-    description: "學生資訊系統，學生資訊、成績查詢、選課、課表",
+    description: "學生資訊系統，學生資訊、成績查詢、選課、課表、宿舍查詢",
   },
   {
     href: "https://ilearn.thu.edu.tw/",
