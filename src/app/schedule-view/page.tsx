@@ -15,7 +15,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -267,7 +267,6 @@ function ScheduleViewContent() {
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
-      <Toaster richColors />
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>

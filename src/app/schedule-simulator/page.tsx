@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { CourseInfoData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 export default function ScheduleSimulatorPage() {
   const [selectedCourses, setSelectedCourses] = useState<CourseInfoData[]>([]);
@@ -76,7 +76,6 @@ export default function ScheduleSimulatorPage() {
 
   return (
     <main className="bg-background container max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <Toaster richColors />
       <div className="flex flex-col gap-8 md:flex-row">
         {/* 左側：課程選擇，寬度較窄 */}
         <div className="md:w-1/3 w-full md:pr-4 min-w-0">

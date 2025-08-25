@@ -1,6 +1,6 @@
 "use client";
 
-import { X, QrCode, Download } from "lucide-react";
+import { X, QrCode, Download, Share2 } from "lucide-react";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,6 +95,36 @@ export default function ScheduleTable({
     });
   });
 
+  const createShareUrl = async () => {
+    if (selectedCourses.length === 0) {
+      return null;
+    }
+
+    try {
+      const courseCodes = selectedCourses.map((course) => course.course_code);
+      const response = await fetch("/api/share-schedule", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ courseCodes }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "創建分享連結失敗");
+      }
+
+      const baseUrl = window.location.origin;
+      return `${baseUrl}/schedule-view?share=${result.shareId}`;
+    } catch (error) {
+      console.error("創建分享連結失敗:", error);
+      toast.error("創建分享連結失敗，請稍後再試");
+      return null;
+    }
+  };
+
   const generateQrCode = async () => {
     if (selectedCourses.length === 0) {
       toast.error("請先選擇課程");
@@ -102,49 +132,8 @@ export default function ScheduleTable({
     }
 
     try {
-      const courseCodes = selectedCourses.map((course) => course.course_code);
-      const baseUrl = window.location.origin;
-      let shareUrl: string;
-
-      // 如果課程太多，使用分享 ID 系統
-      if (selectedCourses.length > 15) {
-        try {
-          const response = await fetch("/api/share-schedule", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ courseCodes }),
-          });
-
-          const result = await response.json();
-
-          if (!result.success) {
-            throw new Error(result.error || "創建分享連結失敗");
-          }
-
-          shareUrl = `${baseUrl}/schedule-view?share=${result.shareId}`;
-        } catch (apiError) {
-          console.error("使用分享 API 失敗，回退到直接方式:", apiError);
-          // 回退到直接方式
-          shareUrl = `${baseUrl}/schedule-view?codes=${courseCodes.join(
-            ","
-          )}&t=${Date.now()}`;
-        }
-      } else {
-        // 課程較少時直接使用 URL 參數
-        shareUrl = `${baseUrl}/schedule-view?codes=${courseCodes.join(
-          ","
-        )}&t=${Date.now()}`;
-      }
-
-      // 檢查 URL 長度
-      if (shareUrl.length > 2500) {
-        toast.error(
-          `選擇的課程太多（${selectedCourses.length} 門），無法生成 QR Code。請減少選擇的課程數量到 20 門以下。`
-        );
-        return;
-      }
+      const shareUrl = await createShareUrl();
+      if (!shareUrl) return;
 
       // 生成 QR Code
       const qrDataUrl = await QRCode.toDataURL(shareUrl, {
@@ -161,20 +150,40 @@ export default function ScheduleTable({
       setIsQrDialogOpen(true);
     } catch (error) {
       console.error("生成 QR Code 失敗:", error);
-      if (error instanceof Error) {
-        if (
-          error.message.includes("too big") ||
-          error.message.includes("too large")
-        ) {
-          toast.error(
-            "選擇的課程太多，QR Code 無法容納。請減少選擇的課程數量。"
-          );
-        } else {
-          toast.error(`生成 QR Code 失敗：${error.message}`);
+      toast.error("生成 QR Code 失敗，請稍後再試");
+    }
+  };
+
+  const shareSchedule = async () => {
+    if (selectedCourses.length === 0) {
+      toast.error("請先選擇課程");
+      return;
+    }
+
+    try {
+      const shareUrl = await createShareUrl();
+      if (!shareUrl) return;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "我的課表",
+            text: `查看我選的 ${selectedCourses.length} 門課程`,
+            url: shareUrl,
+          });
+        } catch {
+          // 用戶取消分享或不支援，回退到複製連結
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success("課表連結已複製到剪貼簿");
         }
       } else {
-        toast.error("生成 QR Code 失敗，請稍後再試");
+        // 複製到剪貼簿
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("課表連結已複製到剪貼簿");
       }
+    } catch (error) {
+      console.error("分享課表失敗:", error);
+      toast.error("分享課表失敗，請稍後再試");
     }
   };
 
@@ -192,6 +201,15 @@ export default function ScheduleTable({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>排課模擬器</CardTitle>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={shareSchedule}
+            disabled={selectedCourses.length === 0}
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            分享課表
+          </Button>
           <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -201,7 +219,7 @@ export default function ScheduleTable({
                 disabled={selectedCourses.length === 0}
               >
                 <QrCode className="h-4 w-4 mr-2" />
-                匯出 QR Code（測試中）
+                匯出 QR Code
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -209,11 +227,6 @@ export default function ScheduleTable({
                 <DialogTitle>課表 QR Code</DialogTitle>
                 <DialogDescription>
                   掃描此 QR Code 即可在手機上查看您的課表
-                  {selectedCourses.length > 15 && (
-                    <span className="block text-sm text-amber-600 mt-1">
-                      ⚡ 由於課程較多，已使用智慧壓縮技術生成分享連結
-                    </span>
-                  )}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col items-center space-y-4">
