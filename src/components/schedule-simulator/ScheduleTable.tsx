@@ -196,10 +196,40 @@ export default function ScheduleTable({
     }
   };
 
+  // 計算總學分
+  const totalCredits = selectedCourses.reduce(
+    (sum, course) => sum + course.credits_1,
+    0
+  );
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>排課模擬器</CardTitle>
+        <div className="flex items-center gap-4">
+          <CardTitle>排課模擬器</CardTitle>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-foreground">
+                {selectedCourses.length}
+              </span>
+              <span>門課程</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>共計</span>
+              <span className="font-medium text-foreground">
+                {totalCredits}
+              </span>
+              <span>學分</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>
+                {totalCredits >= 20
+                  ? "你選的課好多喔，要多休息喔"
+                  : "祝你穩過這幾學分 ><"}
+              </span>
+            </div>
+          </div>
+        </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
