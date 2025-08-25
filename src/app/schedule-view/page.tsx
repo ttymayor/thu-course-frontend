@@ -1,13 +1,34 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, BookOpen, Share2 } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  User,
+  BookOpen,
+  Share2,
+  Download,
+  AlertCircle,
+} from "lucide-react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+// import {
+//   checkScheduleConflict,
+//   formatConflictMessage
+// } from "@/lib/scheduleConflictChecker";
 
 interface SharedCourse {
   course_code: string;
@@ -26,9 +47,11 @@ interface ShareData {
 
 function ScheduleViewContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [shareData, setShareData] = useState<ShareData | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
   useEffect(() => {
     const loadCourseData = async () => {
@@ -177,6 +200,34 @@ function ScheduleViewContent() {
     }
   };
 
+  const handleImport = async () => {
+    if (!shareData) return;
+
+    try {
+      // 直接使用分享的課程覆蓋當前課表
+      const courseCodes = shareData.courses.map((course) => course.course_code);
+
+      // 儲存到 localStorage
+      localStorage.setItem("selectedCourseCodes", JSON.stringify(courseCodes));
+
+      // 顯示成功訊息
+      toast.success("成功匯入課表！", {
+        description: `已匯入 ${shareData.courses.length} 門課程到您的課表中。`,
+        action: {
+          label: "立即查看",
+          onClick: () => {
+            router.push("/schedule-simulator");
+          },
+        },
+      });
+
+      setIsImportDialogOpen(false);
+    } catch (error) {
+      console.error("匯入課表失敗:", error);
+      toast.error("匯入課表失敗，請稍後再試");
+    }
+  };
+
   if (error) {
     return (
       <div className="container max-w-4xl mx-auto px-4 py-8">
@@ -216,6 +267,7 @@ function ScheduleViewContent() {
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
+      <Toaster richColors />
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -229,6 +281,51 @@ function ScheduleViewContent() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Dialog
+              open={isImportDialogOpen}
+              onOpenChange={setIsImportDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button variant="default" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  匯入課表
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-amber-500" />
+                    確認匯入課表
+                  </DialogTitle>
+                  <DialogDescription>
+                    確定要覆蓋當前課表嗎？這將會替換您目前選擇的所有課程。
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="py-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-sm text-muted-foreground mb-1">
+                      即將匯入
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {shareData?.courses.length}
+                    </div>
+                    <div className="text-blue-600">門課程</div>
+                  </div>
+                </div>
+
+                <DialogFooter className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsImportDialogOpen(false)}
+                  >
+                    取消
+                  </Button>
+                  <Button onClick={handleImport}>確定匯入</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <Button variant="outline" size="sm" onClick={shareSchedule}>
               <Share2 className="h-4 w-4 mr-2" />
               分享
@@ -243,7 +340,7 @@ function ScheduleViewContent() {
       <div className="grid gap-4">
         {shareData.courses.map((course, index) => (
           <Card key={`${course.course_code}-${index}`}>
-            <CardContent className="pt-6">
+            <CardContent className="">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
