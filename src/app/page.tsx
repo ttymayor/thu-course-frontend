@@ -15,6 +15,46 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 
+// 學校相關連結配置
+const schoolLinks = [
+  {
+    href: "https://course.thu.edu.tw/",
+    icon: BookOpen,
+    title: "課程資訊網",
+    description: "選課、課表資訊（不如使用這個網站）",
+  },
+  {
+    href: "https://www.thu.edu.tw/",
+    icon: School,
+    title: "學校首頁",
+    description: "學校官網，學校資訊、校園地圖、校園導覽",
+  },
+  {
+    href: "https://fsis.thu.edu.tw/",
+    icon: Users,
+    title: "學生資訊系統",
+    description: "學生資訊系統，學生資訊、成績查詢、選課、課表",
+  },
+  {
+    href: "https://ilearn.thu.edu.tw/",
+    icon: LibraryBig,
+    title: "東海 iLearn",
+    description: "該上課、交作業了各位",
+  },
+  {
+    href: "https://www.thu.edu.tw/web/calendar/page.php?scid=23&sid=36",
+    icon: Calendar,
+    title: "東海行事曆",
+    description: "學校行事曆，不能不看",
+  },
+  {
+    href: "https://www.thu.edu.tw/web/pages/page.php?scid=66&sid=147",
+    icon: Star,
+    title: "新生入學網",
+    description: "新生入學必看，繳費、學號啟用、應辦事項",
+  },
+] as const;
+
 export default function Home() {
   return (
     <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6 bg-background">
@@ -45,102 +85,35 @@ export default function Home() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Button
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
-                    asChild
-                  >
-                    <a
-                      href="https://course.thu.edu.tw/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <BookOpen className="h-6 w-6" />
-                      <span className="text-sm font-medium">課程資訊網</span>
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </a>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
-                    asChild
-                  >
-                    <a
-                      href="https://www.thu.edu.tw/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <School className="h-6 w-6" />
-                      <span className="text-sm font-medium">學校首頁</span>
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </a>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
-                    asChild
-                  >
-                    <a
-                      href="https://fsis.thu.edu.tw/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Users className="h-6 w-6" />
-                      <span className="text-sm font-medium">學生資訊系統</span>
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </a>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
-                    asChild
-                  >
-                    <a
-                      href="https://ilearn.thu.edu.tw/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <LibraryBig className="h-6 w-6" />
-                      <span className="text-sm font-medium">東海 iLearn</span>
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </a>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
-                    asChild
-                  >
-                    <a
-                      href="https://www.thu.edu.tw/web/calendar/page.php?scid=23&sid=36"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Calendar className="h-6 w-6" />
-                      <span className="text-sm font-medium">東海行事曆</span>
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </a>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50"
-                    asChild
-                  >
-                    <a
-                      href="https://www.thu.edu.tw/web/pages/page.php?scid=66&sid=147"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Star className="h-6 w-6" />
-                      <span className="text-sm font-medium">新生入學網</span>
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </a>
-                  </Button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {schoolLinks.map((link, index) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50 text-center"
+                        asChild
+                      >
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <IconComponent className="h-6 w-6" />
+                          <span className="text-sm font-medium">
+                            {link.title}
+                          </span>
+                          {link.description && (
+                            <span className="text-xs text-muted-foreground leading-tight break-words whitespace-normal">
+                              {link.description}
+                            </span>
+                          )}
+                          <ExternalLink className="h-3 w-3 opacity-60" />
+                        </a>
+                      </Button>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
