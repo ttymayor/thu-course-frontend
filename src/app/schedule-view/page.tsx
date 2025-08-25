@@ -25,10 +25,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-// import {
-//   checkScheduleConflict,
-//   formatConflictMessage
-// } from "@/lib/scheduleConflictChecker";
 
 interface SharedCourse {
   course_code: string;
@@ -285,7 +281,7 @@ function ScheduleViewContent() {
               onOpenChange={setIsImportDialogOpen}
             >
               <DialogTrigger asChild>
-                <Button variant="default" size="sm">
+                <Button className="cursor-pointer" variant="default" size="sm">
                   <Download className="h-4 w-4 mr-2" />
                   匯入課表
                 </Button>
@@ -315,23 +311,28 @@ function ScheduleViewContent() {
 
                 <DialogFooter className="flex gap-2">
                   <Button
+                    className="cursor-pointer"
                     variant="outline"
                     onClick={() => setIsImportDialogOpen(false)}
                   >
                     取消
                   </Button>
-                  <Button onClick={handleImport}>確定匯入</Button>
+                  <Button className="cursor-pointer" onClick={handleImport}>
+                    確定匯入
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
 
-            <Button variant="outline" size="sm" onClick={shareSchedule}>
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              size="sm"
+              onClick={shareSchedule}
+            >
               <Share2 className="h-4 w-4 mr-2" />
               分享
             </Button>
-            <Link href="/schedule-simulator">
-              <Button size="sm">編輯課表</Button>
-            </Link>
           </div>
         </CardHeader>
       </Card>
@@ -367,7 +368,11 @@ function ScheduleViewContent() {
 
                 <div className="md:text-right">
                   <Link href={`/course-detail/${course.course_code}`}>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      className="cursor-pointer"
+                      variant="outline"
+                      size="sm"
+                    >
                       <BookOpen className="h-4 w-4 mr-2" />
                       課程詳情
                     </Button>

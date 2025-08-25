@@ -95,29 +95,17 @@ export default function ScheduleTable({
     });
   });
 
-  const createShareUrl = async () => {
+  const createShareUrl = () => {
     if (selectedCourses.length === 0) {
       return null;
     }
 
     try {
       const courseCodes = selectedCourses.map((course) => course.course_code);
-      const response = await fetch("/api/share-schedule", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ courseCodes }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "創建分享連結失敗");
-      }
-
       const baseUrl = window.location.origin;
-      return `${baseUrl}/schedule-view?share=${result.shareId}`;
+
+      // 直接使用課程代碼作為參數
+      return `${baseUrl}/schedule-view?codes=${courseCodes.join(",")}`;
     } catch (error) {
       console.error("創建分享連結失敗:", error);
       toast.error("創建分享連結失敗，請稍後再試");
@@ -132,7 +120,7 @@ export default function ScheduleTable({
     }
 
     try {
-      const shareUrl = await createShareUrl();
+      const shareUrl = createShareUrl();
       if (!shareUrl) return;
 
       // 生成 QR Code
@@ -161,7 +149,7 @@ export default function ScheduleTable({
     }
 
     try {
-      const shareUrl = await createShareUrl();
+      const shareUrl = createShareUrl();
       if (!shareUrl) return;
 
       if (navigator.share) {
@@ -233,6 +221,7 @@ export default function ScheduleTable({
         <div className="flex gap-2">
           <Button
             variant="outline"
+            className="cursor-pointer"
             size="sm"
             onClick={shareSchedule}
             disabled={selectedCourses.length === 0}
@@ -244,6 +233,7 @@ export default function ScheduleTable({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
+                className="cursor-pointer"
                 size="sm"
                 onClick={generateQrCode}
                 disabled={selectedCourses.length === 0}
@@ -269,7 +259,11 @@ export default function ScheduleTable({
                       height={300}
                       className="border rounded-lg"
                     />
-                    <Button onClick={downloadQrCode} variant="outline">
+                    <Button
+                      className="cursor-pointer"
+                      onClick={downloadQrCode}
+                      variant="outline"
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       下載 QR Code
                     </Button>
