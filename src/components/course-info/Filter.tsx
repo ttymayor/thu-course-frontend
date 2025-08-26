@@ -232,7 +232,7 @@ export default function Filter() {
       <Input
         id="search"
         type="text"
-        placeholder="搜尋課程代碼、課程名稱或系所代碼..."
+        placeholder="搜尋課程代碼或課程名稱..."
         value={searchQuery}
         onChange={handleSearchChange}
         className="border w-full md:max-w-[270px] h-10 text-sm px-3 py-2"

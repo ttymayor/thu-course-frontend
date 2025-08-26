@@ -7,7 +7,11 @@ import Pagination from "@/components/course-info/Pagination";
 import { CourseInfoFilters } from "@/components/course-info/types";
 import { getCourseInfo } from "@/lib/courseInfo";
 
-async function CourseInfoData({ filters }: { filters: CourseInfoFilters }) {
+export async function CourseInfoData({
+  filters,
+}: {
+  filters: CourseInfoFilters;
+}) {
   "use cache";
 
   // 構建 API 查詢參數
@@ -16,21 +20,13 @@ async function CourseInfoData({ filters }: { filters: CourseInfoFilters }) {
     page_size: 10,
   };
 
-  // 如果選擇了特定系所，直接使用系所篩選
   if (filters.department) {
     params.department_code = filters.department;
-    // 在特定系所內搜尋時，只搜尋課程代碼和課程名稱
-    if (filters.search) {
-      params.course_code = filters.search;
-      params.course_name = filters.search;
-    }
-  } else {
-    // 沒有選擇系所時，使用統一搜尋（包含系所代碼）
-    if (filters.search) {
-      params.course_code = filters.search;
-      params.course_name = filters.search;
-      params.department_code = filters.search;
-    }
+  }
+
+  if (filters.search) {
+    params.course_code = filters.search;
+    params.course_name = filters.search;
   }
 
   const { data: infos, total } = await getCourseInfo(params);
@@ -63,14 +59,7 @@ export default async function CourseInfoPage({
         <div className="w-full flex justify-center">
           <Frame>
             <Filter />
-            <Suspense
-              fallback={
-                <>
-                  <ListSkeleton />
-                  <div className="flex justify-center mt-4"></div>
-                </>
-              }
-            >
+            <Suspense fallback={<ListSkeleton />}>
               <CourseInfoData filters={filters} />
             </Suspense>
           </Frame>
