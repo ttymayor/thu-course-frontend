@@ -3,7 +3,13 @@
 import { X, QrCode, Download, Share2 } from "lucide-react";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -192,36 +198,28 @@ export default function ScheduleTable({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div className="flex items-center gap-4">
-          <CardTitle>排課模擬器</CardTitle>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-foreground">
-                {selectedCourses.length}
-              </span>
-              <span>門課程</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span>共計</span>
-              <span className="font-medium text-foreground">
-                {totalCredits}
-              </span>
-              <span>學分</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span>
-                {totalCredits >= 20
-                  ? "你選的課好多喔，要多休息喔"
-                  : "祝你穩過這幾學分 ><"}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-2">
+      <CardHeader>
+        <CardTitle>排課模擬器</CardTitle>
+        <CardDescription className="flex flex-row gap-2">
+          <span className="font-medium text-foreground">
+            {selectedCourses.length}
+          </span>
+          <span>門課程</span>
+          <span>共計</span>
+          <span className="font-medium text-foreground">{totalCredits}</span>
+          <span>
+            學分{" "}
+            {totalCredits >= 20
+              ? "你選的課好多喔，要多休息喔"
+              : "祝你穩過這幾學分 ><"}
+          </span>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-4 flex gap-2 flex-wrap justify-end items-center">
           <Button
             variant="outline"
-            className="cursor-pointer"
+            className="cursor-pointer w-full sm:w-auto"
             size="sm"
             onClick={shareSchedule}
             disabled={selectedCourses.length === 0}
@@ -233,7 +231,7 @@ export default function ScheduleTable({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="cursor-pointer"
+                className="cursor-pointer w-full sm:w-auto"
                 size="sm"
                 onClick={generateQrCode}
                 disabled={selectedCourses.length === 0}
@@ -257,10 +255,10 @@ export default function ScheduleTable({
                       alt="課表 QR Code"
                       width={300}
                       height={300}
-                      className="border rounded-lg"
+                      className="border rounded-lg w-full max-w-[300px]"
                     />
                     <Button
-                      className="cursor-pointer"
+                      className="cursor-pointer w-full sm:w-auto"
                       onClick={downloadQrCode}
                       variant="outline"
                     >
@@ -276,8 +274,6 @@ export default function ScheduleTable({
             </DialogContent>
           </Dialog>
         </div>
-      </CardHeader>
-      <CardContent>
         <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
