@@ -6,14 +6,14 @@ import { createScope, Scope, createTimeline, stagger, text } from "animejs";
 export default function HomePageAnimation() {
   const animation = useRef<HTMLDivElement | null>(null);
   const scope = useRef<Scope | null>(null);
-  const [shouldRender, setShouldRender] = useState(true);
+  const [render, setRender] = useState(true);
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsFading(true);
       setTimeout(() => {
-        setShouldRender(false);
+        setRender(false);
       }, 500);
     }, 3000);
 
@@ -48,7 +48,7 @@ export default function HomePageAnimation() {
     };
   }, []);
 
-  if (!shouldRender) return null;
+  if (!render) return null;
 
   return (
     <div
