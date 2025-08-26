@@ -146,13 +146,13 @@ export default function Filter() {
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full md:w-[270px] cursor-pointer justify-between h-10 text-sm px-3 py-2"
+              className="w-full md:max-w-[270px] cursor-pointer justify-between h-10 text-sm px-3 py-2"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full md:w-[270px] p-0" align="start">
+          <PopoverContent className="w-full md:max-w-[270px] p-0" align="start">
             <Command>
               <CommandInput
                 placeholder="搜尋系所..."
@@ -235,7 +235,7 @@ export default function Filter() {
         placeholder="搜尋課程代碼、課程名稱或系所代碼..."
         value={searchQuery}
         onChange={handleSearchChange}
-        className="border w-full md:w-[270px] h-10 text-sm px-3 py-2"
+        className="border w-full md:max-w-[270px] h-10 text-sm px-3 py-2"
       />
     </div>
   );
