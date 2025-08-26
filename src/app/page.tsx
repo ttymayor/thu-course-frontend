@@ -14,6 +14,7 @@ import {
   LibraryBig,
 } from "lucide-react";
 import { Suspense } from "react";
+import HomePageAnimation from "@/components/HomePageAnimation";
 
 // 學校相關連結配置
 const schoolLinks = [
@@ -59,6 +60,7 @@ export default function Home() {
   return (
     <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6 bg-background">
       <main className="flex flex-col gap-8 sm:gap-[32px] items-center justify-center">
+        <HomePageAnimation />
         <div id="schedule" className="w-full flex flex-col items-center gap-6">
           <Alert className="max-w-4xl flex gap-3 justify-center items-center">
             <div>
