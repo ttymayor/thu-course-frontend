@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCourseSchedules } from "@/lib/courseSchedule";
+import { Clock } from "lucide-react";
 
 interface CourseScheduleData {
   _id: string;
@@ -33,7 +34,10 @@ export default async function CourseScheduleList() {
   return (
     <Card className="w-full max-w-5xl">
       <CardHeader>
-        <CardTitle>選課時程</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Clock className="h-5 w-5" />
+          選課時程
+        </CardTitle>
         <CardDescription>來看看選課時程表吧</CardDescription>
       </CardHeader>
       <CardContent>
