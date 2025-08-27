@@ -7,11 +7,7 @@ import Pagination from "@/components/course-info/Pagination";
 import { CourseInfoFilters } from "@/components/course-info/types";
 import { getCourseInfo } from "@/lib/courseInfo";
 
-export async function CourseInfoData({
-  filters,
-}: {
-  filters: CourseInfoFilters;
-}) {
+async function CourseInfoData({ filters }: { filters: CourseInfoFilters }) {
   "use cache";
 
   // 構建 API 查詢參數
