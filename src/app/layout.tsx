@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import FirstLoadingAnimation from "@/components/FirstLoadingAnimation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <FirstLoadingAnimation />
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <div className="flex-1">{children}</div>
