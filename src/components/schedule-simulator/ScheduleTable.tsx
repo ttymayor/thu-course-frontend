@@ -158,23 +158,8 @@ export default function ScheduleTable({
       const shareUrl = createShareUrl();
       if (!shareUrl) return;
 
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: "我的課表",
-            text: `查看我選的 ${selectedCourses.length} 門課程`,
-            url: shareUrl,
-          });
-        } catch {
-          // 用戶取消分享或不支援，回退到複製連結
-          await navigator.clipboard.writeText(shareUrl);
-          toast.success("課表連結已複製到剪貼簿");
-        }
-      } else {
-        // 複製到剪貼簿
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("課表連結已複製到剪貼簿");
-      }
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("課表連結已複製到剪貼簿");
     } catch (error) {
       console.error("分享課表失敗:", error);
       toast.error("分享課表失敗，請稍後再試");
