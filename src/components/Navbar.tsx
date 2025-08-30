@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { sendGAEvent } from "@next/third-parties/google";
 
 // 導航配置
 const NAVBAR_CONFIG = {
@@ -50,6 +51,9 @@ export default function Navbar() {
   const handleReplayAnimation = () => {
     localStorage.removeItem("first-loading");
     window.location.reload();
+    sendGAEvent("ReplayAnimation", "buttonClicked", {
+      value: "ReplayAnimation",
+    });
   };
 
   return (
