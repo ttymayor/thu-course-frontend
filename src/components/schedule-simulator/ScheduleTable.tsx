@@ -190,14 +190,13 @@ export default function ScheduleTable({
             {selectedCourses.length}
           </span>
           <span>門課程</span>
-          <span>共計</span>
           <span className="font-medium text-foreground">{totalCredits}</span>
-          <span>
-            學分{" "}
-            {totalCredits >= 20
-              ? "你選的課好多喔，要多休息喔"
-              : "祝你穩過這幾學分 ><"}
-          </span>
+          <span>學分 </span>
+        </CardDescription>
+        <CardDescription className="flex flex-row gap-2">
+          {totalCredits >= 20
+            ? "你選的課好多喔，要多休息喔"
+            : "祝你穩過這幾學分 ><"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -209,7 +208,7 @@ export default function ScheduleTable({
             onClick={shareSchedule}
             disabled={selectedCourses.length === 0}
           >
-            <Share2 className="h-4 w-4 mr-2" />
+            <Share2 className="h-4 w-4" />
             分享課表
           </Button>
           <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
@@ -221,7 +220,7 @@ export default function ScheduleTable({
                 onClick={generateQrCode}
                 disabled={selectedCourses.length === 0}
               >
-                <QrCode className="h-4 w-4 mr-2" />
+                <QrCode className="h-4 w-4" />
                 匯出 QR Code
               </Button>
             </DialogTrigger>
