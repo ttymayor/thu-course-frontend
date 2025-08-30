@@ -107,7 +107,7 @@ export default function FirstLoadingAnimation() {
   return (
     <div
       ref={animation}
-      className={`fixed inset-0 z-40 bg-white dark:bg-black transition-opacity duration-500 ${
+      className={`fixed inset-0 z-40 backdrop-blur-xs bg-white/50 dark:bg-black/50 transition-opacity duration-500 ${
         isFading ? "opacity-0" : "opacity-100"
       }`}
     >
