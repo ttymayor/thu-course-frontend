@@ -21,12 +21,12 @@ function createAnimation(animationRef: React.RefObject<HTMLDivElement | null>) {
     const [$particles] = utils.$("#particles");
     for (let i = 0; i < 100; i++) {
       const $particle = document.createElement("div");
-      $particle.className = `w-2 h-2 rounded bg-black dark:bg-white absolute`;
+      $particle.className = `w-2 h-2 rounded-full bg-black dark:bg-white absolute`;
       $particles.appendChild($particle);
       animate($particle, {
-        x: utils.random(-50, 50) + "rem",
-        y: utils.random(-50, 50) + "rem",
-        scale: [0, 0, 0.3, 0.6, 0.6, 0],
+        x: utils.random(-80, 80) + "rem",
+        y: utils.random(-80, 80) + "rem",
+        scale: [0, 0, 0.5, 1, 1, 0],
         loop: true,
         delay: utils.random(0, 1000),
       });
