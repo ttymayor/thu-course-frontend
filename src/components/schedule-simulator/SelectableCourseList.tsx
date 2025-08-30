@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CourseInfoData, CourseTypeMap } from "@/components/course-info/types";
 import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
+import { courseTimeParser } from "@/lib/courseTimeParser";
 
 interface SelectableCourseListProps {
   infos: CourseInfoData[];
@@ -164,8 +165,16 @@ export default function SelectableCourseList({
                             ? `${item.teachers.join("、")}`
                             : "-"}
                           {item.class_time && (
-                            <span className="ml-2">
-                              | {item.class_time.split("\n")[0]}
+                            <span>
+                              {"｜"}
+                              {courseTimeParser(item.class_time).map(
+                                (entry, index) => (
+                                  <span key={index}>
+                                    {entry.day} {entry.periods.join(", ")}
+                                    {entry.location && `［${entry.location}］`}
+                                  </span>
+                                )
+                              )}
                             </span>
                           )}
                         </div>
