@@ -7,39 +7,36 @@ import {
   createTimeline,
   stagger,
   text,
-  // utils,
-  // waapi,
+  utils,
+  animate,
+  createAnimatable,
 } from "animejs";
 
-// 抽出動畫邏輯成獨立函數
 function createAnimation(animationRef: React.RefObject<HTMLDivElement | null>) {
   if (!animationRef.current) return null;
 
   // 創建動畫區域
   const scope = createScope({ root: animationRef.current }).add(() => {
+    // 創建方塊動畫
+    const [$particles] = utils.$("#particles");
+    for (let i = 0; i < 100; i++) {
+      const $particle = document.createElement("div");
+      $particle.className = `w-2 h-2 rounded bg-black dark:bg-white absolute`;
+      $particles.appendChild($particle);
+      animate($particle, {
+        x: utils.random(-50, 50) + "rem",
+        y: utils.random(-50, 50) + "rem",
+        scale: [0, 0, 0.3, 0.6, 0.6, 0],
+        loop: true,
+        delay: utils.random(0, 1000),
+      });
+    }
+
+    // 創建文字動畫
     const { words, chars } = text.split("p", {
       words: { wrap: "clip" },
       chars: true,
     });
-
-    // 創建方塊動畫
-    // const [$particles] = utils.$("#particles");
-    // const particles = [];
-    // for (let i = 0; i < 10; i++) {
-    //   const $particle = document.createElement("div");
-    //   $particle.className = `square-${i} w-10 h-10 rounded bg-black dark:bg-white absolute`;
-    //   $particles.appendChild($particle);
-    //   particles.push(
-    //     waapi.animate($particle, {
-    //       x: utils.random(-10, 10) + "rem",
-    //       y: utils.random(-10, 10) + "rem",
-    //       scale: [0, 1, 0],
-    //       delay: utils.random(0, 1000),
-    //       loop: true,
-    //     })
-    //   );
-    // }
-
     createTimeline({
       defaults: { ease: "inOut(3)", duration: 1000 },
     })
@@ -58,7 +55,37 @@ function createAnimation(animationRef: React.RefObject<HTMLDivElement | null>) {
         stagger(10, { from: "random" })
       )
       .init();
-    // .sync(...particles);
+
+    // 使動畫隨游標位置稍微偏移
+    const $demos = document.querySelector("#container");
+    const $demo = $demos?.querySelector("#particles");
+
+    let bounds = $demo?.getBoundingClientRect();
+    const refreshBounds = () => (bounds = $demo?.getBoundingClientRect());
+
+    const animatableSquare = createAnimatable("#particles", {
+      x: 500,
+      y: 500,
+      ease: "out(3)",
+    });
+
+    const onMouseMove = (e: MouseEvent) => {
+      const { width, height, left, top } = bounds || {
+        width: 0,
+        height: 0,
+        left: 0,
+        top: 0,
+      };
+      const hw = width / 2;
+      const hh = height / 2;
+      const x = utils.clamp(e.clientX - left - hw, -hw, hw);
+      const y = utils.clamp(e.clientY - top - hh, -hh, hh);
+      animatableSquare.x(x * 0.1);
+      animatableSquare.y(y * 0.1);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    $demos?.addEventListener("scroll", refreshBounds);
   });
 
   return scope;
@@ -111,12 +138,15 @@ export default function FirstLoadingAnimation() {
         isFading ? "opacity-0" : "opacity-100"
       }`}
     >
-      <div className="large centered grid square-grid h-screen items-center justify-center">
+      <div
+        id="container"
+        className="relative h-screen flex items-center justify-center"
+      >
         <div
           id="particles"
-          className="absolute top-0 left-0 w-full h-full z-50 items-center justify-center"
+          className="absolute inset-0 z-50 flex items-center justify-center"
         ></div>
-        <p className="text-xl font-bold text-center">
+        <p className="text-xl font-bold text-center z-10 relative">
           東海選課資訊
           <br />
           一個更好的東海課程資訊網站
