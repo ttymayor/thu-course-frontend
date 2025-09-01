@@ -65,6 +65,7 @@ export default function List({ infos }: ListProps) {
                   </Tooltip>
                 ) : (
                   <Link
+                    prefetch={false}
                     href={`/course-detail/${item.course_code}`}
                     className="underline"
                     target="_blank"
