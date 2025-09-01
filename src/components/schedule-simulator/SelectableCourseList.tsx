@@ -133,6 +133,7 @@ export default function SelectableCourseList({
                             </Tooltip>
                           ) : (
                             <Link
+                              prefetch={false}
                               href={`/course-detail/${item.course_code}`}
                               className="underline"
                               target="_blank"
