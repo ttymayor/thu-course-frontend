@@ -10,8 +10,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { CourseDetail } from "@/lib/courseDetail";
-import GradingPieChart from "@/components/GradingPieChart";
-import SelectionLineChart from "@/components/SelectionLineChart";
+import GradingPieChart from "@/components/course-detail/GradingPieChart";
+import SelectionLineChart from "@/components/course-detail/SelectionLineChart";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "@/components/ui/table";
 
 export default function CourseDetailView({
   courseDetail,

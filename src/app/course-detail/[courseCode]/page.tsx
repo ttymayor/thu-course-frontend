@@ -1,6 +1,6 @@
 "use cache";
 
-import CourseDetailView from "@/components/CourseDetailView";
+import CourseDetailView from "@/components/course-detail/CourseDetailView";
 import { getCourseDetail } from "@/lib/courseDetail";
 
 export default async function CourseDetailPage({
