@@ -200,11 +200,11 @@ function ScheduleViewContent() {
     if (!shareData) return;
 
     try {
-      // 直接使用分享的課程覆蓋當前課表
-      const courseCodes = shareData.courses.map((course) => course.course_code);
-
-      // 儲存到 localStorage
-      localStorage.setItem("selectedCourseCodes", JSON.stringify(courseCodes));
+      // 直接使用分享的完整課程資料覆蓋當前課表
+      localStorage.setItem(
+        "selectedCourses",
+        JSON.stringify(shareData.courses)
+      );
 
       // 顯示成功訊息
       toast.success("成功匯入課表！", {

@@ -107,38 +107,45 @@ function CourseSelectorContent({
 
   // 從 localStorage 重建選中課程列表（只在沒有跳過初始載入時執行）
   useEffect(() => {
-    const loadSelectedCourses = async () => {
+    const loadSelectedCourses = () => {
       if (!externalSelectedCourses && !skipInitialLoad) {
-        const savedCourseCodes = localStorage.getItem("selectedCourseCodes");
-        if (savedCourseCodes) {
-          const parsedCourseCodes = JSON.parse(savedCourseCodes);
-
-          if (parsedCourseCodes.length > 0) {
-            try {
-              // 使用 API 獲取完整的課程資訊
-              const courseParams = parsedCourseCodes
-                .map((code: string) => `course_codes=${code}`)
-                .join("&");
-              const response = await fetch(
-                `/api/course-info?${courseParams}&page_size=100`
-              );
-              const result = await response.json();
-
-              if (result.success && result.data.length > 0) {
-                setSelectedCourses(result.data);
-                onSelectionChange(result.data);
-              }
-            } catch (error) {
-              console.error("Failed to load selected courses:", error);
-              // 如果 API 失敗，嘗試從當前課程列表中重建
-              if (courses.length > 0) {
-                const reconstructedCourses = courses.filter((course) =>
-                  parsedCourseCodes.includes(course.course_code)
-                );
-                if (reconstructedCourses.length > 0) {
-                  setSelectedCourses(reconstructedCourses);
-                  onSelectionChange(reconstructedCourses);
+        const savedCourses = localStorage.getItem("selectedCourses");
+        if (savedCourses) {
+          try {
+            const parsedCourses = JSON.parse(savedCourses);
+            if (parsedCourses.length > 0) {
+              setSelectedCourses(parsedCourses);
+              onSelectionChange(parsedCourses);
+            }
+          } catch (error) {
+            console.error("Failed to load selected courses:", error);
+            // 如果解析失敗，嘗試從舊格式遷移
+            const savedCourseCodes = localStorage.getItem(
+              "selectedCourseCodes"
+            );
+            if (savedCourseCodes) {
+              try {
+                const parsedCourseCodes = JSON.parse(savedCourseCodes);
+                if (parsedCourseCodes.length > 0 && courses.length > 0) {
+                  const reconstructedCourses = courses.filter((course) =>
+                    parsedCourseCodes.includes(course.course_code)
+                  );
+                  if (reconstructedCourses.length > 0) {
+                    setSelectedCourses(reconstructedCourses);
+                    onSelectionChange(reconstructedCourses);
+                    // 遷移到新格式
+                    localStorage.setItem(
+                      "selectedCourses",
+                      JSON.stringify(reconstructedCourses)
+                    );
+                    localStorage.removeItem("selectedCourseCodes");
+                  }
                 }
+              } catch (migrationError) {
+                console.error(
+                  "Failed to migrate from old format:",
+                  migrationError
+                );
               }
             }
           }
@@ -180,9 +187,8 @@ function CourseSelectorContent({
 
     setSelectedCourses(newSelectedCourses);
 
-    // 只儲存 course_code 陣列到 localStorage
-    const courseCodes = newSelectedCourses.map((c) => c.course_code);
-    localStorage.setItem("selectedCourseCodes", JSON.stringify(courseCodes));
+    // 儲存完整的課程物件到 localStorage
+    localStorage.setItem("selectedCourses", JSON.stringify(newSelectedCourses));
 
     onSelectionChange(newSelectedCourses);
   };
