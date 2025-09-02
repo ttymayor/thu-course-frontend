@@ -286,7 +286,7 @@ export default function ScheduleTable({
                       {grid[day]?.[period]?.map((course) => (
                         <div
                           key={course.course_code}
-                          className="relative bg-indigo-100 dark:bg-indigo-900 p-2 rounded-md text-xs h-full flex flex-col justify-center"
+                          className="relative p-2 shadow-lg shadow-[#02A596]/10 dark:shadow-[#02A596]/10 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs h-full flex flex-col justify-center"
                         >
                           <code className="text-center">
                             {course.course_code}
