@@ -1,9 +1,9 @@
 "use cache";
 
-import CourseDetailView from "@/components/course-detail/CourseDetailView";
-import { getCourseDetail } from "@/lib/courseDetail";
 import { Suspense } from "react";
-import CourseDetailViewSkeleton from "@/components/course-detail/CourseDetailViewSkeleton";
+import { getCourseDetail } from "@/lib/courseDetail";
+import CourseDetailView from "@/components/course-detail/View";
+import CourseDetailViewSkeleton from "@/components/course-detail/ViewSkeleton";
 import Frame from "@/components/course-detail/Frame";
 
 export default async function CourseDetailPage({
