@@ -259,7 +259,7 @@ export default function ScheduleTable({
           </Dialog>
         </div>
         <div className="overflow-x-auto rounded-lg border">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-20 text-center font-medium">
@@ -291,7 +291,7 @@ export default function ScheduleTable({
                           <code className="text-center">
                             {course.course_code}
                           </code>
-                          <p className="font-semibold text-center">
+                          <p className="font-semibold text-center break-words whitespace-normal">
                             {course.course_name}
                           </p>
                           <Button
