@@ -27,7 +27,7 @@ export default function CourseDetailView({
   courseDetail: CourseDetail;
 }) {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl">
+    <>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
         <div className="flex items-center gap-2">
           <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-lg font-semibold">
@@ -196,6 +196,6 @@ export default function CourseDetailView({
           </p>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
