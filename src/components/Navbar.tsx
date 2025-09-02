@@ -31,6 +31,10 @@ const NAVBAR_CONFIG = {
         label: "排課模擬器",
         href: "/schedule-simulator",
       },
+      {
+        label: "校園地圖",
+        href: "/school-map",
+      },
     ],
   },
   mobile: {
