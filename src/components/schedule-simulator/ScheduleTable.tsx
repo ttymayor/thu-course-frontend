@@ -275,7 +275,7 @@ export default function ScheduleTable({
             <TableBody>
               {periods.map((period) => (
                 <TableRow key={period}>
-                  <TableCell className="w-20 text-center font-medium py-4">
+                  <TableCell className="text-center font-medium py-4">
                     {period}
                   </TableCell>
                   {days.map((day) => (
@@ -286,18 +286,18 @@ export default function ScheduleTable({
                       {grid[day]?.[period]?.map((course) => (
                         <div
                           key={course.course_code}
-                          className="relative p-2 shadow-lg shadow-[#02A596]/10 dark:shadow-[#02A596]/10 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs h-full flex flex-col justify-center"
+                          className="relative p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs h-full flex flex-col justify-center"
                         >
                           <code className="text-center">
                             {course.course_code}
                           </code>
-                          <p className="font-semibold text-center break-words whitespace-normal">
+                          <p className="font-semibold text-center break-words whitespace-normal mb-1">
                             {course.course_name}
                           </p>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer"
+                            className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer opacity-0 hover:opacity-100"
                             onClick={() => onRemoveCourse(course.course_code)}
                           >
                             <X className="h-3 w-3" />
