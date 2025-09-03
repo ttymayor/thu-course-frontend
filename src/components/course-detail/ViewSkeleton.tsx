@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function CourseDetailViewSkeleton() {
+export default function ViewSkeleton() {
   return (
     <>
       {/* 標題區域 skeleton */}

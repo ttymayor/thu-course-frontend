@@ -21,11 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function CourseDetailView({
-  courseDetail,
-}: {
-  courseDetail: CourseDetail;
-}) {
+export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
   return (
     <>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
