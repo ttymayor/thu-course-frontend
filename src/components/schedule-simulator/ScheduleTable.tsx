@@ -1,6 +1,7 @@
 "use client";
 
 import { X, QrCode, Download, Share2 } from "lucide-react";
+import Link from "next/link";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -284,27 +285,31 @@ export default function ScheduleTable({
                       key={`${day}-${period}`}
                       className="w-32 p-2 h-24 align-top"
                     >
-                      {grid[day]?.[period]?.map((course) => (
-                        <div
-                          key={course.course_code}
-                          className="relative p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs h-full flex flex-col justify-center"
-                        >
-                          <code className="text-center">
-                            {course.course_code}
-                          </code>
-                          <p className="font-semibold text-center break-words whitespace-normal mb-1">
-                            {course.course_name}
-                          </p>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer opacity-0 hover:opacity-100"
-                            onClick={() => onRemoveCourse(course.course_code)}
+                      <div className="h-full flex flex-col gap-1">
+                        {grid[day]?.[period]?.map((course) => (
+                          <Link
+                            key={course.course_code}
+                            href={`/course-detail/${course.course_code}`}
+                            target="_blank"
+                            className="relative p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                           >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
+                            <code className="text-center">
+                              {course.course_code}
+                            </code>
+                            <p className="font-semibold text-center break-words whitespace-normal mb-1">
+                              {course.course_name}
+                            </p>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer opacity-0 hover:opacity-100"
+                              onClick={() => onRemoveCourse(course.course_code)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Link>
+                        ))}
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>
