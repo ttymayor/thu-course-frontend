@@ -274,7 +274,7 @@ function ScheduleViewContent() {
             >
               <DialogTrigger asChild>
                 <Button className="cursor-pointer" variant="default" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="h-4 w-4" />
                   匯入課表
                 </Button>
               </DialogTrigger>
@@ -322,7 +322,7 @@ function ScheduleViewContent() {
               size="sm"
               onClick={shareSchedule}
             >
-              <Share2 className="h-4 w-4 mr-2" />
+              <Share2 className="h-4 w-4" />
               分享
             </Button>
           </CardAction>
@@ -365,7 +365,7 @@ function ScheduleViewContent() {
                       variant="outline"
                       size="sm"
                     >
-                      <BookOpen className="h-4 w-4 mr-2" />
+                      <BookOpen className="h-4 w-4" />
                       課程詳情
                     </Button>
                   </Link>
