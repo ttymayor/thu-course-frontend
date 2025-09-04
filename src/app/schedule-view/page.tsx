@@ -179,21 +179,8 @@ function ScheduleViewContent() {
   }, [searchParams]);
 
   const shareSchedule = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "我的課表",
-          text: `查看我選的 ${shareData?.courses.length} 門課程`,
-          url: window.location.href,
-        });
-      } catch {
-        // 用戶取消分享或不支援
-      }
-    } else {
-      // 複製到剪貼簿
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("課表連結已複製到剪貼簿");
-    }
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("課表連結已複製到剪貼簿");
   };
 
   const handleImport = async () => {
