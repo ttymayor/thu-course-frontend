@@ -285,20 +285,25 @@ export default function ScheduleTable({
                       key={`${day}-${period}`}
                       className="w-32 p-2 h-24 align-top"
                     >
-                      <div className="h-full flex flex-col gap-1">
+                      <div className="h-full flex">
                         {grid[day]?.[period]?.map((course) => (
-                          <Link
+                          <div
                             key={course.course_code}
-                            href={`/course-detail/${course.course_code}`}
-                            target="_blank"
                             className="relative p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                           >
-                            <code className="text-center">
-                              {course.course_code}
-                            </code>
-                            <p className="font-semibold text-center break-words whitespace-normal mb-1">
-                              {course.course_name}
-                            </p>
+                            <Link
+                              href={`/course-detail/${course.course_code}`}
+                              className="h-full flex flex-col justify-center"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <code className="text-center">
+                                {course.course_code}
+                              </code>
+                              <p className="font-semibold text-center break-words whitespace-normal">
+                                {course.course_name}
+                              </p>
+                            </Link>
                             <Button
                               variant="ghost"
                               size="icon"
@@ -307,7 +312,7 @@ export default function ScheduleTable({
                             >
                               <X className="h-3 w-3" />
                             </Button>
-                          </Link>
+                          </div>
                         ))}
                       </div>
                     </TableCell>
