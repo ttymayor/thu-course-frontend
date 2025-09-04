@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Filter from "@/components/course-info/Filter";
 import SelectableCourseList from "./SelectableCourseList";
 import Pagination from "@/components/course-info/Pagination";
-import ListSkeleton from "@/components/course-info/ListSkeleton";
+import SelectableCourseListSkeleton from "./SelectableCourseListSkeleton";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
@@ -127,7 +127,7 @@ function CourseSelectorContent({
       <Filter />
       <div className="flex-grow">
         {isLoading ? (
-          <ListSkeleton />
+          <SelectableCourseListSkeleton />
         ) : (
           <SelectableCourseList
             infos={courses}
@@ -152,7 +152,7 @@ export default function CourseSelector(props: CourseSelectorProps) {
         <CardTitle>課程選擇</CardTitle>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<ListSkeleton />}>
+        <Suspense fallback={<SelectableCourseListSkeleton />}>
           <CourseSelectorContent {...props} />
         </Suspense>
       </CardContent>
