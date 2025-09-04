@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { courseTimeParser } from "@/lib/courseTimeParser";
 
 interface SharedCourse {
   course_code: string;
@@ -349,7 +350,14 @@ function ScheduleViewContent() {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 text-sm">
                       <Clock className="h-4 w-4" />
-                      <span>{course.class_time || "時間未定"}</span>
+                      <span>
+                        {courseTimeParser(course.class_time)
+                          .map(
+                            (entry) =>
+                              `${entry.day} ${entry.periods.join(", ")}`
+                          )
+                          .join(", ") || "-"}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <User className="h-4 w-4" />
