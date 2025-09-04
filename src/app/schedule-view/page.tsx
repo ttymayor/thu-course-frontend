@@ -2,7 +2,14 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardAction,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +44,6 @@ interface SharedCourse {
 
 interface ShareData {
   courses: SharedCourse[];
-  timestamp: string;
   source: string;
 }
 
@@ -96,7 +102,6 @@ function ScheduleViewContent() {
               credits_1: course.credits_1,
               department_name: course.department_name,
             })),
-            timestamp: result.createdAt,
             source: "thu-course-frontend",
           };
 
@@ -140,7 +145,6 @@ function ScheduleViewContent() {
               credits_1: course.credits_1,
               department_name: course.department_name,
             })),
-            timestamp: new Date().toISOString(),
             source: "thu-course-frontend",
           };
 
@@ -242,7 +246,6 @@ function ScheduleViewContent() {
     );
   }
 
-  const shareDate = new Date(shareData.timestamp).toLocaleDateString("zh-TW");
   const totalCredits = shareData.courses.reduce(
     (sum, course) => sum + course.credits_1,
     0
@@ -251,18 +254,20 @@ function ScheduleViewContent() {
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
       <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              共享課表
-            </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              建立於 {shareDate} • 共 {shareData.courses.length} 門課程 •{" "}
-              {totalCredits} 學分
-            </p>
-          </div>
-          <div className="flex gap-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            共享課表
+          </CardTitle>
+          <CardDescription className="flex flex-row gap-2">
+            <span className="font-medium text-foreground">
+              {shareData.courses.length}
+            </span>{" "}
+            門課程{" "}
+            <span className="font-medium text-foreground">{totalCredits}</span>{" "}
+            學分
+          </CardDescription>
+          <CardAction className="flex gap-2">
             <Dialog
               open={isImportDialogOpen}
               onOpenChange={setIsImportDialogOpen}
@@ -320,7 +325,7 @@ function ScheduleViewContent() {
               <Share2 className="h-4 w-4 mr-2" />
               分享
             </Button>
-          </div>
+          </CardAction>
         </CardHeader>
       </Card>
 
