@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardAction,
 } from "@/components/ui/card";
 import {
   Dialog,
@@ -198,9 +199,7 @@ export default function ScheduleTable({
             ? "你選的課好多喔，要多休息喔"
             : "祝你穩過這幾學分 ><"}
         </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 flex gap-2 flex-wrap justify-end items-center">
+        <CardAction className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             className="cursor-pointer w-full sm:w-auto"
@@ -246,18 +245,20 @@ export default function ScheduleTable({
                       onClick={downloadQrCode}
                       variant="outline"
                     >
-                      <Download className="h-4 w-4 mr-2" />
+                      <Download className="h-4 w-4" />
                       下載 QR Code
                     </Button>
                     <p className="text-sm text-muted-foreground text-center">
-                      包含 {selectedCourses.length} 門課程
+                      共 {selectedCourses.length} 門課程
                     </p>
                   </>
                 )}
               </div>
             </DialogContent>
           </Dialog>
-        </div>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
         <div className="overflow-x-auto rounded-lg border">
           <Table className="table-fixed">
             <TableHeader>
