@@ -285,7 +285,7 @@ export default function ScheduleTable({
                       key={`${day}-${period}`}
                       className="w-32 p-2 h-24 align-top"
                     >
-                      <div className="h-full flex">
+                      <div className="h-full flex flex-col">
                         {grid[day]?.[period]?.map((course) => (
                           <div
                             key={course.course_code}
