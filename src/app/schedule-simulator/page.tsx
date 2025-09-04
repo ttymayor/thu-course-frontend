@@ -37,6 +37,12 @@ export default function ScheduleSimulatorPage() {
 
       toast.info("已移除課程", {
         description: `已將 ${courseToRemove.course_name} 從您的課表中移除。`,
+        action: {
+          label: "復原",
+          onClick: () => {
+            setSelectedCourses([...newSelectedCourses, courseToRemove]);
+          },
+        },
       });
     }
   };
