@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CourseInfoData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
@@ -14,12 +14,6 @@ export default function ScheduleSimulatorPage() {
   const [hoveredCourse, setHoveredCourse] = useState<CourseInfoData | null>(
     null
   );
-  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true);
-
-  // 頁面載入時初始化載入狀態
-  useEffect(() => {
-    setIsLoadingInitialData(false);
-  }, []);
 
   const handleSelectionChange = (courses: CourseInfoData[]) => {
     setSelectedCourses(courses);
@@ -58,9 +52,9 @@ export default function ScheduleSimulatorPage() {
         <div className="md:w-1/3 w-full md:pr-4 min-w-0">
           <CourseSelector
             selectedCourses={selectedCourses}
+            setSelectedCourses={setSelectedCourses}
             onSelectionChange={handleSelectionChange}
             onCourseHover={handleCourseHover}
-            skipInitialLoad={!isLoadingInitialData}
           />
         </div>
 
