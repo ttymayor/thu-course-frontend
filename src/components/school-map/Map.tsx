@@ -1,9 +1,34 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
-import L from "leaflet";
+import { useEffect, useState } from "react";
+import L, { LatLng } from "leaflet";
+
+function LocationMarker() {
+  const [position, setPosition] = useState<LatLng | null>(null);
+  const map = useMapEvents({
+    click() {
+      map.locate();
+    },
+    locationfound(e) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+  });
+
+  return position === null ? null : (
+    <Marker position={position}>
+      <Popup>你的位置</Popup>
+    </Marker>
+  );
+}
 
 export default function Map() {
   const markers = [
@@ -63,6 +88,7 @@ export default function Map() {
             </Popup>
           </Marker>
         ))}
+        <LocationMarker />
       </MapContainer>
     </div>
   );
