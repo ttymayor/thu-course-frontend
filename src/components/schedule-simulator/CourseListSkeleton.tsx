@@ -10,7 +10,7 @@ import {
 } from "../ui/table";
 import { Skeleton } from "../ui/skeleton";
 
-export default function SelectableCourseListSkeleton({
+export default function CourseListSkeleton({
   pageSize = 10,
 }: {
   pageSize?: number;

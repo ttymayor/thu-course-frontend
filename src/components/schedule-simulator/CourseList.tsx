@@ -21,7 +21,7 @@ import { CourseInfoData, CourseTypeMap } from "@/components/course-info/types";
 import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 
-interface SelectableCourseListProps {
+interface CourseListProps {
   infos: CourseInfoData[];
   selectedCourseCodes: Set<string>;
   selectedCourses: CourseInfoData[];
@@ -29,13 +29,13 @@ interface SelectableCourseListProps {
   onCourseHover?: (course: CourseInfoData | null) => void;
 }
 
-export default function SelectableCourseList({
+export default function CourseList({
   infos,
   selectedCourseCodes,
   selectedCourses,
   onSelectionChange,
   onCourseHover,
-}: SelectableCourseListProps) {
+}: CourseListProps) {
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
     2: "必選",

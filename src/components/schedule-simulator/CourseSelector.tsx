@@ -3,9 +3,9 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Filter from "@/components/course-info/Filter";
-import SelectableCourseList from "./SelectableCourseList";
+import CourseList from "./CourseList";
 import Pagination from "@/components/course-info/Pagination";
-import SelectableCourseListSkeleton from "./SelectableCourseListSkeleton";
+import CourseListSkeleton from "./CourseListSkeleton";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
@@ -127,9 +127,9 @@ function CourseSelectorContent({
       <Filter />
       <div className="flex-grow">
         {isLoading ? (
-          <SelectableCourseListSkeleton />
+          <CourseListSkeleton />
         ) : (
-          <SelectableCourseList
+          <CourseList
             infos={courses}
             selectedCourseCodes={
               new Set(selectedCourses.map((c) => c.course_code))
@@ -152,7 +152,7 @@ export default function CourseSelector(props: CourseSelectorProps) {
         <CardTitle>課程選擇</CardTitle>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<SelectableCourseListSkeleton />}>
+        <Suspense fallback={<CourseListSkeleton />}>
           <CourseSelectorContent {...props} />
         </Suspense>
       </CardContent>
