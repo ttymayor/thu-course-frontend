@@ -80,8 +80,8 @@ function createAnimation(animationRef: React.RefObject<HTMLDivElement | null>) {
       const hh = height / 2;
       const x = utils.clamp(e.clientX - left - hw, -hw, hw);
       const y = utils.clamp(e.clientY - top - hh, -hh, hh);
-      animatableSquare.x(x * 0.1);
-      animatableSquare.y(y * 0.1);
+      animatableSquare.x(x * -0.1);
+      animatableSquare.y(y * -0.1);
     };
 
     window.addEventListener("mousemove", onMouseMove);
