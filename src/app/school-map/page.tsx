@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { Suspense } from "react";
 
 // 動態導入地圖組件，禁用 SSR
@@ -26,6 +27,19 @@ export default function SchoolMap() {
           }
         >
           <Map />
+          <div className="text-center">
+            <p>
+              校內接駁車行駛動線根據：
+              <Link
+                className="underline"
+                href="https://business.thu.edu.tw/web/news/detail.php?cid=1&id=147"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                【公告】本校校內接駁車行駛動線及搭乘地點調整公告
+              </Link>
+            </p>
+          </div>
         </Suspense>
       </main>
     </div>
