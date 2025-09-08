@@ -71,49 +71,57 @@ export async function getCourseInfo(
     department_code !== course_code &&
     department_code !== course_name;
 
-  if (isDeptFilter) {
-    query.department_code = { $regex: department_code, $options: "i" };
-    if (course_code && course_name && course_code === course_name) {
-      query.$or = [
-        { course_code: { $regex: course_code, $options: "i" } },
-        { course_name: { $regex: course_code, $options: "i" } },
-      ];
+    if (isDeptFilter) {
+      query.department_code = { $regex: department_code, $options: "i" };
+      if (course_code && course_name && course_code === course_name) {
+        query.$or = [
+          { course_code: { $regex: course_code, $options: "i" } },
+          { course_name: { $regex: course_code, $options: "i" } },
+        ];
+      } else {
+        if (course_code) {
+          query.course_code = { $regex: course_code, $options: "i" };
+        }
+        if (course_name && course_name !== course_code) {
+          query.course_name = { $regex: course_name, $options: "i" };
+        }
+      }
     } else {
-      if (course_code) {
-        query.course_code = { $regex: course_code, $options: "i" };
-      }
-      if (course_name && course_name !== course_code) {
-        query.course_name = { $regex: course_name, $options: "i" };
-      }
-    }
-  } else {
-    const isUnifiedSearch =
-      course_code === course_name &&
-      course_name === department_code &&
-      course_code;
+      const isUnifiedSearch =
+        course_code === course_name &&
+        course_name === department_code &&
+        course_code;
 
-    if (isUnifiedSearch) {
-      query.$or = [
-        { course_code: { $regex: course_code, $options: "i" } },
-        { course_name: { $regex: course_code, $options: "i" } },
-        { department_code: { $regex: course_code, $options: "i" } },
-      ];
-    } else {
-      if (course_code) {
-        query.course_code = { $regex: course_code, $options: "i" };
-      }
-      if (course_name && course_name !== course_code) {
-        query.course_name = { $regex: course_name, $options: "i" };
-      }
-      if (
-        department_code &&
-        department_code !== course_code &&
-        department_code !== course_name
-      ) {
-        query.department_code = { $regex: department_code, $options: "i" };
+      if (isUnifiedSearch) {
+        query.$or = [
+          { course_code: { $regex: course_code, $options: "i" } },
+          { course_name: { $regex: course_code, $options: "i" } },
+          { department_code: { $regex: course_code, $options: "i" } },
+        ];
+      } else {
+        // 當 course_code 和 course_name 相等時，使用 $or 查詢
+        if (course_code && course_name && course_code === course_name) {
+          query.$or = [
+            { course_code: { $regex: course_code, $options: "i" } },
+            { course_name: { $regex: course_code, $options: "i" } },
+          ];
+        } else {
+          if (course_code) {
+            query.course_code = { $regex: course_code, $options: "i" };
+          }
+          if (course_name && course_name !== course_code) {
+            query.course_name = { $regex: course_name, $options: "i" };
+          }
+        }
+        if (
+          department_code &&
+          department_code !== course_code &&
+          department_code !== course_name
+        ) {
+          query.department_code = { $regex: department_code, $options: "i" };
+        }
       }
     }
-  }
   }
 
   if (department_name) {
