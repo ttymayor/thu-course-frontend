@@ -302,7 +302,7 @@ export default function ScheduleTable({
           <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 sm:w-16 text-center font-medium text-xs sm:text-sm px-1 sm:px-2">
+                <TableHead className="w-8 sm:w-16 text-center font-medium text-xs sm:text-sm px-1 sm:px-2">
                   時段
                 </TableHead>
                 {days.map((day) => (
@@ -349,7 +349,7 @@ export default function ScheduleTable({
                         {grid[day]?.[period]?.map((course) => (
                           <div
                             key={course.course_code}
-                            className="relative p-1 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                            className="relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                           >
                             <Link
                               href={`/course-detail/${course.course_code}`}
@@ -357,10 +357,10 @@ export default function ScheduleTable({
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <code className="text-center text-[9px] sm:text-[10px] leading-tight">
+                              <code className="text-center text-[9px] sm:text-[12px] leading-tight">
                                 {course.course_code}
                               </code>
-                              <p className="font-semibold text-center break-words whitespace-normal text-[9px] sm:text-[10px] leading-tight mt-0.5">
+                              <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
                                 {course.course_name}
                               </p>
                             </Link>
