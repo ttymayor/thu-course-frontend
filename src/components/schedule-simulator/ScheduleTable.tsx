@@ -55,23 +55,27 @@ export default function ScheduleTable({
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
 
   const days = ["一", "二", "三", "四", "五", "六", "日"];
-  const periods = [
-    "A",
-    "1",
-    "2",
-    "3",
-    "4",
-    "B",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-  ];
+
+  // 時間段對應表
+  const periodTimeMap = {
+    A: { period: "0(A)", startTime: "7:10", endTime: "8:00" },
+    "1": { period: "1", startTime: "8:10", endTime: "9:00" },
+    "2": { period: "2", startTime: "9:10", endTime: "10:00" },
+    "3": { period: "3", startTime: "10:20", endTime: "11:10" },
+    "4": { period: "4", startTime: "11:20", endTime: "12:10" },
+    B: { period: "4.5(B)", startTime: "12:10", endTime: "13:00" },
+    "5": { period: "5", startTime: "13:10", endTime: "14:00" },
+    "6": { period: "6", startTime: "14:10", endTime: "15:00" },
+    "7": { period: "7", startTime: "15:20", endTime: "16:10" },
+    "8": { period: "8", startTime: "16:20", endTime: "17:10" },
+    "9": { period: "9", startTime: "17:20", endTime: "18:10" },
+    "10": { period: "10", startTime: "18:20", endTime: "19:10" },
+    "11": { period: "11", startTime: "19:20", endTime: "20:10" },
+    "12": { period: "12", startTime: "20:20", endTime: "21:10" },
+    "13": { period: "13", startTime: "21:20", endTime: "22:10" },
+  };
+
+  const periods = Object.keys(periodTimeMap);
 
   const grid: ScheduleGrid = days.reduce((acc, day) => {
     acc[day] = periods.reduce((periodAcc, period) => {
@@ -261,7 +265,7 @@ export default function ScheduleTable({
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto rounded-lg border">
-          <Table className="table-fixed">
+          <Table className="table-fixed min-w-full">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-20 text-center font-medium">
@@ -277,8 +281,27 @@ export default function ScheduleTable({
             <TableBody>
               {periods.map((period) => (
                 <TableRow key={period}>
-                  <TableCell className="text-center font-medium py-4">
-                    {period}
+                  <TableCell className="text-center font-medium py-4 px-2">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">
+                        {
+                          periodTimeMap[period as keyof typeof periodTimeMap]
+                            .period
+                        }
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {
+                          periodTimeMap[period as keyof typeof periodTimeMap]
+                            .startTime
+                        }
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {
+                          periodTimeMap[period as keyof typeof periodTimeMap]
+                            .endTime
+                        }
+                      </span>
+                    </div>
                   </TableCell>
                   {days.map((day) => (
                     <TableCell
