@@ -34,6 +34,7 @@ import { courseTimeParser } from "@/lib/courseTimeParser";
 import QRCode from "qrcode";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useLocalStorage } from "foxact/use-local-storage";
 
 interface ScheduleTableProps {
   selectedCourses: CourseInfoData[];
@@ -54,7 +55,7 @@ export default function ScheduleTable({
 }: ScheduleTableProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
-  const [showWeekend, setShowWeekend] = useState(true);
+  const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
 
   const allDays = ["一", "二", "三", "四", "五", "六", "日"];
   const days = showWeekend ? allDays : allDays.slice(0, 5);
