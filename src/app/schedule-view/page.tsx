@@ -1,7 +1,8 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
+import useSWR from "swr";
 import {
   Card,
   CardContent,
@@ -51,137 +52,132 @@ interface ShareData {
 function ScheduleViewContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [shareData, setShareData] = useState<ShareData | null>(null);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
-  useEffect(() => {
-    const loadCourseData = async () => {
-      try {
-        setIsLoading(true);
+  // 建立 SWR key 和參數
+  const swrKey = useMemo(() => {
+    const shareId = searchParams.get("share");
+    const codesParam = searchParams.get("codes");
+    const dataParam = searchParams.get("data");
 
-        // 檢查是否有分享 ID（最新格式）
-        const shareId = searchParams.get("share");
-        if (shareId) {
-          const response = await fetch(
-            `/api/share-schedule?id=${encodeURIComponent(shareId)}`
-          );
-          const result = await response.json();
+    if (shareId) {
+      return { type: "share" as const, shareId };
+    } else if (codesParam) {
+      return { type: "codes" as const, codesParam };
+    } else if (dataParam) {
+      return { type: "data" as const, dataParam };
+    }
 
-          if (!result.success) {
-            setError(result.error || "無法載入分享的課表");
-            return;
-          }
-
-          // 使用分享的課程代碼獲取完整資訊
-          const courseCodes = result.courseCodes;
-          const courseParams = courseCodes
-            .map((code: string) => `course_codes=${encodeURIComponent(code)}`)
-            .join("&");
-
-          const courseResponse = await fetch(
-            `/api/course-info?${courseParams}&page_size=100`
-          );
-          const courseResult = await courseResponse.json();
-
-          if (
-            !courseResult.success ||
-            !courseResult.data ||
-            courseResult.data.length === 0
-          ) {
-            setError("無法載入課程資料");
-            return;
-          }
-
-          const shareData: ShareData = {
-            courses: courseResult.data.map((course: SharedCourse) => ({
-              course_code: course.course_code,
-              course_name: course.course_name,
-              class_time: course.class_time,
-              teachers: course.teachers,
-              credits_1: course.credits_1,
-              department_name: course.department_name,
-            })),
-            source: "thu-course-frontend",
-          };
-
-          setShareData(shareData);
-          return;
-        }
-
-        // 檢查是否有課程代碼參數（直接格式）
-        const codesParam = searchParams.get("codes");
-        if (codesParam) {
-          const courseCodes = codesParam
-            .split(",")
-            .filter((code) => code.trim());
-          if (courseCodes.length === 0) {
-            setError("未找到有效的課程代碼");
-            return;
-          }
-
-          // 通過 API 獲取課程詳細資訊
-          const courseParams = courseCodes
-            .map((code) => `course_codes=${encodeURIComponent(code.trim())}`)
-            .join("&");
-
-          const response = await fetch(
-            `/api/course-info?${courseParams}&page_size=100`
-          );
-          const result = await response.json();
-
-          if (!result.success || !result.data || result.data.length === 0) {
-            setError("無法載入課程資料，可能是課程代碼無效");
-            return;
-          }
-
-          // 轉換為 ShareData 格式
-          const shareData: ShareData = {
-            courses: result.data.map((course: SharedCourse) => ({
-              course_code: course.course_code,
-              course_name: course.course_name,
-              class_time: course.class_time,
-              teachers: course.teachers,
-              credits_1: course.credits_1,
-              department_name: course.department_name,
-            })),
-            source: "thu-course-frontend",
-          };
-
-          setShareData(shareData);
-          return;
-        }
-
-        // 檢查舊格式的 data 參數（向後兼容）
-        const dataParam = searchParams.get("data");
-        if (dataParam) {
-          try {
-            const decoded = JSON.parse(decodeURIComponent(dataParam));
-            if (decoded.source !== "thu-course-frontend") {
-              setError("無效的課表資料");
-              return;
-            }
-            setShareData(decoded);
-            return;
-          } catch {
-            setError("課表資料格式錯誤");
-            return;
-          }
-        }
-
-        // 都沒有找到
-        setError("未找到課表資料");
-      } catch (error) {
-        console.error("載入課程資料失敗:", error);
-        setError("載入課程資料時發生錯誤");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadCourseData();
+    return null;
   }, [searchParams]);
+
+  // SWR fetcher 函數
+  const fetcher = async (key: typeof swrKey): Promise<ShareData> => {
+    if (!key) {
+      throw new Error("未找到課表資料");
+    }
+
+    if (key.type === "share") {
+      // 處理分享 ID 格式
+      if (!key.shareId) {
+        throw new Error("分享 ID 不能為空");
+      }
+      const response = await fetch(
+        `/api/share-schedule?id=${encodeURIComponent(key.shareId)}`
+      );
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "無法載入分享的課表");
+      }
+
+      // 使用分享的課程代碼獲取完整資訊
+      const courseCodes = result.courseCodes;
+      const courseParams = courseCodes
+        .map((code: string) => `course_codes=${encodeURIComponent(code)}`)
+        .join("&");
+
+      const courseResponse = await fetch(
+        `/api/course-info?${courseParams}&page_size=100`
+      );
+      const courseResult = await courseResponse.json();
+
+      if (
+        !courseResult.success ||
+        !courseResult.data ||
+        courseResult.data.length === 0
+      ) {
+        throw new Error("無法載入課程資料");
+      }
+
+      return {
+        courses: courseResult.data.map((course: SharedCourse) => ({
+          course_code: course.course_code,
+          course_name: course.course_name,
+          class_time: course.class_time,
+          teachers: course.teachers,
+          credits_1: course.credits_1,
+          department_name: course.department_name,
+        })),
+        source: "thu-course-frontend",
+      };
+    } else if (key.type === "codes") {
+      // 處理課程代碼參數格式
+      if (!key.codesParam) {
+        throw new Error("課程代碼參數不能為空");
+      }
+      const courseCodes = key.codesParam
+        .split(",")
+        .filter((code) => code.trim());
+
+      if (courseCodes.length === 0) {
+        throw new Error("未找到有效的課程代碼");
+      }
+
+      const courseParams = courseCodes
+        .map((code) => `course_codes=${encodeURIComponent(code.trim())}`)
+        .join("&");
+
+      const response = await fetch(
+        `/api/course-info?${courseParams}&page_size=100`
+      );
+      const result = await response.json();
+
+      if (!result.success || !result.data || result.data.length === 0) {
+        throw new Error("無法載入課程資料，可能是課程代碼無效");
+      }
+
+      return {
+        courses: result.data.map((course: SharedCourse) => ({
+          course_code: course.course_code,
+          course_name: course.course_name,
+          class_time: course.class_time,
+          teachers: course.teachers,
+          credits_1: course.credits_1,
+          department_name: course.department_name,
+        })),
+        source: "thu-course-frontend",
+      };
+    } else if (key.type === "data") {
+      // 處理舊格式的 data 參數（向後兼容）
+      if (!key.dataParam) {
+        throw new Error("資料參數不能為空");
+      }
+      try {
+        const decoded = JSON.parse(decodeURIComponent(key.dataParam));
+        if (decoded.source !== "thu-course-frontend") {
+          throw new Error("無效的課表資料");
+        }
+        return decoded;
+      } catch {
+        throw new Error("課表資料格式錯誤");
+      }
+    }
+
+    throw new Error("未找到課表資料");
+  };
+
+  const { data: shareData, isLoading, error } = useSWR(swrKey, fetcher);
 
   const shareSchedule = async () => {
     navigator.clipboard.writeText(window.location.href);
@@ -222,7 +218,9 @@ function ScheduleViewContent() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-red-500 mb-4">{error}</p>
+              <p className="text-red-500 mb-4">
+                {error.message || "載入課程資料時發生錯誤"}
+              </p>
               <Link href="/schedule-simulator">
                 <Button>返回課表模擬器</Button>
               </Link>
