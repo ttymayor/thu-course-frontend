@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import Filter from "@/components/course-info/Filter";
@@ -31,30 +31,28 @@ function CourseSelectorContent({
   const searchParams = useSearchParams();
 
   // 構建查詢參數和 SWR key
-  const swrKey = useMemo(() => {
-    const params: Record<string, string | number> = {
-      page: parseInt(searchParams.get("page") || "1"),
-      page_size: 10,
-    };
+  const params: Record<string, string | number> = {
+    page: parseInt(searchParams.get("page") || "1"),
+    page_size: 10,
+  };
 
-    const search = searchParams.get("search");
-    const department = searchParams.get("department");
+  const search = searchParams.get("search");
+  const department = searchParams.get("department");
 
-    if (department) {
-      params.department_code = department;
-    }
+  if (department) {
+    params.department_code = department;
+  }
 
-    if (search) {
-      params.course_code = search;
-      params.course_name = search;
-    }
+  if (search) {
+    params.course_name = search;
+    params.course_code = search;
+  }
 
-    const queryString = new URLSearchParams(
-      Object.entries(params).map(([key, value]) => [key, String(value)])
-    ).toString();
+  const queryString = new URLSearchParams(
+    Object.entries(params).map(([key, value]) => [key, String(value)])
+  ).toString();
 
-    return `/api/course-info?${queryString}`;
-  }, [searchParams]);
+  const swrKey = `/api/course-info?${queryString}`;
 
   // SWR fetcher 函數
   const fetcher = async (url: string) => {
