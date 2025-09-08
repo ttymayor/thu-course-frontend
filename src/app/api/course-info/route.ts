@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getCourseInfo } from "@/lib/courseInfo";
 
 export async function GET(request: Request) {
-  const startTime = Date.now();
   const { searchParams } = new URL(request.url);
   const course_code = searchParams.get("course_code") || "";
   const course_name = searchParams.get("course_name") || "";
@@ -29,16 +28,12 @@ export async function GET(request: Request) {
       page_size,
     });
 
-    const endTime = Date.now();
-    const processingTime = endTime - startTime;
-
     return NextResponse.json(
       { success: true, data, total },
       {
         headers: {
           "Cache-Control": "public, max-age=3600, s-maxage=3600",
           "X-Data-Source": "database",
-          "X-Processing-Time": `${processingTime}ms`,
         },
       }
     );
