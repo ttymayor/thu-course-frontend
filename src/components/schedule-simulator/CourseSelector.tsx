@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import useSWR from "swr";
 import Filter from "@/components/course-info/Filter";
 import CourseList from "./CourseList";
 import Pagination from "@/components/course-info/Pagination";
@@ -28,64 +29,48 @@ function CourseSelectorContent({
   onCourseHover,
 }: CourseSelectorProps) {
   const searchParams = useSearchParams();
-  const [courses, setCourses] = useState<CourseInfoData[]>([]);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      setIsLoading(true);
-
-      // 構建查詢參數，參考 course-info 的實作方式
-      const params: Record<string, string | number> = {
-        page: parseInt(searchParams.get("page") || "1"),
-        page_size: 10,
-      };
-
-      const search = searchParams.get("search");
-      const department = searchParams.get("department");
-
-      // 如果選擇了特定系所，直接使用系所篩選
-      if (department) {
-        params.department_code = department;
-        // 在特定系所內搜尋時，只搜尋課程代碼和課程名稱
-        if (search) {
-          params.course_code = search;
-          params.course_name = search;
-        }
-      } else {
-        // 沒有選擇系所時，使用統一搜尋（包含系所代碼）
-        if (search) {
-          params.course_code = search;
-          params.course_name = search;
-          params.department_code = search;
-        }
-      }
-
-      try {
-        const queryString = new URLSearchParams(
-          Object.entries(params).map(([key, value]) => [key, String(value)])
-        ).toString();
-
-        const response = await fetch(`/api/course-info?${queryString}`);
-        const result = await response.json();
-        if (result.success) {
-          setCourses(result.data);
-          setTotal(result.total);
-        } else {
-          setCourses([]);
-          setTotal(0);
-        }
-      } catch (error) {
-        console.error("Failed to fetch courses:", error);
-        setCourses([]);
-        setTotal(0);
-      }
-      setIsLoading(false);
+  // 構建查詢參數和 SWR key
+  const swrKey = useMemo(() => {
+    const params: Record<string, string | number> = {
+      page: parseInt(searchParams.get("page") || "1"),
+      page_size: 10,
     };
 
-    fetchCourses();
+    const search = searchParams.get("search");
+    const department = searchParams.get("department");
+
+    if (department) {
+      params.department_code = department;
+    }
+
+    if (search) {
+      params.course_code = search;
+      params.course_name = search;
+    }
+
+    const queryString = new URLSearchParams(
+      Object.entries(params).map(([key, value]) => [key, String(value)])
+    ).toString();
+
+    return `/api/course-info?${queryString}`;
   }, [searchParams]);
+
+  // SWR fetcher 函數
+  const fetcher = async (url: string) => {
+    const response = await fetch(url);
+    const result = await response.json();
+    if (result.success) {
+      return { data: result.data, total: result.total };
+    } else {
+      return { data: [], total: 0 };
+    }
+  };
+
+  const { data, isLoading, error } = useSWR(swrKey, fetcher);
+
+  const courses = data?.data || [];
+  const total = data?.total || 0;
 
   const handleSelectionChange = (
     course: CourseInfoData,
@@ -128,6 +113,10 @@ function CourseSelectorContent({
       <div className="flex-grow">
         {isLoading ? (
           <CourseListSkeleton />
+        ) : error ? (
+          <div className="text-center text-red-500 py-4">
+            載入課程資料時發生錯誤，請稍後再試。
+          </div>
         ) : (
           <CourseList
             infos={courses}
