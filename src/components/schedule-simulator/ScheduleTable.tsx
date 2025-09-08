@@ -66,12 +66,12 @@ export default function ScheduleTable({
 
   // 時間段對應表
   const periodTimeMap = {
-    A: { period: "0(A)", startTime: "7:10", endTime: "8:00" },
+    A: { period: "A", startTime: "7:10", endTime: "8:00" },
     "1": { period: "1", startTime: "8:10", endTime: "9:00" },
     "2": { period: "2", startTime: "9:10", endTime: "10:00" },
     "3": { period: "3", startTime: "10:20", endTime: "11:10" },
     "4": { period: "4", startTime: "11:20", endTime: "12:10" },
-    B: { period: "4.5(B)", startTime: "12:10", endTime: "13:00" },
+    B: { period: "B", startTime: "12:10", endTime: "13:00" },
     "5": { period: "5", startTime: "13:10", endTime: "14:00" },
     "6": { period: "6", startTime: "14:10", endTime: "15:00" },
     "7": { period: "7", startTime: "15:20", endTime: "16:10" },
@@ -83,7 +83,24 @@ export default function ScheduleTable({
     "13": { period: "13", startTime: "21:20", endTime: "22:10" },
   };
 
-  const periods = Object.keys(periodTimeMap);
+  // 確保時間段按照正確順序排列
+  const periods = [
+    "A",
+    "1",
+    "2",
+    "3",
+    "4",
+    "B",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+  ];
 
   const grid: ScheduleGrid = days.reduce((acc, day) => {
     acc[day] = periods.reduce((periodAcc, period) => {
@@ -306,15 +323,18 @@ export default function ScheduleTable({
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto rounded-lg border">
-          <Table className="table-fixed min-w-full">
+        <div className="rounded-lg border">
+          <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-20 text-center font-medium">
+                <TableHead className="w-12 sm:w-16 text-center font-medium text-xs sm:text-sm px-1 sm:px-2">
                   時段
                 </TableHead>
                 {days.map((day) => (
-                  <TableHead key={day} className="w-32 text-center font-medium">
+                  <TableHead
+                    key={day}
+                    className="text-center font-medium text-xs sm:text-sm px-1 sm:px-2"
+                  >
                     {day}
                   </TableHead>
                 ))}
@@ -323,21 +343,21 @@ export default function ScheduleTable({
             <TableBody>
               {periods.map((period) => (
                 <TableRow key={period}>
-                  <TableCell className="text-center font-medium py-4 px-2">
+                  <TableCell className="text-center font-medium py-2 sm:py-3 px-1 sm:px-2">
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold">
+                      <span className="text-xs sm:text-sm font-semibold">
                         {
                           periodTimeMap[period as keyof typeof periodTimeMap]
                             .period
                         }
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-[10px] sm:text-xs text-muted-foreground">
                         {
                           periodTimeMap[period as keyof typeof periodTimeMap]
                             .startTime
                         }
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-[10px] sm:text-xs text-muted-foreground">
                         {
                           periodTimeMap[period as keyof typeof periodTimeMap]
                             .endTime
@@ -348,13 +368,13 @@ export default function ScheduleTable({
                   {days.map((day) => (
                     <TableCell
                       key={`${day}-${period}`}
-                      className="w-32 p-2 h-24 align-top"
+                      className="p-1 sm:p-2 h-16 sm:h-20 align-top"
                     >
                       <div className="h-full flex flex-col">
                         {grid[day]?.[period]?.map((course) => (
                           <div
                             key={course.course_code}
-                            className="relative p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded-md text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                            className="relative p-1 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                           >
                             <Link
                               href={`/course-detail/${course.course_code}`}
@@ -362,20 +382,20 @@ export default function ScheduleTable({
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <code className="text-center">
+                              <code className="text-center text-[9px] sm:text-[10px] leading-tight">
                                 {course.course_code}
                               </code>
-                              <p className="font-semibold text-center break-words whitespace-normal">
+                              <p className="font-semibold text-center break-words whitespace-normal text-[9px] sm:text-[10px] leading-tight mt-0.5">
                                 {course.course_name}
                               </p>
                             </Link>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="absolute top-0 right-0 h-4 w-4 mt-1 mr-1 cursor-pointer opacity-0 hover:opacity-100"
+                              className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
                               onClick={() => onRemoveCourse(course.course_code)}
                             >
-                              <X className="h-3 w-3" />
+                              <X className="h-2 w-2 sm:h-3 sm:w-3" />
                             </Button>
                           </div>
                         ))}
