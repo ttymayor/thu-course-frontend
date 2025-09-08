@@ -1,6 +1,6 @@
 "use client";
 
-import { X, QrCode, Download, Share2, Settings } from "lucide-react";
+import { X, QrCode, Download, Share2 } from "lucide-react";
 import Link from "next/link";
 import { CourseInfoData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
@@ -21,11 +21,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -230,40 +225,6 @@ export default function ScheduleTable({
             : "祝你穩過這幾學分 ><"}
         </CardDescription>
         <CardAction className="flex flex-col sm:flex-row gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="cursor-pointer w-full sm:w-auto"
-                size="sm"
-              >
-                <Settings className="h-4 w-4" />
-                顯示設定
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56" align="start">
-              <div className="space-y-4">
-                <h4 className="font-medium leading-none">顯示選項</h4>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="weekend-toggle"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    顯示周六日
-                  </label>
-                  <Switch
-                    id="weekend-toggle"
-                    className="cursor-pointer"
-                    checked={showWeekend}
-                    onCheckedChange={setShowWeekend}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  切換是否在課表中顯示周六和周日
-                </p>
-              </div>
-            </PopoverContent>
-          </Popover>
           <Button
             variant="outline"
             className="cursor-pointer w-full sm:w-auto"
@@ -320,6 +281,20 @@ export default function ScheduleTable({
               </div>
             </DialogContent>
           </Dialog>
+          <div className="flex items-center justify-center gap-3">
+            <label
+              htmlFor="weekend-toggle"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              顯示周六日
+            </label>
+            <Switch
+              id="weekend-toggle"
+              className="cursor-pointer"
+              checked={showWeekend}
+              onCheckedChange={setShowWeekend}
+            />
+          </div>
         </CardAction>
       </CardHeader>
       <CardContent>
