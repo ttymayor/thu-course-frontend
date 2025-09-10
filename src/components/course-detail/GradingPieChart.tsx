@@ -5,7 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { GradingItem } from "@/lib/courseDetail";
+import { GradingItem } from "@/components/course-info/types";
 
 interface GradingPieChartProps {
   gradingItems: GradingItem[];

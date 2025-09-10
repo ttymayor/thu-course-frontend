@@ -7,7 +7,7 @@ import Filter from "@/components/course-info/Filter";
 import CourseList from "./CourseList";
 import Pagination from "@/components/course-info/Pagination";
 import CourseListSkeleton from "./CourseListSkeleton";
-import { CourseInfoData } from "@/components/course-info/types";
+import { CourseData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   checkScheduleConflict,
@@ -16,10 +16,10 @@ import {
 import { toast } from "sonner";
 
 interface CourseSelectorProps {
-  selectedCourses: CourseInfoData[];
-  setSelectedCourses: (selectedCourses: CourseInfoData[]) => void;
-  onSelectionChange: (selectedCourses: CourseInfoData[]) => void;
-  onCourseHover: (hoveredCourse: CourseInfoData | null) => void;
+  selectedCourses: CourseData[];
+  setSelectedCourses: (selectedCourses: CourseData[]) => void;
+  onSelectionChange: (selectedCourses: CourseData[]) => void;
+  onCourseHover: (hoveredCourse: CourseData | null) => void;
 }
 
 function CourseSelectorContent({
@@ -70,10 +70,7 @@ function CourseSelectorContent({
   const courses = data?.data || [];
   const total = data?.total || 0;
 
-  const handleSelectionChange = (
-    course: CourseInfoData,
-    isSelected: boolean
-  ) => {
+  const handleSelectionChange = (course: CourseData, isSelected: boolean) => {
     if (isSelected) {
       const conflictInfo = checkScheduleConflict(selectedCourses, course);
 
@@ -101,7 +98,7 @@ function CourseSelectorContent({
   };
 
   // hover handler
-  const handleCourseHover = (course: CourseInfoData | null) => {
+  const handleCourseHover = (course: CourseData | null) => {
     onCourseHover(course);
   };
 

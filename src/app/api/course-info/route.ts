@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCourseInfo } from "@/lib/courseInfo";
+import { getCourses } from "@/lib/course";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const course_codes = searchParams.getAll("course_codes");
 
   try {
-    const { data, total } = await getCourseInfo({
+    const { data, total } = await getCourses({
       course_code,
       course_name,
       department_code,

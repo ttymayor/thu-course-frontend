@@ -17,16 +17,16 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CourseInfoData, CourseTypeMap } from "@/components/course-info/types";
+import { CourseData, CourseTypeMap } from "@/components/course-info/types";
 import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 
 interface CourseListProps {
-  infos: CourseInfoData[];
+  infos: CourseData[];
   selectedCourseCodes: Set<string>;
-  selectedCourses: CourseInfoData[];
-  onSelectionChange: (course: CourseInfoData, isSelected: boolean) => void;
-  onCourseHover?: (course: CourseInfoData | null) => void;
+  selectedCourses: CourseData[];
+  onSelectionChange: (course: CourseData, isSelected: boolean) => void;
+  onCourseHover?: (course: CourseData | null) => void;
 }
 
 export default function CourseList({
@@ -53,7 +53,7 @@ export default function CourseList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {infos.map((item: CourseInfoData) => {
+            {infos.map((item: CourseData) => {
               // 檢查是否已選擇
               const isSelected = selectedCourseCodes.has(item.course_code);
 

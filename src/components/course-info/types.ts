@@ -1,4 +1,27 @@
-export interface CourseInfoData {
+// 基本資訊介面
+export interface BasicInfo {
+  class_time: string;
+  enrollment_notes: string;
+  target_class: string;
+  target_grade: string;
+}
+
+// 評分項目介面
+export interface GradingItem {
+  description: string;
+  method: string;
+  percentage: number;
+}
+
+// 選課紀錄介面
+export interface SelectionRecord {
+  date: string;
+  enrolled: number;
+  registered: number;
+  remaining: number;
+}
+
+export interface CourseData {
   _id: string;
   is_closed: boolean;
   academic_semester: string;
@@ -14,6 +37,12 @@ export interface CourseInfoData {
   target_class: string;
   target_grade: string;
   teachers: string[];
+  basic_info?: BasicInfo;
+  course_description?: string;
+  grading_items?: GradingItem[];
+  selection_records?: SelectionRecord[];
+  teaching_goal?: string;
+  enrollment_notes?: string;
 }
 
 export interface Department {
@@ -23,7 +52,7 @@ export interface Department {
 
 export type CourseTypeMap = Record<number, string>;
 
-export interface CourseInfoFilters {
+export interface CourseFilters {
   search?: string;
   department?: string;
   page?: string;

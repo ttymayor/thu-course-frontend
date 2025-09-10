@@ -4,10 +4,10 @@ import Filter from "@/components/course-info/Filter";
 import List from "@/components/course-info/List";
 import ListSkeleton from "@/components/course-info/ListSkeleton";
 import Pagination from "@/components/course-info/Pagination";
-import { CourseInfoFilters } from "@/components/course-info/types";
-import { getCourseInfo } from "@/lib/courseInfo";
+import { CourseFilters } from "@/components/course-info/types";
+import { getCourses } from "@/lib/course";
 
-async function CourseInfoData({ filters }: { filters: CourseInfoFilters }) {
+async function CourseData({ filters }: { filters: CourseFilters }) {
   "use cache";
 
   // 構建 API 查詢參數
@@ -25,7 +25,7 @@ async function CourseInfoData({ filters }: { filters: CourseInfoFilters }) {
     params.course_name = filters.search;
   }
 
-  const { data: infos, total } = await getCourseInfo(params);
+  const { data: infos, total } = await getCourses(params);
 
   return (
     <>
@@ -42,7 +42,7 @@ export default async function CourseInfoPage({
 }) {
   const params = await searchParams;
 
-  const filters: CourseInfoFilters = {
+  const filters: CourseFilters = {
     search: typeof params.search === "string" ? params.search : undefined,
     department:
       typeof params.department === "string" ? params.department : undefined,
@@ -56,7 +56,7 @@ export default async function CourseInfoPage({
           <Frame>
             <Filter />
             <Suspense fallback={<ListSkeleton />}>
-              <CourseInfoData filters={filters} />
+              <CourseData filters={filters} />
             </Suspense>
           </Frame>
         </div>

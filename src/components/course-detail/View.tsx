@@ -9,7 +9,7 @@ import {
   Trophy,
   BarChart3,
 } from "lucide-react";
-import { CourseDetail } from "@/lib/courseDetail";
+import { CourseData } from "@/components/course-info/types";
 import GradingPieChart from "@/components/course-detail/GradingPieChart";
 import SelectionLineChart from "@/components/course-detail/SelectionLineChart";
 import {
@@ -20,20 +20,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { courseTimeParser } from "@/lib/courseTimeParser";
 
-export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
+export default function View({ courseInfo }: { courseInfo: CourseData }) {
   return (
     <>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
         <div className="flex items-center gap-2">
           <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-lg font-semibold">
-            {courseDetail.course_code}
+            {courseInfo.course_code}
           </code>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            {courseDetail.course_name ? `${courseDetail.course_name} ` : "-"}
+            {courseInfo.course_name ? `${courseInfo.course_name} ` : "-"}
           </h1>
           <div className="hidden h-1 w-10 bg-muted sm:block" />
-          {courseDetail.teachers.map((teacher, index) => (
+          {courseInfo.teachers.map((teacher, index) => (
             <Badge key={index} variant="secondary" className="text-sm">
               {teacher}
             </Badge>
@@ -41,7 +42,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
         </div>
         <div className="flex gap-4 text-sm sm:ml-auto">
           <a
-            href={`https://course.thu.edu.tw/view/114/1/${courseDetail.course_code}`}
+            href={`https://course.thu.edu.tw/view/114/1/${courseInfo.course_code}`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline"
@@ -49,7 +50,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
             課程資訊網
           </a>
           <a
-            href={`http://desc.ithu.tw/114/1/${courseDetail.course_code}`}
+            href={`http://desc.ithu.tw/114/1/${courseInfo.course_code}`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline"
@@ -59,27 +60,36 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* 基本資訊 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarDays className="h-5 w-5" />
-              基本資訊
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
-              <li>上課時間：{courseDetail.basic_info.class_time || "-"}</li>
-              <li>修課對象：{courseDetail.basic_info.target_class || "-"}</li>
-              <li>修課年級：{courseDetail.basic_info.target_grade || "-"}</li>
-              <li>
-                選課說明：{courseDetail.basic_info.enrollment_notes || "-"}
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+      {/* 基本資訊 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5" />
+            基本資訊
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+            <li className="">
+              上課時間：
+              {courseTimeParser(courseInfo.class_time || "").map(
+                (entry, index) => (
+                  <span key={entry.day}>
+                    {index > 0 && "、"}
+                    {entry.day} {entry.periods.join(", ")}
+                    {entry.location && `［${entry.location}］`}
+                  </span>
+                )
+              )}
+            </li>
+            <li>修課對象：{courseInfo.target_class || "-"}</li>
+            <li>修課年級：{courseInfo.target_grade || "-"}</li>
+            <li>選課說明：{courseInfo.enrollment_notes || "-"}</li>
+          </ul>
+        </CardContent>
+      </Card>
 
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* 評分項目 */}
         <Card>
           <CardHeader>
@@ -89,7 +99,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <GradingPieChart gradingItems={courseDetail.grading_items} />
+            <GradingPieChart gradingItems={courseInfo.grading_items || []} />
             <div className="mt-4">
               <Table>
                 <TableHeader>
@@ -100,7 +110,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {courseDetail.grading_items.map((item, index) => (
+                  {(courseInfo.grading_items || []).map((item, index) => (
                     <TableRow key={index}>
                       <TableCell className="">{item.method}</TableCell>
                       <TableCell className="text-center">
@@ -127,7 +137,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
           </CardHeader>
           <CardContent>
             <SelectionLineChart
-              selectionRecords={courseDetail.selection_records}
+              selectionRecords={courseInfo.selection_records || []}
             />
             <div className="mt-4">
               <Table>
@@ -143,7 +153,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {courseDetail.selection_records.map((record, index) => (
+                  {(courseInfo.selection_records || []).map((record, index) => (
                     <TableRow key={index}>
                       <TableCell className="text-center">
                         {record.date || "-"}
@@ -173,7 +183,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
         </CardHeader>
         <CardContent>
           <p className="whitespace-pre-line leading-relaxed">
-            {courseDetail.teaching_goal}
+            {courseInfo.teaching_goal || "-"}
           </p>
         </CardContent>
       </Card>
@@ -188,7 +198,7 @@ export default function View({ courseDetail }: { courseDetail: CourseDetail }) {
         </CardHeader>
         <CardContent>
           <p className="whitespace-pre-line leading-relaxed">
-            {courseDetail.course_description}
+            {courseInfo.course_description || "-"}
           </p>
         </CardContent>
       </Card>

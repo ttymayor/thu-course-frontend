@@ -1,21 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { CourseInfoData } from "@/components/course-info/types";
+import { CourseData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
 import { useLocalStorage } from "foxact/use-local-storage";
 import { toast } from "sonner";
 
 export default function ScheduleSimulatorPage() {
-  const [selectedCourses, setSelectedCourses] = useLocalStorage<
-    CourseInfoData[]
-  >("selectedCourses", []);
-  const [hoveredCourse, setHoveredCourse] = useState<CourseInfoData | null>(
-    null
+  const [selectedCourses, setSelectedCourses] = useLocalStorage<CourseData[]>(
+    "selectedCourses",
+    []
   );
+  const [hoveredCourse, setHoveredCourse] = useState<CourseData | null>(null);
 
-  const handleSelectionChange = (courses: CourseInfoData[]) => {
+  const handleSelectionChange = (courses: CourseData[]) => {
     setSelectedCourses(courses);
   };
 
@@ -41,7 +40,7 @@ export default function ScheduleSimulatorPage() {
     }
   };
 
-  const handleCourseHover = (hoveredCourse: CourseInfoData | null) => {
+  const handleCourseHover = (hoveredCourse: CourseData | null) => {
     setHoveredCourse(hoveredCourse);
   };
 

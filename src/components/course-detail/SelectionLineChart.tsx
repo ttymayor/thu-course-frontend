@@ -6,7 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { SelectionRecord } from "@/lib/courseDetail";
+import { SelectionRecord } from "@/components/course-info/types";
 
 interface SelectionLineChartProps {
   selectionRecords: SelectionRecord[];

@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
-import { CourseInfoData, CourseTypeMap } from "./types";
+import { CourseData, CourseTypeMap } from "./types";
 
 interface ListProps {
-  infos: CourseInfoData[];
+  infos: CourseData[];
 }
 
 export default function List({ infos }: ListProps) {
@@ -41,7 +41,7 @@ export default function List({ infos }: ListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {infos.map((item: CourseInfoData, idx: number) => (
+          {infos.map((item: CourseData, idx: number) => (
             <TableRow
               key={idx}
               className={`h-12 ${

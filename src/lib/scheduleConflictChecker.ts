@@ -1,4 +1,4 @@
-import { CourseInfoData } from "@/components/course-info/types";
+import { CourseData } from "@/components/course-info/types";
 import { courseTimeParser } from "./courseTimeParser";
 
 export interface TimeSlot {
@@ -11,8 +11,8 @@ export interface TimeSlot {
 export interface ConflictInfo {
   hasConflict: boolean;
   conflictingCourses: {
-    existingCourse: CourseInfoData;
-    newCourse: CourseInfoData;
+    existingCourse: CourseData;
+    newCourse: CourseData;
     conflictingSlots: {
       day: string;
       periods: number[];
@@ -20,15 +20,9 @@ export interface ConflictInfo {
   }[];
 }
 
-/**
- * 檢查新課程是否與現有課程有時間衝突
- * @param existingCourses 已選擇的課程列表
- * @param newCourse 要新增的課程
- * @returns 衝突檢測結果
- */
 export function checkScheduleConflict(
-  existingCourses: CourseInfoData[],
-  newCourse: CourseInfoData
+  existingCourses: CourseData[],
+  newCourse: CourseData
 ): ConflictInfo {
   const conflictInfo: ConflictInfo = {
     hasConflict: false,
@@ -74,12 +68,6 @@ export function checkScheduleConflict(
   return conflictInfo;
 }
 
-/**
- * 找出兩個課程時間表之間的衝突
- * @param timeSlots1 第一個課程的時間表
- * @param timeSlots2 第二個課程的時間表
- * @returns 衝突的時間段
- */
 function findTimeConflicts(
   timeSlots1: Array<{ day: string; periods: number[] }>,
   timeSlots2: Array<{ day: string; periods: number[] }>
@@ -108,11 +96,6 @@ function findTimeConflicts(
   return conflicts;
 }
 
-/**
- * 格式化衝突資訊為可讀的文字
- * @param conflictInfo 衝突資訊
- * @returns 格式化的衝突描述
- */
 export function formatConflictMessage(conflictInfo: ConflictInfo): string {
   if (!conflictInfo.hasConflict) {
     return "";

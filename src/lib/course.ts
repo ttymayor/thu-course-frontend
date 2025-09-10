@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import connectMongoDB from "./mongodb";
+import { CourseData } from "@/components/course-info/types";
 
 const courseInfoSchema = new mongoose.Schema({
   is_closed: Boolean,
@@ -32,7 +33,7 @@ interface CourseInfoQuery {
   }>;
 }
 
-export async function getCourseInfo(
+export async function getCourses(
   filters: {
     course_code?: string;
     course_name?: string;
@@ -177,9 +178,13 @@ export async function getCourseInfo(
 
   const results = await CourseInfo.aggregate(aggregationPipeline);
 
-  const data = results[0].paginatedResults;
+  const data: CourseData[] = results[0].paginatedResults;
   const total =
     results[0].totalCount.length > 0 ? results[0].totalCount[0].count : 0;
+
+  data.forEach((course) => {
+    course.teachers = course.teachers.filter((teacher) => teacher && teacher.trim().length > 0);
+  });
 
   return { data, total };
 }
@@ -210,4 +215,69 @@ export async function getAllDepartments() {
   ]);
 
   return departments;
+}
+
+// 根據課程代碼獲取單一課程的完整資訊（包含詳細資料）
+export async function getCourse(
+  courseCode: string
+): Promise<CourseData | null> {
+  await connectMongoDB();
+
+  const aggregationPipeline = [
+    { $match: { course_code: courseCode } },
+    {
+      $lookup: {
+        from: "course_detail",
+        localField: "course_code",
+        foreignField: "course_code",
+        as: "detail",
+      },
+    },
+    {
+      $unwind: {
+        path: "$detail",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        is_closed: "$detail.is_closed",
+        class_time: "$detail.basic_info.class_time",
+        target_class: "$detail.basic_info.target_class",
+        target_grade: "$detail.basic_info.target_grade",
+        teachers: "$detail.teachers",
+        // 完整的詳細資訊
+        basic_info: "$detail.basic_info",
+        course_description: "$detail.course_description",
+        grading_items: "$detail.grading_items",
+        selection_records: "$detail.selection_records",
+        teaching_goal: "$detail.teaching_goal",
+        enrollment_notes: "$detail.basic_info.enrollment_notes",
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        detail: 0,
+      },
+    },
+    { $limit: 1 },
+  ];
+
+  const results = await CourseInfo.aggregate(aggregationPipeline);
+  
+  if (results.length === 0) {
+    return null;
+  }
+
+  const course: CourseData = results[0];
+  
+  // 過濾空字串教師名稱
+  if (course.teachers) {
+    course.teachers = course.teachers.filter(
+      (teacher) => teacher && teacher.trim().length > 0
+    );
+  }
+
+  return course;
 }

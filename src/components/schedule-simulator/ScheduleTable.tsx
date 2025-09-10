@@ -2,7 +2,7 @@
 
 import { X, QrCode, Download, Share2 } from "lucide-react";
 import Link from "next/link";
-import { CourseInfoData } from "@/components/course-info/types";
+import { CourseData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,14 +37,14 @@ import Image from "next/image";
 import { useLocalStorage } from "foxact/use-local-storage";
 
 interface ScheduleTableProps {
-  selectedCourses: CourseInfoData[];
-  hoveredCourse?: CourseInfoData | null;
+  selectedCourses: CourseData[];
+  hoveredCourse?: CourseData | null;
   onRemoveCourse: (courseCode: string) => void;
 }
 
 type ScheduleGrid = {
   [day: string]: {
-    [period: string]: CourseInfoData[];
+    [period: string]: CourseData[];
   };
 };
 
@@ -108,7 +108,7 @@ export default function ScheduleTable({
     acc[day] = periods.reduce((periodAcc, period) => {
       periodAcc[period] = [];
       return periodAcc;
-    }, {} as { [period: string]: CourseInfoData[] });
+    }, {} as { [period: string]: CourseData[] });
     return acc;
   }, {} as ScheduleGrid);
 
