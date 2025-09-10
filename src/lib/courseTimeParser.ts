@@ -106,8 +106,3 @@ export function courseTimeParser(input: string): ScheduleEntry[] {
 
   return results;
 }
-
-export function courseLocation(input: string): string[] {
-  const results = courseTimeParser(input);
-  return results.map((result) => result.location || "");
-}
