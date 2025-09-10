@@ -95,19 +95,3 @@ function findTimeConflicts(
 
   return conflicts;
 }
-
-export function formatConflictMessage(conflictInfo: ConflictInfo): string {
-  if (!conflictInfo.hasConflict) {
-    return "";
-  }
-
-  const messages = conflictInfo.conflictingCourses.map(conflict => {
-    const slotsText = conflict.conflictingSlots
-      .map(slot => `${slot.day}第${slot.periods.join('、')}節`)
-      .join('，');
-    
-    return `與「${conflict.existingCourse.course_name}」(${conflict.existingCourse.course_code}) 在 ${slotsText} 時間衝突`;
-  });
-
-  return messages.join('；');
-}

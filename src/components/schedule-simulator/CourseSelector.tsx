@@ -9,11 +9,6 @@ import Pagination from "@/components/course-info/Pagination";
 import CourseListSkeleton from "./CourseListSkeleton";
 import { CourseData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import {
-  checkScheduleConflict,
-  formatConflictMessage,
-} from "@/lib/scheduleConflictChecker";
-import { toast } from "sonner";
 
 interface CourseSelectorProps {
   selectedCourses: CourseData[];
@@ -71,24 +66,6 @@ function CourseSelectorContent({
   const total = data?.total || 0;
 
   const handleSelectionChange = (course: CourseData, isSelected: boolean) => {
-    if (isSelected) {
-      const conflictInfo = checkScheduleConflict(selectedCourses, course);
-
-      if (conflictInfo.hasConflict) {
-        const conflictMessage = formatConflictMessage(conflictInfo);
-        toast.warning("課程時間衝突", {
-          description: `無法新增「${course.course_name}」：${conflictMessage}`,
-          duration: 5000,
-        });
-        return;
-      }
-
-      toast.success("已新增課程", {
-        description: `已將「${course.course_name}」新增到您的課表中。`,
-        duration: 3000,
-      });
-    }
-
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
       : selectedCourses.filter((c) => c.course_code !== course.course_code);

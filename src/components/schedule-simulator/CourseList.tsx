@@ -77,39 +77,18 @@ export default function CourseList({
                   onMouseLeave={() => onCourseHover?.(null)}
                 >
                   <TableCell className="text-center">
-                    {hasConflict ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="inline-block">
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={(checked) => {
-                                onSelectionChange(item, !!checked);
-                              }}
-                              disabled={item.is_closed || hasConflict}
-                              className="cursor-not-allowed opacity-50"
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <div className="max-w-xs">
-                            <p className="font-medium text-red-600">時間衝突</p>
-                            <p className="text-sm">
-                              此課程與已選課程有時間衝突，無法新增
-                            </p>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <Checkbox
-                        checked={isSelected}
-                        onCheckedChange={(checked) => {
-                          onSelectionChange(item, !!checked);
-                        }}
-                        disabled={item.is_closed}
-                        className="cursor-pointer"
-                      />
-                    )}
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={(checked) => {
+                        onSelectionChange(item, !!checked);
+                      }}
+                      disabled={item.is_closed || hasConflict}
+                      className={
+                        hasConflict || item.is_closed
+                          ? "cursor-not-allowed opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
