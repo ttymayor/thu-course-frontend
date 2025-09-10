@@ -10,7 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardAction
+  CardAction,
 } from "@/components/ui/card";
 import {
   Dialog,
@@ -18,7 +18,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -27,7 +27,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { courseTimeParser, courseLocation } from "@/lib/courseTimeParser";
@@ -48,16 +48,10 @@ type ScheduleGrid = {
   };
 };
 
-type CellSpanInfo = {
-  course: CourseInfoData;
-  rowSpan: number;
-  isFirstCell: boolean;
-};
-
 export default function ScheduleTable({
   selectedCourses,
   hoveredCourse,
-  onRemoveCourse
+  onRemoveCourse,
 }: ScheduleTableProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
@@ -82,7 +76,7 @@ export default function ScheduleTable({
     "10": { period: "10", startTime: "18:20", endTime: "19:10" },
     "11": { period: "11", startTime: "19:20", endTime: "20:10" },
     "12": { period: "12", startTime: "20:20", endTime: "21:10" },
-    "13": { period: "13", startTime: "21:20", endTime: "22:10" }
+    "13": { period: "13", startTime: "21:20", endTime: "22:10" },
   };
 
   // 確保時間段按照正確順序排列
@@ -101,7 +95,7 @@ export default function ScheduleTable({
     "10",
     "11",
     "12",
-    "13"
+    "13",
   ];
 
   const grid: ScheduleGrid = days.reduce((acc, day) => {
@@ -129,65 +123,6 @@ export default function ScheduleTable({
           if (grid[dayKey] && grid[dayKey][periodKey]) {
             grid[dayKey][periodKey].push(course);
           }
-        });
-      }
-    });
-  });
-
-  // 計算每個課程的 rowspan 和跨越資訊
-  const spanInfo: { [day: string]: { [period: string]: CellSpanInfo[] } } = {};
-
-  days.forEach((day) => {
-    spanInfo[day] = {};
-    periods.forEach((period) => {
-      spanInfo[day][period] = [];
-    });
-  });
-
-  // 為每個課程計算連續時間段的跨越
-  allCourses.forEach((course) => {
-    const parsedTimes = courseTimeParser(course.class_time);
-    parsedTimes.forEach((time) => {
-      const dayKey = time.day.replace("星期", "");
-      if (days.includes(dayKey)) {
-        // 將時間段轉換為字符串並排序
-        const coursePeriods = time.periods
-          .map((p) => String(p))
-          .filter((p) => periods.includes(p))
-          .sort((a, b) => periods.indexOf(a) - periods.indexOf(b));
-
-        if (coursePeriods.length === 0) return;
-
-        // 找出連續的時間段組
-        const continuousGroups: string[][] = [];
-        let currentGroup: string[] = [coursePeriods[0]];
-
-        for (let i = 1; i < coursePeriods.length; i++) {
-          const currentPeriodIndex = periods.indexOf(coursePeriods[i]);
-          const previousPeriodIndex = periods.indexOf(coursePeriods[i - 1]);
-
-          if (currentPeriodIndex === previousPeriodIndex + 1) {
-            // 連續的時間段
-            currentGroup.push(coursePeriods[i]);
-          } else {
-            // 不連續，開始新的組
-            continuousGroups.push(currentGroup);
-            currentGroup = [coursePeriods[i]];
-          }
-        }
-        continuousGroups.push(currentGroup);
-
-        // 為每個連續組設置 rowspan
-        continuousGroups.forEach((group) => {
-          const rowSpan = group.length;
-          group.forEach((period, index) => {
-            const isFirstCell = index === 0;
-            spanInfo[dayKey][period].push({
-              course,
-              rowSpan,
-              isFirstCell
-            });
-          });
         });
       }
     });
@@ -227,9 +162,9 @@ export default function ScheduleTable({
         margin: 2,
         color: {
           dark: "#000000",
-          light: "#FFFFFF"
+          light: "#FFFFFF",
         },
-        errorCorrectionLevel: "M"
+        errorCorrectionLevel: "M",
       });
 
       setQrCodeDataUrl(qrDataUrl);
@@ -406,104 +341,46 @@ export default function ScheduleTable({
                       </span>
                     </div>
                   </TableCell>
-                  {days.map((day) => {
-                    const cellSpans = spanInfo[day]?.[period] || [];
-                    const firstCellSpans = cellSpans.filter(
-                      (span) => span.isFirstCell
-                    );
-
-                    // 如果這個儲存格沒有 isFirstCell 的課程，則跳過渲染（被上面的 rowspan 覆蓋）
-                    if (firstCellSpans.length === 0 && cellSpans.length > 0) {
-                      return null;
-                    }
-
-                    return (
-                      <TableCell
-                        key={`${day}-${period}`}
-                        className="p-1 sm:p-2 h-16 sm:h-24 align-top"
-                        rowSpan={
-                          firstCellSpans.length > 0
-                            ? firstCellSpans[0].rowSpan
-                            : 1
-                        }
-                      >
-                        <div className="h-full flex flex-col">
-                          {firstCellSpans.map((spanInfo) => (
-                            <div
-                              key={spanInfo.course.course_code}
-                              className="relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                  {days.map((day) => (
+                    <TableCell
+                      key={`${day}-${period}`}
+                      className="p-1 sm:p-2 h-16 sm:h-24 align-top"
+                    >
+                      <div className="h-full flex flex-col">
+                        {grid[day]?.[period]?.map((course) => (
+                          <div
+                            key={course.course_code}
+                            className="relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                          >
+                            <Link
+                              href={`/course-detail/${course.course_code}`}
+                              className="h-full flex flex-col justify-center"
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              <Link
-                                href={`/course-detail/${spanInfo.course.course_code}`}
-                                className="h-full flex flex-col justify-center"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <code className="text-center text-[9px] sm:text-[12px] leading-tight">
-                                  {spanInfo.course.course_code}
-                                </code>
-                                <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
-                                  {spanInfo.course.course_name}
-                                </p>
-                                <p className="text-center text-[9px] sm:text-[12px] leading-tight mt-0.5">
-                                  {courseLocation(
-                                    spanInfo.course.class_time
-                                  ).join(", ")}
-                                </p>
-                              </Link>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
-                                onClick={() =>
-                                  onRemoveCourse(spanInfo.course.course_code)
-                                }
-                              >
-                                <X className="h-2 w-2 sm:h-3 sm:w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                          {/* 如果沒有跨越的課程，顯示原本的課程（如果有的話） */}
-                          {firstCellSpans.length === 0 &&
-                            grid[day]?.[period]?.map((course) => (
-                              <div
-                                key={course.course_code}
-                                className="relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
-                              >
-                                <Link
-                                  href={`/course-detail/${course.course_code}`}
-                                  className="h-full flex flex-col justify-center"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <code className="text-center text-[9px] sm:text-[12px] leading-tight">
-                                    {course.course_code}
-                                  </code>
-                                  <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
-                                    {course.course_name}
-                                  </p>
-                                  <p className="text-center text-[9px] sm:text-[12px] leading-tight mt-0.5">
-                                    {courseLocation(course.class_time).join(
-                                      ", "
-                                    )}
-                                  </p>
-                                </Link>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
-                                  onClick={() =>
-                                    onRemoveCourse(course.course_code)
-                                  }
-                                >
-                                  <X className="h-2 w-2 sm:h-3 sm:w-3" />
-                                </Button>
-                              </div>
-                            ))}
-                        </div>
-                      </TableCell>
-                    );
-                  })}
+                              <code className="text-center text-[9px] sm:text-[12px] leading-tight">
+                                {course.course_code}
+                              </code>
+                              <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
+                                {course.course_name}
+                              </p>
+                              <p className="text-center text-[9px] sm:text-[12px] leading-tight mt-0.5">
+                                {courseLocation(course.class_time).join(", ")}
+                              </p>
+                            </Link>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
+                              onClick={() => onRemoveCourse(course.course_code)}
+                            >
+                              <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))}
             </TableBody>
