@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { courseTimeParser } from "@/lib/courseTimeParser";
+import { courseTimeParser, courseLocation } from "@/lib/courseTimeParser";
 import QRCode from "qrcode";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -344,7 +344,7 @@ export default function ScheduleTable({
                   {days.map((day) => (
                     <TableCell
                       key={`${day}-${period}`}
-                      className="p-1 sm:p-2 h-16 sm:h-20 align-top"
+                      className="p-1 sm:p-2 h-16 sm:h-24 align-top"
                     >
                       <div className="h-full flex flex-col">
                         {grid[day]?.[period]?.map((course) => (
@@ -363,6 +363,9 @@ export default function ScheduleTable({
                               </code>
                               <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
                                 {course.course_name}
+                              </p>
+                              <p className="text-center text-[9px] sm:text-[12px] leading-tight mt-0.5">
+                                {courseLocation(course.class_time).join(", ")}
                               </p>
                             </Link>
                             <Button
