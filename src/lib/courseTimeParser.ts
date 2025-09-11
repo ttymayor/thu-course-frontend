@@ -106,3 +106,15 @@ export function courseTimeParser(input: string): ScheduleEntry[] {
 
   return results;
 }
+
+export function courseLocation(input: string): string {
+  const lines = (typeof input === "string" ? input : "").split("\n").filter((line) => line.trim() !== "");
+  const results: string[] = [];
+  for (const line of lines) {
+    const location = line.match(/\[(.*?)\]/)?.[1];
+    if (location) {
+      results.push(location);
+    }
+  }
+  return results.join(", ");
+}

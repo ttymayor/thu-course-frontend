@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { courseTimeParser } from "@/lib/courseTimeParser";
+import { courseTimeParser, courseLocation } from "@/lib/courseTimeParser";
 import QRCode from "qrcode";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -363,6 +363,9 @@ export default function ScheduleTable({
                               </code>
                               <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
                                 {course.course_name}
+                              </p>
+                              <p className="text-center text-[9px] sm:text-[10px] leading-tight mt-0.5">
+                                {courseLocation(course.class_time)}
                               </p>
                             </Link>
                             <Button
