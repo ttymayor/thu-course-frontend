@@ -182,8 +182,12 @@ export async function getCourses(
   const total =
     results[0].totalCount.length > 0 ? results[0].totalCount[0].count : 0;
 
-  data.forEach((course) => {
-    course.teachers = course.teachers.filter((teacher) => teacher && teacher.trim().length > 0);
+  data?.forEach((course) => {
+    if (course.teachers && Array.isArray(course.teachers)) {
+      course.teachers = course.teachers.filter((teacher) => teacher !== null && teacher !== undefined && teacher !== "");
+    } else {
+      course.teachers = [];
+    }
   });
 
   return { data, total };
@@ -273,10 +277,12 @@ export async function getCourse(
   const course: CourseData = results[0];
   
   // 過濾空字串教師名稱
-  if (course.teachers) {
+  if (course.teachers && Array.isArray(course.teachers)) {
     course.teachers = course.teachers.filter(
       (teacher) => teacher && teacher.trim().length > 0
     );
+  } else {
+    course.teachers = [];
   }
 
   return course;
