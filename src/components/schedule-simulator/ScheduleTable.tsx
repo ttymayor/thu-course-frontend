@@ -211,7 +211,7 @@ export default function ScheduleTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>排課模擬器</CardTitle>
+        <CardTitle>排課模擬</CardTitle>
         <CardDescription className="flex flex-row gap-2">
           <span className="font-medium text-foreground">
             {selectedCourses.length}

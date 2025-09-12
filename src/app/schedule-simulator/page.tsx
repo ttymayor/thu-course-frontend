@@ -13,7 +13,7 @@ const ScheduleSimulator = dynamic(() => import("./ScheduleSimulator"), {
 });
 
 export const metadata: Metadata = {
-  title: "排課模擬器",
+  title: "排課模擬",
 };
 
 export default function ScheduleSimulatorPage() {

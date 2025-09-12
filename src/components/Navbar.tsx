@@ -28,7 +28,7 @@ const NAVBAR_CONFIG = {
         href: "/course-info",
       },
       {
-        label: "排課模擬器",
+        label: "排課模擬",
         href: "/schedule-simulator",
       },
       {
@@ -44,7 +44,7 @@ const NAVBAR_CONFIG = {
         href: "/course-info",
       },
       {
-        label: "排課模擬器",
+        label: "排課模擬",
         href: "/schedule-simulator",
       },
       {
