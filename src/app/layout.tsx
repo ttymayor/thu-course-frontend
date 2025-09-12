@@ -19,7 +19,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "東海課程資訊",
+  title: {
+    template: "%s • 東海課程資訊",
+    default: "東海課程資訊",
+  },
   description: "一個更好的東海課程資訊網站",
 };
 

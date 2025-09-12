@@ -6,6 +6,11 @@ import ListSkeleton from "@/components/course-info/ListSkeleton";
 import Pagination from "@/components/course-info/Pagination";
 import { CourseFilters } from "@/components/course-info/types";
 import { getCourses } from "@/lib/course";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "課程資訊",
+};
 
 async function CourseData({ filters }: { filters: CourseFilters }) {
   "use cache";
