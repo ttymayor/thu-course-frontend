@@ -46,6 +46,7 @@ export async function getCourses(
     page_size?: number;
   } = {}
 ) {
+  "use cache";
   await connectMongoDB();
 
   const {
@@ -194,6 +195,7 @@ export async function getCourses(
 }
 
 export async function getAllDepartments() {
+  "use cache";
   await connectMongoDB();
 
   // 獲取所有不重複的系所
@@ -225,6 +227,7 @@ export async function getAllDepartments() {
 export async function getCourse(
   courseCode: string
 ): Promise<CourseData | null> {
+  "use cache";
   await connectMongoDB();
 
   const aggregationPipeline = [
