@@ -10,8 +10,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { CourseData } from "@/components/course-info/types";
-import GradingPieChart from "@/components/course-detail/GradingPieChart";
-import SelectionLineChart from "@/components/course-detail/SelectionLineChart";
+import GradingPieChart from "@/components/course-info/GradingPieChart";
+import SelectionLineChart from "@/components/course-info/SelectionLineChart";
 import {
   Table,
   TableBody,

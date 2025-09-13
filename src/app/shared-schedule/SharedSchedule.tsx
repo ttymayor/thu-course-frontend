@@ -365,7 +365,7 @@ export default function SharedSchedule() {
                 </div>
 
                 <div className="md:text-right">
-                  <Link href={`/course-detail/${course.course_code}`}>
+                  <Link href={`/course-info/${course.course_code}`}>
                     <Button
                       className="cursor-pointer"
                       variant="outline"

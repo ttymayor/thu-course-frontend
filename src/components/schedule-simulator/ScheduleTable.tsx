@@ -353,10 +353,8 @@ export default function ScheduleTable({
                             className="relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                           >
                             <Link
-                              href={`/course-detail/${course.course_code}`}
+                              href={`/course-info/${course.course_code}`}
                               className="h-full flex flex-col justify-center"
-                              target="_blank"
-                              rel="noopener noreferrer"
                             >
                               <code className="text-center text-[9px] sm:text-[12px] leading-tight">
                                 {course.course_code}

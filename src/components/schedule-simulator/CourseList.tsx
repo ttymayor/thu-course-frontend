@@ -113,10 +113,8 @@ export default function CourseList({
                           ) : (
                             <Link
                               prefetch={false}
-                              href={`/course-detail/${item.course_code}`}
+                              href={`/course-info/${item.course_code}`}
                               className="underline"
-                              target="_blank"
-                              rel="noopener noreferrer"
                             >
                               {item.course_name}
                             </Link>
