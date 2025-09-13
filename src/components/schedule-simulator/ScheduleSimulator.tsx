@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { CourseData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
 import { useLocalStorage } from "foxact/use-local-storage";
 import { toast } from "sonner";
 import Frame from "@/components/schedule-simulator/Frame";
+import CourseListSkeleton from "./CourseListSkeleton";
 
 export default function ScheduleSimulator() {
   const [selectedCourses, setSelectedCourses] = useLocalStorage<CourseData[]>(
@@ -49,12 +50,14 @@ export default function ScheduleSimulator() {
     <Frame>
       {/* 左側：課程選擇，寬度較窄 */}
       <div className="md:w-1/3 w-full md:pr-4 min-w-0">
-        <CourseSelector
-          selectedCourses={selectedCourses}
-          setSelectedCourses={setSelectedCourses}
-          onSelectionChange={handleSelectionChange}
-          onCourseHover={handleCourseHover}
-        />
+        <Suspense fallback={<CourseListSkeleton />}>
+          <CourseSelector
+            selectedCourses={selectedCourses}
+            setSelectedCourses={setSelectedCourses}
+            onSelectionChange={handleSelectionChange}
+            onCourseHover={handleCourseHover}
+          />
+        </Suspense>
       </div>
 
       {/* 右側：課表模擬，寬度較寬 */}
