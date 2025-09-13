@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://thc.ttymayor.com"),
   title: {
     template: "%s • 東海課程資訊",
     default: "東海課程資訊",
