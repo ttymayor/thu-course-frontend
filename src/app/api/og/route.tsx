@@ -2,15 +2,6 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-// Image metadata
-export const alt = "東海選課資訊";
-export const size = {
-  width: 1200,
-  height: 630,
-};
-
-export const contentType = "image/png";
-
 export async function GET() {
   const LineSeedRegular = await readFile(
     join(process.cwd(), "assets/LINESeedTW_TTF_Rg.ttf")
