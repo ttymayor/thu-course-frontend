@@ -34,6 +34,13 @@ export const metadata: Metadata = {
     siteName: "東海課程資訊",
     locale: "zh-TW",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "東海課程資訊",
+    description: "一個更好的東海課程資訊網站",
+    site: "https://thc.ttymayor.com",
+    images: `/api/og`,
+  },
 };
 
 export default function RootLayout({
