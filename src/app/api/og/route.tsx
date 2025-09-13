@@ -1,14 +1,31 @@
 import { ImageResponse } from "next/og";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+
+export const runtime = "edge";
 
 export async function GET() {
-  const LineSeedRegular = await readFile(
-    join(process.cwd(), "assets/LINESeedTW_TTF_Rg.ttf")
+  const LineSeedRegularUrl = new URL(
+    `${
+      process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000"
+    }/fonts/LINESeedTW_TTF_Rg.ttf`,
+    import.meta.url
   );
-  const LineSeedBold = await readFile(
-    join(process.cwd(), "assets/LINESeedTW_TTF_Bd.ttf")
+  const LineSeedBoldUrl = new URL(
+    `${
+      process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000"
+    }/fonts/LINESeedTW_TTF_Bd.ttf`,
+    import.meta.url
   );
+  const LineSeedRegular = await fetch(LineSeedRegularUrl).then((res) =>
+    res.arrayBuffer()
+  );
+  const LineSeedBold = await fetch(LineSeedBoldUrl).then((res) =>
+    res.arrayBuffer()
+  );
+
   return new ImageResponse(
     (
       <div
