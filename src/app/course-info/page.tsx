@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "課程資訊",
+  description: "東海大學的課程資訊",
 };
 
 async function CourseData({ filters }: { filters: CourseFilters }) {
