@@ -24,6 +24,15 @@ export const metadata: Metadata = {
     default: "東海課程資訊",
   },
   description: "一個更好的東海課程資訊網站",
+  openGraph: {
+    title: "東海課程資訊",
+    description: "一個更好的東海課程資訊網站",
+    images: `/api/og`,
+    type: "website",
+    url: "https://thc.ttymayor.com",
+    siteName: "東海課程資訊",
+    locale: "zh-TW",
+  },
 };
 
 export default function RootLayout({
