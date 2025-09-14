@@ -28,7 +28,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "東海課程資訊",
     description: "一個更好的東海課程資訊網站",
-    images: `/api/og`,
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "東海課程資訊 - 一個更好的東海課程資訊網站",
+      },
+    ],
     type: "website",
     url: "https://thc.ttymayor.com",
     siteName: "東海課程資訊",
@@ -38,8 +45,14 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "東海課程資訊",
     description: "一個更好的東海課程資訊網站",
-    site: "https://thc.ttymayor.com",
-    images: `/api/og`,
+    site: "@thc_ttymayor",
+    creator: "@thc_ttymayor",
+    images: [
+      {
+        url: "/api/og",
+        alt: "東海課程資訊 - 一個更好的東海課程資訊網站",
+      },
+    ],
   },
 };
 
