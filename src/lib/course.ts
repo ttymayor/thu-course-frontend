@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { cache } from "react";
 import connectMongoDB from "./mongodb";
 import { CourseData } from "@/components/course-info/types";
 
@@ -33,7 +34,7 @@ interface CourseInfoQuery {
   }>;
 }
 
-export async function getCourses(
+export const getCourses = cache(async function getCourses(
   filters: {
     course_code?: string;
     course_name?: string;
@@ -46,7 +47,6 @@ export async function getCourses(
     page_size?: number;
   } = {}
 ) {
-  "use cache";
   await connectMongoDB();
 
   const {
@@ -192,10 +192,9 @@ export async function getCourses(
   });
 
   return { data, total };
-}
+});
 
-export async function getAllDepartments() {
-  "use cache";
+export const getAllDepartments = cache(async function getAllDepartments() {
   await connectMongoDB();
 
   // 獲取所有不重複的系所
@@ -221,13 +220,12 @@ export async function getAllDepartments() {
   ]);
 
   return departments;
-}
+});
 
 // 根據課程代碼獲取單一課程的完整資訊（包含詳細資料）
-export async function getCourse(
+export const getCourse = cache(async function getCourse(
   courseCode: string
 ): Promise<CourseData | null> {
-  "use cache";
   await connectMongoDB();
 
   const aggregationPipeline = [
@@ -289,4 +287,4 @@ export async function getCourse(
   }
 
   return course;
-}
+});
