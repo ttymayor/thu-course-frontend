@@ -27,24 +27,3 @@ export default async function CourseDetailPage({
     </DetailFrame>
   );
 }
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ courseCode: string }>;
-}) {
-  const { courseCode } = await params;
-
-  const courseInfo = await getCourse(courseCode);
-
-  if (!courseInfo) {
-    return {
-      title: `${courseCode}`,
-    };
-  }
-
-  return {
-    title: `${courseCode} ${courseInfo?.course_name}`,
-    description: courseInfo?.course_description,
-  };
-}

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     description: "一個更好的東海課程資訊網站",
     images: [
       {
-        url: "/api/og",
+        url: "https://thc.ttymayor.com/api/og",
         width: 1200,
         height: 630,
         alt: "東海課程資訊 - 一個更好的東海課程資訊網站",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     creator: "@thc_ttymayor",
     images: [
       {
-        url: "/api/og",
+        url: "https://thc.ttymayor.com/api/og",
         alt: "東海課程資訊 - 一個更好的東海課程資訊網站",
       },
     ],
