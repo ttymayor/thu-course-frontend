@@ -90,7 +90,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="flex flex-col gap-6 lg:flex-row">
         {/* 評分項目 */}
         <Card>
           <CardHeader>
@@ -126,13 +126,11 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
                   <TableBody>
                     {(courseInfo.grading_items || []).map((item, index) => (
                       <TableRow key={index}>
-                        <TableCell className="">{item.method}</TableCell>
+                        <TableCell>{item.method}</TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline">{item.percentage}%</Badge>
                         </TableCell>
-                        <TableCell className="">
-                          {item.description || "-"}
-                        </TableCell>
+                        <TableCell>{item.description || "-"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
