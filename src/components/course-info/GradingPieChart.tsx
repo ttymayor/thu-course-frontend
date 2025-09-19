@@ -22,6 +22,9 @@ export default function GradingPieChart({
     "#FF8042",
     "#8884d8",
     "#82ca9d",
+    "#FFC658",
+    "#FF6384",
+    "#36CFD6",
   ];
 
   // 準備圖表資料
