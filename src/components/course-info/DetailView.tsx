@@ -23,7 +23,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 
-export default function View({ courseInfo }: { courseInfo: CourseData }) {
+export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
   return (
     <>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">

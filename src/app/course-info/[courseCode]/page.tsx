@@ -2,8 +2,8 @@
 
 import { Suspense } from "react";
 import { getCourse } from "@/lib/course";
-import View from "@/components/course-info/View";
-import ViewSkeleton from "@/components/course-info/ViewSkeleton";
+import DetailView from "@/components/course-info/DetailView";
+import DetailViewSkeleton from "@/components/course-info/DetailViewSkeleton";
 import DetailFrame from "@/components/course-info/DetailFrame";
 
 export default async function CourseDetailPage({
@@ -21,8 +21,8 @@ export default async function CourseDetailPage({
 
   return (
     <DetailFrame>
-      <Suspense fallback={<ViewSkeleton />}>
-        <View courseInfo={courseInfo} />
+      <Suspense fallback={<DetailViewSkeleton />}>
+        <DetailView courseInfo={courseInfo} />
       </Suspense>
     </DetailFrame>
   );
