@@ -59,7 +59,13 @@ export default function GradingPieChart({
         <PieChart>
           <ChartTooltip
             cursor={false}
-            content={<ChartTooltipContent nameKey="percentage" hideLabel />}
+            content={
+              <ChartTooltipContent
+                labelKey="method"
+                indicator="line"
+                nameKey="percentage"
+              />
+            }
           />
           <Pie
             data={chartData}
@@ -67,17 +73,7 @@ export default function GradingPieChart({
             label={({ method }) => `${method}`}
             cx="50%"
             cy="50%"
-          >
-            {/* <LabelList
-              dataKey="method"
-              className="fill-background"
-              stroke="none"
-              fontSize={12}
-              formatter={(value: keyof typeof chartConfig) =>
-                chartConfig[value]?.label
-              }
-            /> */}
-          </Pie>
+          />
         </PieChart>
       </ChartContainer>
     </>
