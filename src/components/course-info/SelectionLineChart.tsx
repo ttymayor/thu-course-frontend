@@ -64,9 +64,7 @@ export default function SelectionLineChart({
             dataKey="enrolled"
             stroke="#0088FE"
             strokeWidth={2}
-            dot={{
-              fill: "#0088FE",
-            }}
+            dot={false}
             activeDot={{
               r: 6,
             }}
@@ -76,18 +74,14 @@ export default function SelectionLineChart({
             dataKey="registered"
             stroke="#00C49F"
             strokeWidth={2}
-            dot={{
-              fill: "#00C49F",
-            }}
+            dot={false}
           />
           <Line
             type="monotone"
             dataKey="remaining"
             stroke="#FFBB28"
             strokeWidth={2}
-            dot={{
-              fill: "#FFBB28",
-            }}
+            dot={false}
           />
         </LineChart>
       </ChartContainer>

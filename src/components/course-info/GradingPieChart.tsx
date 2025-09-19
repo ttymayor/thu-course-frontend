@@ -52,7 +52,10 @@ export default function GradingPieChart({
 
   return (
     <>
-      <ChartContainer config={chartConfig} className="max-h-[300px]">
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square max-h-[250px] pb-0"
+      >
         <PieChart>
           <ChartTooltip
             cursor={false}
