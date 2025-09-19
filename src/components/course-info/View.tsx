@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 
 export default function View({ courseInfo }: { courseInfo: CourseData }) {
@@ -99,31 +100,45 @@ export default function View({ courseInfo }: { courseInfo: CourseData }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <GradingPieChart gradingItems={courseInfo.grading_items || []} />
-            <div className="mt-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-1/3">評分方式</TableHead>
-                    <TableHead className="w-1/3 text-center">比例</TableHead>
-                    <TableHead className="w-1/3">說明</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(courseInfo.grading_items || []).map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="">{item.method}</TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="outline">{item.percentage}%</Badge>
-                      </TableCell>
-                      <TableCell className="">
-                        {item.description || "-"}
-                      </TableCell>
+            <Tabs defaultValue="chart">
+              <TabsList>
+                <TabsTrigger value="chart" className="cursor-pointer">
+                  圖表
+                </TabsTrigger>
+                <TabsTrigger value="table" className="cursor-pointer">
+                  表格
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="chart">
+                <GradingPieChart
+                  gradingItems={courseInfo.grading_items || []}
+                />
+              </TabsContent>
+              <TabsContent value="table">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-1/3">評分方式</TableHead>
+                      <TableHead className="w-1/3 text-center">比例</TableHead>
+                      <TableHead className="w-1/3">說明</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {(courseInfo.grading_items || []).map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="">{item.method}</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline">{item.percentage}%</Badge>
+                        </TableCell>
+                        <TableCell className="">
+                          {item.description || "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
 
@@ -136,39 +151,56 @@ export default function View({ courseInfo }: { courseInfo: CourseData }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <SelectionLineChart
-              selectionRecords={courseInfo.selection_records || []}
-            />
-            <div className="mt-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-1/3 text-center">日期</TableHead>
-                    <TableHead className="w-1/3 text-center">
-                      已選課 / 上課人數
-                    </TableHead>
-                    <TableHead className="w-1/3 text-center">
-                      登記人數
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(courseInfo.selection_records || []).map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">
-                        {record.date || "-"}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {record.enrolled} / {record.remaining + record.enrolled}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={"outline"}>{record.registered}</Badge>
-                      </TableCell>
+            <Tabs defaultValue="chart">
+              <TabsList>
+                <TabsTrigger value="chart" className="cursor-pointer">
+                  圖表
+                </TabsTrigger>
+                <TabsTrigger value="table" className="cursor-pointer">
+                  表格
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="chart">
+                <SelectionLineChart
+                  selectionRecords={courseInfo.selection_records || []}
+                />
+              </TabsContent>
+              <TabsContent value="table">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-1/3 text-center">日期</TableHead>
+                      <TableHead className="w-1/3 text-center">
+                        已選課 / 上課人數
+                      </TableHead>
+                      <TableHead className="w-1/3 text-center">
+                        登記人數
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {(courseInfo.selection_records || []).map(
+                      (record, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="text-center">
+                            {record.date || "-"}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {record.enrolled} /{" "}
+                            {record.remaining + record.enrolled}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant={"outline"}>
+                              {record.registered}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    )}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

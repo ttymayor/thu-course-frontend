@@ -36,28 +36,42 @@ export default function GradingPieChart({
     percentage: {
       label: "百分比",
     },
+    ...Object.fromEntries(
+      chartData.map((item, index) => [
+        item.method,
+        {
+          label: item.method,
+          color: COLORS[index % COLORS.length],
+        },
+      ])
+    ),
   } satisfies ChartConfig;
 
   return (
     <>
-      <ChartContainer
-        config={chartConfig}
-        className="mx-auto aspect-square max-h-[250px]"
-      >
+      <ChartContainer config={chartConfig} className="max-h-[300px]">
         <PieChart>
           <ChartTooltip
             cursor={false}
-            content={<ChartTooltipContent hideLabel />}
+            content={<ChartTooltipContent nameKey="percentage" hideLabel />}
           />
           <Pie
             data={chartData}
             dataKey="percentage"
-            nameKey="method"
+            label={({ method }) => `${method}`}
             cx="50%"
             cy="50%"
-            outerRadius={80}
-            label={({ percentage }) => `${percentage}%`}
-          />
+          >
+            {/* <LabelList
+              dataKey="method"
+              className="fill-background"
+              stroke="none"
+              fontSize={12}
+              formatter={(value: keyof typeof chartConfig) =>
+                chartConfig[value]?.label
+              }
+            /> */}
+          </Pie>
         </PieChart>
       </ChartContainer>
     </>

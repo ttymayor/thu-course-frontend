@@ -41,7 +41,7 @@ export default function SelectionLineChart({
 
   return (
     <>
-      <ChartContainer config={chartConfig}>
+      <ChartContainer config={chartConfig} className="max-h-[300px]">
         <LineChart
           accessibilityLayer
           data={chartData}
