@@ -92,7 +92,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
 
       <div className="flex flex-col gap-6 lg:flex-row">
         {/* 評分項目 */}
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5" />
@@ -141,7 +141,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
         </Card>
 
         {/* 選課紀錄 */}
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
