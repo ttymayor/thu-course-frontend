@@ -54,7 +54,7 @@ export default function GradingPieChart({
     <>
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square w-full max-h-[250px]"
+        className="mx-auto aspect-square w-full max-h-[300px]"
       >
         <PieChart>
           <ChartTooltip

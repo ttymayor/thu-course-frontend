@@ -43,7 +43,10 @@ export default function SelectionLineChart({
 
   return (
     <>
-      <ChartContainer config={chartConfig} className="max-h-[300px]">
+      <ChartContainer
+        config={chartConfig}
+        className="aspect-square w-full max-h-[300px]"
+      >
         <LineChart
           accessibilityLayer
           data={chartData}
