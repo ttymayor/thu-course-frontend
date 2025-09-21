@@ -5,6 +5,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 import { SelectionRecord } from "@/components/course-info/types";
 
@@ -83,6 +85,7 @@ export default function SelectionLineChart({
             strokeWidth={2}
             dot={false}
           />
+          <ChartLegend content={<ChartLegendContent />} />
         </LineChart>
       </ChartContainer>
     </>
