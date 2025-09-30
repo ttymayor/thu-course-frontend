@@ -18,8 +18,12 @@ export default function ListSkeleton({ pageSize = 10 }: ListSkeletonProps) {
       <Table className="min-w-full">
         <TableHeader>
           <TableRow className="h-12">
-            <TableHead className="text-center">操作</TableHead>
-            <TableHead className="">課程</TableHead>
+            <TableHead className="text-center">課程代碼</TableHead>
+            <TableHead className="text-center">課程名稱</TableHead>
+            <TableHead className="text-center">學分</TableHead>
+            <TableHead className="text-center">教師</TableHead>
+            <TableHead className="text-center">時間地點</TableHead>
+            <TableHead className="text-center">系所名稱 / 上課年級</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
