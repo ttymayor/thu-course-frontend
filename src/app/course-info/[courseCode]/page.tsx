@@ -5,6 +5,7 @@ import { getCourse } from "@/lib/course";
 import DetailView from "@/components/course-info/DetailView";
 import DetailViewSkeleton from "@/components/course-info/DetailViewSkeleton";
 import DetailFrame from "@/components/course-info/DetailFrame";
+import { notFound } from "next/navigation";
 
 export default async function CourseDetailPage({
   params,
@@ -16,7 +17,7 @@ export default async function CourseDetailPage({
   const courseInfo = await getCourse(courseCode);
 
   if (!courseInfo) {
-    return null;
+    return notFound();
   }
 
   return (
