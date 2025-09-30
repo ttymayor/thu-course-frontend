@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { CourseData, CourseTypeMap } from "./types";
 
+import LoadingIndicator from "@/components/LoadingIndicator";
 interface ListProps {
   infos: CourseData[];
 }
@@ -67,9 +68,9 @@ export default function List({ infos }: ListProps) {
                   <Link
                     prefetch={false}
                     href={`/course-info/${item.course_code}`}
-                    className="underline"
+                    className="underline inline-flex items-center gap-2"
                   >
-                    {item.course_name}
+                    {item.course_name} <LoadingIndicator />
                   </Link>
                 )}
               </TableCell>
