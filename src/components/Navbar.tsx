@@ -6,6 +6,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import ModeToggle from "./ModeToggle";
 import { usePathname } from "next/navigation";
@@ -48,6 +49,21 @@ const NAVBAR_CONFIG = {
   },
 };
 
+const getAcademicYearAndSemester = () => {
+  const academicYear = process.env.NEXT_PUBLIC_ACADEMIC_YEAR as string;
+  const academicSemester = process.env.NEXT_PUBLIC_ACADEMIC_SEMESTER as string;
+
+  if (!academicYear || !academicSemester) {
+    return "";
+  }
+
+  if (academicSemester === "1") {
+    return `${academicYear} 上學期`;
+  } else {
+    return `${academicYear} 下學期`;
+  }
+};
+
 export default function Navbar() {
   const pathname = usePathname();
 
@@ -66,7 +82,17 @@ export default function Navbar() {
         {/* 桌面版導航 */}
         <div className="mr-4 hidden md:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">
-            <span className="font-bold">{NAVBAR_CONFIG.brand}</span>
+            <span className="font-bold flex items-center gap-2">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  getAcademicYearAndSemester() === "" ? "hidden" : ""
+                )}
+              >
+                {getAcademicYearAndSemester()}
+              </Badge>{" "}
+              {NAVBAR_CONFIG.brand}
+            </span>
           </Link>
           <NavigationMenu>
             <NavigationMenuList>
