@@ -1,6 +1,6 @@
 "use client";
 
-import { X, QrCode, Download, Share2 } from "lucide-react";
+import { X, QrCode, Download, Share2, Settings } from "lucide-react";
 import Link from "next/link";
 import { CourseData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -30,6 +29,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { courseTimeParser, courseLocation } from "@/lib/courseTimeParser";
 import QRCode from "qrcode";
@@ -59,10 +66,11 @@ export default function ScheduleTable({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
+  const [showAllPeriod, setShowAllPeriod] = useLocalStorage(
+    "showAllPeriod",
+    true
+  );
   const tableRef = useRef<HTMLTableElement>(null);
-
-  const allDays = ["一", "二", "三", "四", "五", "六", "日"];
-  const days = showWeekend ? allDays : allDays.slice(0, 5);
 
   // 時間段對應表
   const periodTimeMap = {
@@ -84,7 +92,7 @@ export default function ScheduleTable({
   };
 
   // 確保時間段按照正確順序排列
-  const periods = [
+  const allPeriods = [
     "A",
     "1",
     "2",
@@ -102,6 +110,49 @@ export default function ScheduleTable({
     "13",
   ];
 
+  const allDays = ["一", "二", "三", "四", "五", "六", "日"];
+  const days = showWeekend ? allDays : allDays.slice(0, 5);
+
+  // 合併 selectedCourses 與 hoveredCourse（不重複）用於計算範圍
+  const coursesForRange =
+    hoveredCourse &&
+    !selectedCourses.some((c) => c.course_code === hoveredCourse.course_code)
+      ? [...selectedCourses, hoveredCourse]
+      : selectedCourses;
+
+  const getMinimumPeriodRange = () => {
+    // 如果沒有課程，返回所有時段
+    if (coursesForRange.length === 0) {
+      return allPeriods;
+    }
+
+    let earliestIndex = allPeriods.length - 1; // 初始化為最晚
+    let latestIndex = 0; // 初始化為最早
+
+    coursesForRange.forEach((course) => {
+      const parsedTimes = courseTimeParser(course.class_time);
+      parsedTimes.forEach((time) => {
+        time.periods.forEach((periodStr) => {
+          // 將時段字串轉換為在 allPeriods 中的索引
+          const periodIndex = allPeriods.indexOf(String(periodStr));
+          if (periodIndex !== -1) {
+            if (periodIndex < earliestIndex) {
+              earliestIndex = periodIndex;
+            }
+            if (periodIndex > latestIndex) {
+              latestIndex = periodIndex;
+            }
+          }
+        });
+      });
+    });
+
+    // 返回範圍（包含結束索引，所以 +1）
+    return allPeriods.slice(earliestIndex, latestIndex + 1);
+  };
+
+  const periods = showAllPeriod ? allPeriods : getMinimumPeriodRange();
+
   const grid: ScheduleGrid = days.reduce((acc, day) => {
     acc[day] = periods.reduce((periodAcc, period) => {
       periodAcc[period] = [];
@@ -110,14 +161,8 @@ export default function ScheduleTable({
     return acc;
   }, {} as ScheduleGrid);
 
-  // 合併 selectedCourses 與 hoveredCourse（不重複）
-  const allCourses =
-    hoveredCourse &&
-    !selectedCourses.some((c) => c.course_code === hoveredCourse.course_code)
-      ? [...selectedCourses, hoveredCourse]
-      : selectedCourses;
-
-  allCourses.forEach((course) => {
+  // 使用 coursesForRange 來填充課表格子
+  coursesForRange.forEach((course) => {
     const parsedTimes = courseTimeParser(course.class_time);
     parsedTimes.forEach((time) => {
       const dayKey = time.day.replace("星期", "");
@@ -213,23 +258,44 @@ export default function ScheduleTable({
   );
 
   const downloadSchedule = async () => {
-    if (tableRef.current) {
-      try {
-        const dataUrl = await htmlToImage.toPng(tableRef.current, {
-          cacheBust: true,
-          pixelRatio: 2,
-          skipFonts: false,
-          fontEmbedCSS: "",
-        });
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = `東海大學課表.png`;
-        link.click();
-        toast.success("課表已成功下載");
-      } catch (error) {
-        console.error("下載課表失敗:", error);
-        toast.error("下載課表失敗，請稍後再試");
-      }
+    if (!tableRef.current) return;
+
+    if (selectedCourses.length === 0) {
+      toast.error("請先選擇課程再下載");
+      return;
+    }
+
+    const loadingToast = toast.loading("正在生成課表圖片...");
+
+    try {
+      // 等待一小段時間讓 DOM 完全渲染
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const dataUrl = await htmlToImage.toPng(tableRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        skipFonts: false,
+        fontEmbedCSS: "",
+        backgroundColor: "#ffffff",
+        style: {
+          transform: "scale(1)",
+        },
+      });
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      const fileName = `東海大學課表_${new Date()
+        .toLocaleDateString("zh-TW")
+        .replace(/\//g, "-")}.png`;
+      link.download = fileName;
+      link.click();
+
+      toast.dismiss(loadingToast);
+      toast.success(`課表已成功下載：${fileName}`);
+    } catch (error) {
+      console.error("下載課表失敗:", error);
+      toast.dismiss(loadingToast);
+      toast.error("下載課表失敗，請稍後再試");
     }
   };
 
@@ -255,7 +321,6 @@ export default function ScheduleTable({
               disabled={selectedCourses.length === 0}
             >
               <Share2 className="h-4 w-4" />
-              <span className="hidden md:block">分享課表</span>
             </Button>
             <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
               <DialogTrigger asChild>
@@ -267,7 +332,6 @@ export default function ScheduleTable({
                   disabled={selectedCourses.length === 0}
                 >
                   <QrCode className="h-4 w-4" />
-                  <span className="hidden md:block">匯出 QR Code</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
@@ -308,25 +372,38 @@ export default function ScheduleTable({
               className="cursor-pointer w-auto"
               size="sm"
               onClick={downloadSchedule}
+              disabled={selectedCourses.length === 0}
             >
               <Download className="h-4 w-4" />
-              <span className="hidden md:block">下載課表</span>
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="cursor-pointer w-auto"
+                  size="sm"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-auto">
+                <DropdownMenuLabel>設定</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                  checked={showAllPeriod}
+                  onCheckedChange={setShowAllPeriod}
+                >
+                  顯示所有時段
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={showWeekend}
+                  onCheckedChange={setShowWeekend}
+                >
+                  顯示週六週日
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </ButtonGroup>
-          <div className="flex items-center justify-center gap-3">
-            <label
-              htmlFor="weekend-toggle"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              顯示周六日
-            </label>
-            <Switch
-              id="weekend-toggle"
-              className="cursor-pointer"
-              checked={showWeekend}
-              onCheckedChange={setShowWeekend}
-            />
-          </div>
         </CardAction>
       </CardHeader>
       <CardContent>
