@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
   CardAction,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Dialog,
@@ -32,9 +33,11 @@ import {
 import { toast } from "sonner";
 import { courseTimeParser, courseLocation } from "@/lib/courseTimeParser";
 import QRCode from "qrcode";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { useLocalStorage } from "foxact/use-local-storage";
+import * as htmlToImage from "html-to-image";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 interface ScheduleTableProps {
   selectedCourses: CourseData[];
@@ -56,6 +59,7 @@ export default function ScheduleTable({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
+  const tableRef = useRef<HTMLTableElement>(null);
 
   const allDays = ["一", "二", "三", "四", "五", "六", "日"];
   const days = showWeekend ? allDays : allDays.slice(0, 5);
@@ -208,6 +212,27 @@ export default function ScheduleTable({
     0
   );
 
+  const downloadSchedule = async () => {
+    if (tableRef.current) {
+      try {
+        const dataUrl = await htmlToImage.toPng(tableRef.current, {
+          cacheBust: true,
+          pixelRatio: 2,
+          skipFonts: false,
+          fontEmbedCSS: "",
+        });
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `東海大學課表.png`;
+        link.click();
+        toast.success("課表已成功下載");
+      } catch (error) {
+        console.error("下載課表失敗:", error);
+        toast.error("下載課表失敗，請稍後再試");
+      }
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -220,68 +245,74 @@ export default function ScheduleTable({
           <span className="font-medium text-foreground">{totalCredits}</span>
           <span>學分 </span>
         </CardDescription>
-        <CardDescription className="flex flex-row gap-2">
-          {totalCredits >= 20
-            ? "你選的課好多喔，要多休息喔"
-            : "祝你穩過這幾學分 ><"}
-        </CardDescription>
         <CardAction className="flex flex-col sm:flex-row gap-2">
-          <Button
-            variant="outline"
-            className="cursor-pointer w-full sm:w-auto"
-            size="sm"
-            onClick={shareSchedule}
-            disabled={selectedCourses.length === 0}
-          >
-            <Share2 className="h-4 w-4" />
-            分享課表
-          </Button>
-          <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="cursor-pointer w-full sm:w-auto"
-                size="sm"
-                onClick={generateQrCode}
-                disabled={selectedCourses.length === 0}
-              >
-                <QrCode className="h-4 w-4" />
-                匯出 QR Code
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>課表 QR Code</DialogTitle>
-                <DialogDescription>
-                  掃描此 QR Code 即可在手機上查看您的課表
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex flex-col items-center space-y-4">
-                {qrCodeDataUrl && (
-                  <>
-                    <Image
-                      src={qrCodeDataUrl}
-                      alt="課表 QR Code"
-                      width={300}
-                      height={300}
-                      className="border rounded-lg w-full max-w-[300px]"
-                    />
-                    <Button
-                      className="cursor-pointer w-full sm:w-auto"
-                      onClick={downloadQrCode}
-                      variant="outline"
-                    >
-                      <Download className="h-4 w-4" />
-                      下載 QR Code
-                    </Button>
-                    <p className="text-sm text-muted-foreground text-center">
-                      共 {selectedCourses.length} 門課程
-                    </p>
-                  </>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
+          <ButtonGroup>
+            <Button
+              variant="outline"
+              className="cursor-pointer w-auto"
+              size="sm"
+              onClick={shareSchedule}
+              disabled={selectedCourses.length === 0}
+            >
+              <Share2 className="h-4 w-4" />
+              <span className="hidden md:block">分享課表</span>
+            </Button>
+            <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="cursor-pointer w-auto"
+                  size="sm"
+                  onClick={generateQrCode}
+                  disabled={selectedCourses.length === 0}
+                >
+                  <QrCode className="h-4 w-4" />
+                  <span className="hidden md:block">匯出 QR Code</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>課表 QR Code</DialogTitle>
+                  <DialogDescription>
+                    掃描此 QR Code 即可在手機上查看您的課表
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col items-center space-y-4">
+                  {qrCodeDataUrl && (
+                    <>
+                      <Image
+                        src={qrCodeDataUrl}
+                        alt="課表 QR Code"
+                        width={300}
+                        height={300}
+                        className="border rounded-lg w-full max-w-[300px]"
+                      />
+                      <Button
+                        className="cursor-pointer w-full sm:w-auto"
+                        onClick={downloadQrCode}
+                        variant="outline"
+                      >
+                        <Download className="h-4 w-4" />
+                        下載 QR Code
+                      </Button>
+                      <p className="text-sm text-muted-foreground text-center">
+                        共 {selectedCourses.length} 門課程
+                      </p>
+                    </>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button
+              variant="outline"
+              className="cursor-pointer w-auto"
+              size="sm"
+              onClick={downloadSchedule}
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden md:block">下載課表</span>
+            </Button>
+          </ButtonGroup>
           <div className="flex items-center justify-center gap-3">
             <label
               htmlFor="weekend-toggle"
@@ -300,7 +331,10 @@ export default function ScheduleTable({
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border">
-          <Table className="table-fixed w-full">
+          <Table
+            className="table-fixed w-full bg-white dark:bg-[#18181b]"
+            ref={tableRef}
+          >
             <TableHeader>
               <TableRow>
                 <TableHead className="w-8 sm:w-16 text-center font-medium text-xs sm:text-sm px-1 sm:px-2">
@@ -385,6 +419,11 @@ export default function ScheduleTable({
           </Table>
         </div>
       </CardContent>
+      <CardFooter className="flex items-center justify-center text-center text-sm text-muted-foreground">
+        {totalCredits >= 20
+          ? "你選的課好多喔，要多休息喔"
+          : "祝你穩過這幾學分 ><"}
+      </CardFooter>
     </Card>
   );
 }
