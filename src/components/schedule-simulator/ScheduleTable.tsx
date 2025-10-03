@@ -43,7 +43,7 @@ import QRCode from "qrcode";
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { useLocalStorage } from "foxact/use-local-storage";
-import * as htmlToImage from "html-to-image";
+import { toPng } from "html-to-image";
 import { ButtonGroup } from "@/components/ui/button-group";
 
 interface ScheduleTableProps {
@@ -72,7 +72,6 @@ export default function ScheduleTable({
   );
   const tableRef = useRef<HTMLTableElement>(null);
 
-  // 時間段對應表
   const periodTimeMap = {
     A: { period: "A", startTime: "7:10", endTime: "8:00" },
     "1": { period: "1", startTime: "8:10", endTime: "9:00" },
@@ -91,7 +90,6 @@ export default function ScheduleTable({
     "13": { period: "13", startTime: "21:20", endTime: "22:10" },
   };
 
-  // 確保時間段按照正確順序排列
   const allPeriods = [
     "A",
     "1",
@@ -271,12 +269,11 @@ export default function ScheduleTable({
       // 等待一小段時間讓 DOM 完全渲染
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const dataUrl = await htmlToImage.toPng(tableRef.current, {
+      const dataUrl = await toPng(tableRef.current, {
         cacheBust: true,
         pixelRatio: 2,
         skipFonts: false,
         fontEmbedCSS: "",
-        backgroundColor: "#ffffff",
         style: {
           transform: "scale(1)",
         },
