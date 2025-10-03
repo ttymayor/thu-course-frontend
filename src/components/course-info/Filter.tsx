@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronsUpDown, Loader } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Department } from "./types";
+import { Department } from "@/components/course-info/types";
 import useSWR from "swr";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { useDebounceTransition } from "@/lib/debounceTransition";
 
 export default function Filter() {
@@ -135,7 +136,7 @@ export default function Filter() {
 
   return (
     <div className="mb-4 flex gap-2 flex-wrap justify-end items-center">
-      {isPending && <Loader className="w-4 h-4 animate-spin" />}
+      {isPending && <Spinner />}
 
       {isLoading ? (
         <Skeleton className="w-full md:w-[270px] h-10" />
