@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 // 動態導入客戶端組件
 const SharedSchedule = dynamic(() => import("./SharedSchedule"), {
   loading: () => (
-    <div className="container max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <Card>
         <CardContent className="pt-6">
           <div className="text-center">

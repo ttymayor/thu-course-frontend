@@ -214,7 +214,7 @@ export default function SharedSchedule() {
 
   if (error) {
     return (
-      <div className="container max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -233,7 +233,7 @@ export default function SharedSchedule() {
 
   if (isLoading || !shareData) {
     return (
-      <div className="container max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -251,7 +251,7 @@ export default function SharedSchedule() {
   );
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
