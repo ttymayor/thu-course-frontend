@@ -308,7 +308,7 @@ export default function ScheduleTable({
           <span className="font-medium text-foreground">{totalCredits}</span>
           <span>學分 </span>
         </CardDescription>
-        <CardAction className="flex flex-col sm:flex-row gap-2">
+        <CardAction>
           <ButtonGroup>
             <Button
               variant="outline"
@@ -384,7 +384,7 @@ export default function ScheduleTable({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto">
-                <DropdownMenuLabel>設定</DropdownMenuLabel>
+                <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
                   checked={showAllPeriod}
