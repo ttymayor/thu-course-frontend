@@ -437,10 +437,7 @@ export default function ScheduleTable({
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border">
-          <Table
-            className="table-fixed w-full bg-white dark:bg-[#18181b]"
-            ref={tableRef}
-          >
+          <Table className="table-fixed w-full bg-card" ref={tableRef}>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-8 sm:w-16 text-center font-medium text-xs sm:text-sm px-1 sm:px-2">
@@ -494,7 +491,7 @@ export default function ScheduleTable({
                               isViewingShared
                                 ? "border-dashed border-1"
                                 : "border-solid border-1",
-                              "relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 border-[#02A596] dark:border-[#02A596] dark:shadow-[#02A596]/15 bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                              "relative p-0 sm:p-2 shadow-lg shadow-schedule-course-border/15 border-schedule-course-border bg-schedule-course-bg rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                             )}
                           >
                             <Link
