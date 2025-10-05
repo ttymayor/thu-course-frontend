@@ -313,7 +313,7 @@ export default function ScheduleTable({
           </span>
           <span>門課程</span>
           <span className="font-medium text-foreground">{totalCredits}</span>
-          <span>學分 </span>
+          <span>學分</span>
         </CardDescription>
         <CardAction>
           {isViewingShared ? (
@@ -489,9 +489,9 @@ export default function ScheduleTable({
                             key={course.course_code}
                             className={cn(
                               isViewingShared
-                                ? "border-dashed border-1"
-                                : "border-solid border-1",
-                              "relative p-0 sm:p-2 shadow-lg shadow-schedule-course-border/15 border-schedule-course-border bg-schedule-course-bg rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                                ? "border-dashed border-1 bg-schedule-course-bg/50"
+                                : "border-solid border-1 bg-schedule-course-bg",
+                              "relative p-0 sm:p-2 shadow-lg shadow-schedule-course-border/15 border-schedule-course-border rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                             )}
                           >
                             <Link
