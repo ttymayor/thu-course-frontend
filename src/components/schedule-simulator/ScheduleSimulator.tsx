@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { CourseData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
@@ -8,13 +9,45 @@ import { useLocalStorage } from "foxact/use-local-storage";
 import { toast } from "sonner";
 import Frame from "@/components/schedule-simulator/Frame";
 import CourseListSkeleton from "./CourseListSkeleton";
+import useSWR from "swr";
 
 export default function ScheduleSimulator() {
+  const searchParams = useSearchParams();
   const [selectedCourses, setSelectedCourses] = useLocalStorage<CourseData[]>(
     "selectedCourses",
     []
   );
   const [hoveredCourse, setHoveredCourse] = useState<CourseData | null>(null);
+
+  // 從 URL 參數獲取課程代碼
+  const codesParam = searchParams.get("codes");
+
+  // 使用 SWR 來載入分享的課程
+  const { data: sharedCourses, isLoading: isLoadingShared } = useSWR(
+    codesParam
+      ? `/api/course-info?${codesParam
+          .split(",")
+          .map((code) => `course_codes=${encodeURIComponent(code.trim())}`)
+          .join("&")}&page_size=100`
+      : null,
+    async (url: string) => {
+      const response = await fetch(url);
+      const result = await response.json();
+
+      if (!result.success || !result.data || result.data.length === 0) {
+        throw new Error("無法載入課程資料");
+      }
+
+      return result.data as CourseData[];
+    }
+  );
+
+  // 決定要顯示的課程：如果有分享參數就顯示分享的課程，否則顯示本地保存的課程
+  const displayCourses = useMemo(() => {
+    return codesParam && sharedCourses ? sharedCourses : selectedCourses;
+  }, [codesParam, sharedCourses, selectedCourses]);
+
+  const isViewingShared = !!(codesParam && sharedCourses);
 
   const handleSelectionChange = (courses: CourseData[]) => {
     setSelectedCourses(courses);
@@ -46,27 +79,62 @@ export default function ScheduleSimulator() {
     setHoveredCourse(hoveredCourse);
   };
 
+  const handleImportShared = () => {
+    if (sharedCourses) {
+      setSelectedCourses(sharedCourses);
+      toast.success("成功匯入課表！", {
+        description: `已匯入 ${sharedCourses.length} 門課程到您的課表中。`,
+      });
+
+      // 清除 URL 參數
+      window.history.replaceState({}, "", "/schedule-simulator");
+    }
+  };
+
+  const handleRejectShared = () => {
+    toast.info("已取消匯入");
+    // 清除 URL 參數，回到正常模式
+    window.history.replaceState({}, "", "/schedule-simulator");
+  };
+
   return (
     <Frame>
       {/* 左側：課程選擇，寬度較窄 */}
       <div className="md:w-1/3 w-full md:pr-4 min-w-0">
-        <Suspense fallback={<CourseListSkeleton />}>
-          <CourseSelector
-            selectedCourses={selectedCourses}
-            setSelectedCourses={setSelectedCourses}
-            onSelectionChange={handleSelectionChange}
-            onCourseHover={handleCourseHover}
-          />
-        </Suspense>
+        {isViewingShared ? (
+          // 查看分享課表時，隱藏課程選擇器
+          <div className="p-4 bg-muted rounded-lg text-center text-muted-foreground">
+            <p className="mb-2">查看分享課表時無法選擇課程</p>
+            <p className="text-sm">匯入到您的課表後即可編輯</p>
+          </div>
+        ) : (
+          <Suspense fallback={<CourseListSkeleton />}>
+            <CourseSelector
+              selectedCourses={selectedCourses}
+              setSelectedCourses={setSelectedCourses}
+              onSelectionChange={handleSelectionChange}
+              onCourseHover={handleCourseHover}
+            />
+          </Suspense>
+        )}
       </div>
 
       {/* 右側：課表模擬，寬度較寬 */}
       <div className="md:w-2/3 w-full min-w-0">
-        <ScheduleTable
-          selectedCourses={selectedCourses}
-          hoveredCourse={hoveredCourse}
-          onRemoveCourse={handleRemoveCourse}
-        />
+        {isLoadingShared ? (
+          <div className="flex items-center justify-center h-64">
+            <p>載入分享的課表中...</p>
+          </div>
+        ) : (
+          <ScheduleTable
+            selectedCourses={displayCourses}
+            hoveredCourse={hoveredCourse}
+            onRemoveCourse={isViewingShared ? undefined : handleRemoveCourse}
+            isViewingShared={isViewingShared}
+            onImportShared={handleImportShared}
+            onRejectShared={handleRejectShared}
+          />
+        )}
       </div>
     </Frame>
   );

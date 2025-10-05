@@ -1,6 +1,6 @@
 "use client";
 
-import { X, QrCode, Download, Share2, Settings } from "lucide-react";
+import { X, QrCode, Download, Share2, Settings, Check } from "lucide-react";
 import Link from "next/link";
 import { CourseData } from "@/components/course-info/types";
 import { Button } from "@/components/ui/button";
@@ -45,11 +45,15 @@ import Image from "next/image";
 import { useLocalStorage } from "foxact/use-local-storage";
 import { toPng } from "html-to-image";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { cn } from "@/lib/utils";
 
 interface ScheduleTableProps {
   selectedCourses: CourseData[];
   hoveredCourse?: CourseData | null;
-  onRemoveCourse: (courseCode: string) => void;
+  onRemoveCourse?: (courseCode: string) => void;
+  isViewingShared?: boolean;
+  onImportShared?: () => void;
+  onRejectShared?: () => void;
 }
 
 type ScheduleGrid = {
@@ -62,6 +66,9 @@ export default function ScheduleTable({
   selectedCourses,
   hoveredCourse,
   onRemoveCourse,
+  isViewingShared = false,
+  onImportShared,
+  onRejectShared,
 }: ScheduleTableProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
@@ -185,7 +192,7 @@ export default function ScheduleTable({
       const baseUrl = window.location.origin;
 
       // 直接使用課程代碼作為參數
-      return `${baseUrl}/schedule-view?codes=${courseCodes.join(",")}`;
+      return `${baseUrl}/schedule-simulator?codes=${courseCodes.join(",")}`;
     } catch (error) {
       console.error("創建分享連結失敗:", error);
       toast.error("創建分享連結失敗，請稍後再試");
@@ -299,7 +306,7 @@ export default function ScheduleTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>排課模擬</CardTitle>
+        <CardTitle>{isViewingShared ? "預覽分享的課表" : "排課模擬"}</CardTitle>
         <CardDescription className="flex flex-row gap-2">
           <span className="font-medium text-foreground">
             {selectedCourses.length}
@@ -309,98 +316,123 @@ export default function ScheduleTable({
           <span>學分 </span>
         </CardDescription>
         <CardAction>
-          <ButtonGroup>
-            <Button
-              variant="outline"
-              className="cursor-pointer w-auto"
-              size="sm"
-              onClick={shareSchedule}
-              disabled={selectedCourses.length === 0}
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="cursor-pointer w-auto"
-                  size="sm"
-                  onClick={generateQrCode}
-                  disabled={selectedCourses.length === 0}
-                >
-                  <QrCode className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>課表 QR Code</DialogTitle>
-                  <DialogDescription>
-                    掃描此 QR Code 即可在手機上查看您的課表
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col items-center space-y-4">
-                  {qrCodeDataUrl && (
-                    <>
-                      <Image
-                        src={qrCodeDataUrl}
-                        alt="課表 QR Code"
-                        width={300}
-                        height={300}
-                        className="border rounded-lg w-full max-w-[300px]"
-                      />
-                      <Button
-                        className="cursor-pointer w-full sm:w-auto"
-                        onClick={downloadQrCode}
-                        variant="outline"
-                      >
-                        <Download className="h-4 w-4" />
-                        下載 QR Code
-                      </Button>
-                      <p className="text-sm text-muted-foreground text-center">
-                        共 {selectedCourses.length} 門課程
-                      </p>
-                    </>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Button
-              variant="outline"
-              className="cursor-pointer w-auto"
-              size="sm"
-              onClick={downloadSchedule}
-              disabled={selectedCourses.length === 0}
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="cursor-pointer w-auto"
-                  size="sm"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-auto">
-                <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={showAllPeriod}
-                  onCheckedChange={setShowAllPeriod}
-                >
-                  顯示所有時段
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showWeekend}
-                  onCheckedChange={setShowWeekend}
-                >
-                  顯示週六週日
-                </DropdownMenuCheckboxItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </ButtonGroup>
+          {isViewingShared ? (
+            // 預覽分享課表模式：顯示確認和取消按鈕
+            <ButtonGroup>
+              <Button
+                variant="default"
+                className="cursor-pointer"
+                size="sm"
+                onClick={onImportShared}
+              >
+                <Check className="h-4 w-4 mr-1" />
+                匯入課表
+              </Button>
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                size="sm"
+                onClick={onRejectShared}
+              >
+                <X className="h-4 w-4 mr-1" />
+                取消
+              </Button>
+            </ButtonGroup>
+          ) : (
+            // 正常模式：顯示原有的分享、下載等按鈕
+            <ButtonGroup>
+              <Button
+                variant="outline"
+                className="cursor-pointer w-auto"
+                size="sm"
+                onClick={shareSchedule}
+                disabled={selectedCourses.length === 0}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer w-auto"
+                    size="sm"
+                    onClick={generateQrCode}
+                    disabled={selectedCourses.length === 0}
+                  >
+                    <QrCode className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>課表 QR Code</DialogTitle>
+                    <DialogDescription>
+                      掃描此 QR Code 即可在手機上查看您的課表
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex flex-col items-center space-y-4">
+                    {qrCodeDataUrl && (
+                      <>
+                        <Image
+                          src={qrCodeDataUrl}
+                          alt="課表 QR Code"
+                          width={300}
+                          height={300}
+                          className="border rounded-lg w-full max-w-[300px]"
+                        />
+                        <Button
+                          className="cursor-pointer w-full sm:w-auto"
+                          onClick={downloadQrCode}
+                          variant="outline"
+                        >
+                          <Download className="h-4 w-4" />
+                          下載 QR Code
+                        </Button>
+                        <p className="text-sm text-muted-foreground text-center">
+                          共 {selectedCourses.length} 門課程
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button
+                variant="outline"
+                className="cursor-pointer w-auto"
+                size="sm"
+                onClick={downloadSchedule}
+                disabled={selectedCourses.length === 0}
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer w-auto"
+                    size="sm"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-auto">
+                  <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem
+                    checked={showAllPeriod}
+                    onCheckedChange={setShowAllPeriod}
+                  >
+                    顯示所有時段
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={showWeekend}
+                    onCheckedChange={setShowWeekend}
+                  >
+                    顯示週六週日
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </ButtonGroup>
+          )}
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -458,7 +490,12 @@ export default function ScheduleTable({
                         {grid[day]?.[period]?.map((course) => (
                           <div
                             key={course.course_code}
-                            className="relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 dark:shadow-[#02A596]/15 border border-[#02A596] dark:border-[#02A596] bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                            className={cn(
+                              isViewingShared
+                                ? "border-dashed border-1"
+                                : "border-solid border-1",
+                              "relative p-0 sm:p-2 shadow-lg shadow-[#02A596]/15 border-[#02A596] dark:border-[#02A596] dark:shadow-[#02A596]/15 bg-[#E0EFF0] dark:bg-[#416b68] rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                            )}
                           >
                             <Link
                               href={`/course-info/${course.course_code}`}
@@ -474,14 +511,18 @@ export default function ScheduleTable({
                                 {courseLocation(course.class_time)}
                               </p>
                             </Link>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
-                              onClick={() => onRemoveCourse(course.course_code)}
-                            >
-                              <X className="h-2 w-2 sm:h-3 sm:w-3" />
-                            </Button>
+                            {onRemoveCourse && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
+                                onClick={() =>
+                                  onRemoveCourse(course.course_code)
+                                }
+                              >
+                                <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                              </Button>
+                            )}
                           </div>
                         ))}
                       </div>
