@@ -70,11 +70,11 @@ export default function CourseList({
                     item.is_closed
                       ? "opacity-30"
                       : hasConflict
-                      ? "bg-red-50 dark:bg-red-950/20"
+                      ? "bg-destructive/20 opacity-30"
                       : ""
                   }`}
-                  onMouseEnter={() => onCourseHover?.(item)}
-                  onMouseLeave={() => onCourseHover?.(null)}
+                  onMouseEnter={() => !hasConflict && onCourseHover?.(item)}
+                  onMouseLeave={() => !hasConflict && onCourseHover?.(null)}
                 >
                   <TableCell className="text-center">
                     <Checkbox
