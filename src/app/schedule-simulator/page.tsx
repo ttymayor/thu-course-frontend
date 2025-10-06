@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import ScheduleSimulator from "../../components/schedule-simulator/ScheduleSimulator";
+import ScheduleSimulator from "@/components/schedule-simulator/ScheduleSimulator";
+import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
 
 export const metadata: Metadata = {
   title: "排課模擬",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ScheduleSimulatorPage() {
   return (
-    <Suspense fallback={<div className="flex flex-col gap-4">載入中...</div>}>
+    <Suspense fallback={<ScheduleSimulatorSkeleton />}>
       <ScheduleSimulator />
     </Suspense>
   );
