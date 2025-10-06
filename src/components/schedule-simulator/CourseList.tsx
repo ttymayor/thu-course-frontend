@@ -44,7 +44,7 @@ export default function CourseList({
 
   return (
     <TooltipProvider>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-4">
         <Table className="min-w-full">
           <TableHeader>
             <TableRow className="h-12">

@@ -136,7 +136,7 @@ export default function Filter() {
   };
 
   return (
-    <div className="mb-4 flex gap-2 flex-wrap items-center">
+    <div className="mb-2 flex gap-2 flex-wrap items-center">
       {isLoading ? (
         <Skeleton className="w-full h-10" />
       ) : (
