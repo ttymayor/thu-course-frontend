@@ -17,14 +17,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Department } from "@/components/course-info/types";
 import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
+import { InputGroupAddon, InputGroupInput } from "../ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import { useDebounceTransition } from "@/lib/debounceTransition";
+import { InputGroup } from "../ui/input-group";
 
 export default function Filter() {
   const router = useRouter();
@@ -135,11 +136,9 @@ export default function Filter() {
   };
 
   return (
-    <div className="mb-4 flex gap-2 flex-wrap justify-end items-center">
-      {isPending && <Spinner />}
-
+    <div className="mb-4 flex gap-2 flex-wrap items-center">
       {isLoading ? (
-        <Skeleton className="w-full md:w-[270px] h-10" />
+        <Skeleton className="w-full h-10" />
       ) : (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -147,13 +146,13 @@ export default function Filter() {
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full md:max-w-[270px] cursor-pointer justify-between h-10 text-sm px-3 py-2"
+              className="w-full cursor-pointer justify-between h-10 text-sm px-3 py-2"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full md:max-w-[270px] p-0" align="start">
+          <PopoverContent className="w-full p-0" align="start">
             <Command>
               <CommandInput
                 placeholder="搜尋系所..."
@@ -230,14 +229,19 @@ export default function Filter() {
           </PopoverContent>
         </Popover>
       )}
-      <Input
-        id="search"
-        type="text"
-        placeholder="搜尋課程代碼或課程名稱..."
-        value={searchQuery}
-        onChange={handleSearchChange}
-        className="border w-full md:max-w-[270px] h-10 text-sm px-3 py-2"
-      />
+      <InputGroup>
+        <InputGroupInput
+          id="search"
+          type="text"
+          placeholder="搜尋課程代碼或課程名稱..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="w-full h-10 text-sm px-3 py-2"
+        />
+        <InputGroupAddon align="inline-end">
+          {isPending && <Spinner />}
+        </InputGroupAddon>
+      </InputGroup>
     </div>
   );
 }
