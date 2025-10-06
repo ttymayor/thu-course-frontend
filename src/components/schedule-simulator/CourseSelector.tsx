@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import Filter from "@/components/course-info/Filter";
@@ -9,6 +9,7 @@ import Pagination from "@/components/course-info/Pagination";
 import CourseListSkeleton from "./CourseListSkeleton";
 import { CourseData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
 
 interface CourseSelectorProps {
   selectedCourses: CourseData[];
@@ -23,6 +24,7 @@ function CourseSelectorContent({
   onSelectionChange,
   onCourseHover,
 }: CourseSelectorProps) {
+  const [showSelectedCourses, setShowSelectedCourses] = useState(false);
   const searchParams = useSearchParams();
 
   // 構建查詢參數和 SWR key
@@ -82,16 +84,23 @@ function CourseSelectorContent({
   return (
     <div className="flex flex-col h-full">
       <Filter />
+      <Button
+        variant={showSelectedCourses ? "outline" : "default"}
+        className="cursor-pointer"
+        onClick={() => setShowSelectedCourses(!showSelectedCourses)}
+      >
+        {showSelectedCourses ? "顯示所有課程" : "顯示已選課程"}
+      </Button>
       <div className="flex-grow">
         {isLoading ? (
           <CourseListSkeleton />
         ) : error ? (
-          <div className="text-center text-red-500 py-4">
+          <div className="text-center text-destructive py-4">
             載入課程資料時發生錯誤，請稍後再試。
           </div>
         ) : (
           <CourseList
-            infos={courses}
+            infos={showSelectedCourses ? selectedCourses : courses}
             selectedCourseCodes={
               new Set(selectedCourses.map((c) => c.course_code))
             }
@@ -101,7 +110,7 @@ function CourseSelectorContent({
           />
         )}
       </div>
-      <Pagination total={total} />
+      {!showSelectedCourses && <Pagination total={total} />}
     </div>
   );
 }
