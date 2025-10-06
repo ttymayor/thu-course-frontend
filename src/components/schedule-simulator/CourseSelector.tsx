@@ -10,6 +10,7 @@ import CourseListSkeleton from "./CourseListSkeleton";
 import { CourseData } from "@/components/course-info/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
+import { toast } from "sonner";
 
 interface CourseSelectorProps {
   selectedCourses: CourseData[];
@@ -67,10 +68,25 @@ function CourseSelectorContent({
   const courses = data?.data || [];
   const total = data?.total || 0;
 
+  // 1 2 3 4 5
+  // 1   3 4 5
+
   const handleSelectionChange = (course: CourseData, isSelected: boolean) => {
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
       : selectedCourses.filter((c) => c.course_code !== course.course_code);
+
+    if (!isSelected) {
+      toast.info(`${course.course_name} 已取消`, {
+        action: {
+          label: "還原",
+          onClick: () => {
+            setSelectedCourses([...newSelectedCourses, course]);
+            onSelectionChange([...newSelectedCourses, course]);
+          },
+        },
+      });
+    }
 
     setSelectedCourses(newSelectedCourses);
     onSelectionChange(newSelectedCourses);
