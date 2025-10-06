@@ -8,8 +8,9 @@ import CourseSelector from "@/components/schedule-simulator/CourseSelector";
 import { useLocalStorage } from "foxact/use-local-storage";
 import { toast } from "sonner";
 import Frame from "@/components/schedule-simulator/Frame";
-import CourseListSkeleton from "./CourseListSkeleton";
+import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkeleton";
 import useSWR from "swr";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ScheduleSimulator() {
   const searchParams = useSearchParams();
@@ -103,10 +104,16 @@ export default function ScheduleSimulator() {
       <div className="md:w-1/3 w-full md:pr-4 min-w-0">
         {isViewingShared ? (
           // 查看分享課表時，隱藏課程選擇器
-          <div className="p-4 bg-muted rounded-lg text-center text-muted-foreground">
-            <p className="mb-2">查看分享課表時無法選擇課程</p>
-            <p className="text-sm">匯入到您的課表後即可編輯</p>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">
+                查看分享課表時無法選擇課程
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-center">匯入到您的課表後即可編輯</p>
+            </CardContent>
+          </Card>
         ) : (
           <Suspense fallback={<CourseListSkeleton />}>
             <CourseSelector
@@ -122,9 +129,7 @@ export default function ScheduleSimulator() {
       {/* 右側：課表模擬，寬度較寬 */}
       <div className="md:w-2/3 w-full min-w-0">
         {isLoadingShared ? (
-          <div className="flex items-center justify-center h-64">
-            <p>載入分享的課表中...</p>
-          </div>
+          <ScheduleTable selectedCourses={[]} />
         ) : (
           <ScheduleTable
             selectedCourses={displayCourses}
