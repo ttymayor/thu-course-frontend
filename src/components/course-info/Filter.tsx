@@ -17,15 +17,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Department } from "@/components/course-info/types";
 import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
-import { InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import {
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupButton,
+} from "../ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import { useDebounceTransition } from "@/lib/debounceTransition";
-import { InputGroup } from "../ui/input-group";
+import { InputGroup } from "@/components/ui/input-group";
 
 export default function Filter() {
   const router = useRouter();
@@ -146,7 +150,7 @@ export default function Filter() {
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full cursor-pointer justify-between h-10 text-sm px-3 py-2"
+              className="w-full cursor-pointer justify-between text-sm px-3 py-2"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -229,7 +233,10 @@ export default function Filter() {
           </PopoverContent>
         </Popover>
       )}
-      <InputGroup>
+      <InputGroup className="w-full">
+        <InputGroupAddon>
+          {isPending ? <Spinner /> : <Search className="h-4 w-4" />}
+        </InputGroupAddon>
         <InputGroupInput
           id="search"
           type="text"
@@ -239,7 +246,24 @@ export default function Filter() {
           className="w-full h-10 text-sm px-3 py-2"
         />
         <InputGroupAddon align="inline-end">
-          {isPending && <Spinner />}
+          <InputGroupButton
+            className="cursor-pointer"
+            disabled={!searchQuery}
+            onClick={() => {
+              setSearchQuery("");
+              if (searchQuery) {
+                debounceTransition(() => {
+                  const current = buildCleanSearchParams();
+                  current.delete("search");
+                  const search = current.toString();
+                  const query = search ? `?${search}` : "";
+                  router.replace(`${pathname}${query}`);
+                });
+              }
+            }}
+          >
+            <X className="h-4 w-4" />
+          </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
     </div>
