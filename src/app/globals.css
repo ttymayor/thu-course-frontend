@@ -41,9 +41,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-
-  --color-schedule-course-bg: var(--schedule-course-bg);
-  --color-schedule-course-border: var(--schedule-course-border);
 }
 
 :root {
@@ -79,9 +76,6 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
-
-  --schedule-course-bg: oklch(0.9413 0.016 201.7);
-  --schedule-course-border: oklch(0.6486 0.1149 183.57);
 }
 
 .dark {
@@ -116,9 +110,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
-
-  --schedule-course-bg: oklch(0.4961 0.0473 189.97);
-  --schedule-course-border: oklch(0.6486 0.1149 183.57);
 }
 
 @layer base {
@@ -128,4 +119,21 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* 課程自訂顏色 */
+
+@theme inline {
+  --color-schedule-course-bg: var(--schedule-course-bg);
+  --color-schedule-course-border: var(--schedule-course-border);
+}
+
+:root {
+  --schedule-course-bg: oklch(0.9413 0.016 201.7);
+  --schedule-course-border: oklch(0.6486 0.1149 183.57);
+}
+
+.dark {
+  --schedule-course-bg: oklch(0.4961 0.0473 189.97);
+  --schedule-course-border: oklch(0.6486 0.1149 183.57);
 }
