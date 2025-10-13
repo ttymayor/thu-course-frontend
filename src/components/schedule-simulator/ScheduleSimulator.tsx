@@ -16,13 +16,25 @@ export default function ScheduleSimulator() {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [hoveredCourse, setHoveredCourse] = useState<CourseData | null>(null);
 
+  // 遷移資料（暫時性遷移，未來會刪除）
+  useEffect(() => {
+    const migrateData = localStorage.getItem("selectedCourses");
+    if (migrateData) {
+      const courses = JSON.parse(migrateData) as CourseData[];
+      localStorage.setItem(
+        "selectedCourseCodes",
+        courses.map((c) => c.course_code).join(",")
+      );
+      localStorage.removeItem("selectedCourses");
+    }
+  }, []);
+
   // 從 Local Storage 載入已選課程
   useEffect(() => {
     const storedCodes = localStorage.getItem("selectedCourseCodes");
     if (storedCodes) {
       const codes = storedCodes.split(",").filter((code) => code);
       if (codes.length > 0) {
-        // 從 API 載入課程資料
         fetch(
           `/api/course-info?${codes
             .map((code) => `course_codes=${encodeURIComponent(code)}`)
@@ -113,14 +125,12 @@ export default function ScheduleSimulator() {
         description: `已匯入 ${sharedCourses.length} 門課程到您的課表中。`,
       });
 
-      // 清除 URL 參數
       window.history.replaceState({}, "", "/schedule-simulator");
     }
   };
 
   const handleRejectShared = () => {
     toast.info("已取消匯入");
-    // 清除 URL 參數，回到正常模式
     window.history.replaceState({}, "", "/schedule-simulator");
   };
 
@@ -129,7 +139,6 @@ export default function ScheduleSimulator() {
       {/* 左側：課程選擇，寬度較窄 */}
       <div className="md:w-1/3 w-full md:pr-4 min-w-0">
         {isViewingShared ? (
-          // 查看分享課表時，隱藏課程選擇器
           <Card>
             <CardHeader>
               <CardTitle className="text-center">
