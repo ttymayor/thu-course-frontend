@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   description: "你會迷路嗎？來看看東海大學的校園地圖吧",
 };
 
-export default function SchoolMapPage() {
+export default async function SchoolMapPage() {
   return <SchoolMap />;
 }
