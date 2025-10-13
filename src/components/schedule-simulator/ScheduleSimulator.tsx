@@ -1,11 +1,10 @@
 "use client";
 
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { CourseData } from "@/components/course-info/types";
 import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
-import { useLocalStorage } from "foxact/use-local-storage";
 import { toast } from "sonner";
 import Frame from "@/components/schedule-simulator/Frame";
 import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkeleton";
@@ -14,11 +13,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ScheduleSimulator() {
   const searchParams = useSearchParams();
-  const [selectedCourses, setSelectedCourses] = useLocalStorage<CourseData[]>(
-    "selectedCourses",
-    []
-  );
+  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [hoveredCourse, setHoveredCourse] = useState<CourseData | null>(null);
+
+  // 從 Local Storage 載入已選課程
+  useEffect(() => {
+    const storedCodes = localStorage.getItem("selectedCourseCodes");
+    if (storedCodes) {
+      const codes = storedCodes.split(",").filter((code) => code);
+      if (codes.length > 0) {
+        // 從 API 載入課程資料
+        fetch(
+          `/api/course-info?${codes
+            .map((code) => `course_codes=${encodeURIComponent(code)}`)
+            .join("&")}&page_size=100`
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.success && result.data) {
+              setSelectedCourses(result.data);
+            }
+          });
+      }
+    }
+  }, []);
 
   // 從 URL 參數獲取課程代碼
   const codesParam = searchParams.get("codes");
@@ -49,6 +67,14 @@ export default function ScheduleSimulator() {
   }, [codesParam, sharedCourses, selectedCourses]);
 
   const isViewingShared = !!(codesParam && sharedCourses);
+
+  // 當選擇的課程改變時，同步更新 Local Storage
+  useEffect(() => {
+    if (!isViewingShared && selectedCourses.length >= 0) {
+      const courseCodes = selectedCourses.map((c) => c.course_code);
+      localStorage.setItem("selectedCourseCodes", courseCodes.join(","));
+    }
+  }, [selectedCourses, isViewingShared]);
 
   const handleSelectionChange = (courses: CourseData[]) => {
     setSelectedCourses(courses);
