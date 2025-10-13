@@ -19,7 +19,7 @@ export default function ScheduleSimulator() {
   // 遷移資料（暫時性遷移，未來會刪除）
   useEffect(() => {
     const migrateData = localStorage.getItem("selectedCourses");
-    if (migrateData) {
+    if (migrateData && migrateData !== "[]") {
       const courses = JSON.parse(migrateData) as CourseData[];
       localStorage.setItem(
         "selectedCourseCodes",
