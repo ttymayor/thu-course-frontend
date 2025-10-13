@@ -76,10 +76,6 @@ export default function ScheduleSimulator() {
     }
   }, [selectedCourses, isViewingShared]);
 
-  const handleSelectionChange = (courses: CourseData[]) => {
-    setSelectedCourses(courses);
-  };
-
   const handleRemoveCourse = (courseCode: string) => {
     const courseToRemove = selectedCourses.find(
       (c) => c.course_code === courseCode
@@ -145,7 +141,6 @@ export default function ScheduleSimulator() {
             <CourseSelector
               selectedCourses={selectedCourses}
               setSelectedCourses={setSelectedCourses}
-              onSelectionChange={handleSelectionChange}
               onCourseHover={handleCourseHover}
             />
           </Suspense>

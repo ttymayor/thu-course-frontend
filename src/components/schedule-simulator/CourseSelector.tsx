@@ -14,14 +14,12 @@ import { Button } from "../ui/button";
 interface CourseSelectorProps {
   selectedCourses: CourseData[];
   setSelectedCourses: (selectedCourses: CourseData[]) => void;
-  onSelectionChange: (selectedCourses: CourseData[]) => void;
   onCourseHover: (hoveredCourse: CourseData | null) => void;
 }
 
 function CourseSelectorContent({
   selectedCourses,
   setSelectedCourses,
-  onSelectionChange,
   onCourseHover,
 }: CourseSelectorProps) {
   const [showSelectedCourses, setShowSelectedCourses] = useState(false);
@@ -72,7 +70,6 @@ function CourseSelectorContent({
       ? [...selectedCourses, course]
       : selectedCourses.filter((c) => c.course_code !== course.course_code);
     setSelectedCourses(newSelectedCourses);
-    onSelectionChange(newSelectedCourses);
   };
 
   // hover handler
