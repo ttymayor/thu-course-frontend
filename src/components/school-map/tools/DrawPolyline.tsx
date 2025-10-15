@@ -1,9 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useMapEvents, Polyline } from "react-leaflet";
 
 export default function DrawPolyline() {
   const [positions, setPositions] = useState<[number, number][]>([]);
-  const lastPositionsLength = useRef(0);
 
   useMapEvents({
     click(e) {
@@ -14,10 +13,7 @@ export default function DrawPolyline() {
     },
   });
 
-  // 只在 positions 長度改變時才輸出
-  if (positions.length !== lastPositionsLength.current) {
-    lastPositionsLength.current = positions.length;
-
+  useEffect(() => {
     if (positions.length > 0) {
       const pathString = positions
         .map((position, i) => {
@@ -28,7 +24,7 @@ export default function DrawPolyline() {
 
       console.log(`const path: [number, number][] = [\n${pathString}\n];`);
     }
-  }
+  }, [positions]);
 
   return positions.length > 0 ? (
     <Polyline positions={positions} color="blue" />
