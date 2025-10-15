@@ -15,21 +15,24 @@ import { X } from "lucide-react";
 import { CourseData } from "@/components/course-info/types";
 
 interface ScheduleTableProps {
+  tableRef?: React.RefObject<HTMLTableElement | null>;
   days: string[];
   periods: string[];
   grid: ScheduleGrid;
+  hoveredCourse: CourseData | null;
   isViewingShared: boolean;
   onRemoveCourse?: (courseCode: string) => void;
-  tableRef?: React.RefObject<HTMLTableElement | null>;
+  onCourseHover?: (hoveredCourse: CourseData | null) => void;
 }
 
 export default function ScheduleTable({
+  tableRef,
   days,
   periods,
   grid,
+  hoveredCourse,
   isViewingShared,
   onRemoveCourse,
-  tableRef,
 }: ScheduleTableProps) {
   return (
     <Table className="table-fixed w-full bg-card" ref={tableRef}>
@@ -78,6 +81,8 @@ export default function ScheduleTable({
                       key={course.course_code}
                       className={cn(
                         isViewingShared
+                          ? "border-dashed border-1 bg-schedule-course-bg/50"
+                          : hoveredCourse?.course_code === course.course_code
                           ? "border-dashed border-1 bg-schedule-course-bg/50"
                           : "border-solid border-1 bg-schedule-course-bg",
                         "relative p-0 sm:p-2 shadow-lg shadow-schedule-course-border/15 border-schedule-course-border rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"

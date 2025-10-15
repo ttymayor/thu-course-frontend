@@ -391,6 +391,7 @@ export default function ScheduleCard({
             days={days}
             periods={periods}
             grid={grid}
+            hoveredCourse={hoveredCourse || null}
             isViewingShared={isViewingShared}
             onRemoveCourse={onRemoveCourse}
           />
