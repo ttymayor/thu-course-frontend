@@ -39,7 +39,7 @@ import { toPng } from "html-to-image";
 import { ButtonGroup } from "@/components/ui/button-group";
 import ScheduleTable from "./ScheduleTable";
 
-interface ScheduleTableProps {
+interface ScheduleCardProps {
   selectedCourses: CourseData[];
   hoveredCourse?: CourseData | null;
   onRemoveCourse?: (courseCode: string) => void;
@@ -55,7 +55,7 @@ export default function ScheduleCard({
   isViewingShared = false,
   onImportShared,
   onRejectShared,
-}: ScheduleTableProps) {
+}: ScheduleCardProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
