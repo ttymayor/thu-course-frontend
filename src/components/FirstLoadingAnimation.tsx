@@ -101,13 +101,14 @@ export default function FirstLoadingAnimation() {
     const isFirstLoad = localStorage.getItem("first-loading") === null;
 
     if (!isFirstLoad) {
-      setRender(false);
       return;
     }
 
     localStorage.setItem("first-loading", "true");
 
-    setRender(true);
+    queueMicrotask(() => {
+      setRender(true);
+    });
 
     const timer = setTimeout(() => {
       setIsFading(true);
