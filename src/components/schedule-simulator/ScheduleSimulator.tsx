@@ -16,27 +16,6 @@ export default function ScheduleSimulator() {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [hoveredCourse, setHoveredCourse] = useState<CourseData | null>(null);
 
-  // 遷移資料（暫時性遷移，未來會刪除）
-  useEffect(() => {
-    const migrateData = localStorage.getItem("selectedCourses");
-    if (migrateData) {
-      // 無論值是什麼，只要存在舊的 key 就遷移並刪除
-      try {
-        const courses = JSON.parse(migrateData) as CourseData[];
-        if (courses.length > 0) {
-          localStorage.setItem(
-            "selectedCourseCodes",
-            courses.map((c) => c.course_code).join(",")
-          );
-        }
-      } catch (e) {
-        console.error("遷移資料失敗:", e);
-      }
-      // 無論遷移是否成功，都刪除舊的 key
-      localStorage.removeItem("selectedCourses");
-    }
-  }, []);
-
   // 從 Local Storage 載入已選課程
   useEffect(() => {
     const storedCodes = localStorage.getItem("selectedCourseCodes");
