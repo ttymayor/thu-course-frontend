@@ -3,7 +3,7 @@
 import { Suspense, useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { CourseData } from "@/components/course-info/types";
-import ScheduleTable from "@/components/schedule-simulator/ScheduleTable";
+import ScheduleCard from "@/components/schedule-simulator/ScheduleCard";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
 import { toast } from "sonner";
 import Frame from "@/components/schedule-simulator/Frame";
@@ -167,9 +167,9 @@ export default function ScheduleSimulator() {
       {/* 右側：課表模擬，寬度較寬 */}
       <div className="md:w-2/3 w-full min-w-0">
         {isLoadingShared ? (
-          <ScheduleTable selectedCourses={[]} />
+          <ScheduleCard selectedCourses={[]} />
         ) : (
-          <ScheduleTable
+          <ScheduleCard
             selectedCourses={displayCourses}
             hoveredCourse={hoveredCourse}
             onRemoveCourse={isViewingShared ? undefined : handleRemoveCourse}
