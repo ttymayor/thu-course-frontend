@@ -63,6 +63,10 @@ export default function ScheduleCard({
     "showAllPeriod",
     true
   );
+  const [showTimeProgress, setShowTimeProgress] = useLocalStorage(
+    "showTimeProgress",
+    false
+  );
   const tableRef = useRef<HTMLTableElement>(null);
 
   const days = showWeekend ? allDays : allDays.slice(0, 5);
@@ -378,6 +382,12 @@ export default function ScheduleCard({
                   >
                     顯示週六週日
                   </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={showTimeProgress}
+                    onCheckedChange={setShowTimeProgress}
+                  >
+                    顯示時間進度
+                  </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </ButtonGroup>
@@ -394,6 +404,7 @@ export default function ScheduleCard({
             hoveredCourse={hoveredCourse || null}
             isViewingShared={isViewingShared}
             onRemoveCourse={onRemoveCourse}
+            showTimeProgress={showTimeProgress}
           />
         </div>
       </CardContent>

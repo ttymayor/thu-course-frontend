@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "不知道要選什麼課，那就來排課一下吧",
 };
 
-export default function ScheduleSimulatorPage() {
+export default async function ScheduleSimulatorPage() {
   return (
     <Suspense fallback={<ScheduleSimulatorSkeleton />}>
       <ScheduleSimulator />
