@@ -44,7 +44,8 @@
     "recharts": "2.15.4",
     "sonner": "^2.0.7",
     "swr": "^2.3.6",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "vercount-react": "^0.1.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

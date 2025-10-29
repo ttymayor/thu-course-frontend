@@ -1,8 +1,12 @@
+"use client";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
+import { useVercount } from "vercount-react";
 
 const FOOTER_CONFIG = {
   github_thu_course_frontend: "https://github.com/ttymayor/thu-course-frontend",
@@ -11,13 +15,32 @@ const FOOTER_CONFIG = {
 };
 
 export default function Footer() {
+  const [touchTimes, setTouchTimes] = useState(0);
+  const { sitePv, siteUv } = useVercount();
+
   return (
     <div className="w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* 品牌資訊 */}
           <div className="flex flex-col items-center md:items-start space-y-1">
-            <span className="font-bold text-foreground">東海課程資訊</span>
+            <span
+              className="font-bold text-foreground cursor-pointer select-none"
+              onClick={() => setTouchTimes(touchTimes + 1)}
+            >
+              東海課程資訊{" "}
+              {touchTimes > 0 && touchTimes < 3
+                ? "點什麼點？"
+                : touchTimes === 3
+                ? "給你看瀏覽次數"
+                : touchTimes > 3 && touchTimes < 10
+                ? "別點了"
+                : touchTimes >= 10 && touchTimes < 20
+                ? "？"
+                : touchTimes >= 20
+                ? "6"
+                : ""}
+            </span>
             <span className="text-sm text-muted-foreground">
               一個更好的東海課程資訊網站
             </span>
@@ -25,6 +48,16 @@ export default function Footer() {
 
           {/* 開發者資訊 */}
           <div className="flex flex-col items-center text-center space-y-1">
+            {touchTimes === 3 && (
+              <span className="text-sm text-muted-foreground">
+                From 2025/10/30
+                <br />
+                Site Page Views: {sitePv}
+                <br />
+                Unique Visitors: {siteUv}
+              </span>
+            )}
+
             <span className="text-sm text-muted-foreground">
               Developed by{" "}
               <Tooltip>
