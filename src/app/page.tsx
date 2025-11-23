@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Megaphone,
-  ExternalLink,
   School,
   BookOpen,
   Users,
@@ -91,8 +90,8 @@ export default function Home() {
                     return (
                       <Button
                         key={index}
-                        variant="outline"
-                        className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent/50 text-center"
+                        variant="secondary"
+                        className="relative h-auto p-4 hover:bg-accent/50 text-center overflow-hidden group"
                         asChild
                       >
                         <a
@@ -100,16 +99,17 @@ export default function Home() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <IconComponent className="h-6 w-6" />
-                          <span className="text-sm font-medium">
-                            {link.title}
-                          </span>
-                          {link.description && (
-                            <span className="text-xs text-muted-foreground leading-tight break-words whitespace-normal">
-                              {link.description}
-                            </span>
-                          )}
-                          <ExternalLink className="h-3 w-3 opacity-60" />
+                          <div className="relative z-10 flex flex-col items-center gap-2">
+                            <p className="text-base font-bold">
+                              {link.title}
+                            </p>
+                            {link.description && (
+                              <span className="text-sm text-muted-foreground leading-tight break-words whitespace-normal">
+                                {link.description}
+                              </span>
+                            )}
+                          </div>
+                          <IconComponent className="size-24 absolute -left-8 opacity-[0.05] transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-20 group-hover:translate-x-5" />
                         </a>
                       </Button>
                     );

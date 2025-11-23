@@ -44,9 +44,9 @@ export default function ScheduleSimulator() {
   const { data: sharedCourses, isLoading: isLoadingShared } = useSWR(
     codesParam
       ? `/api/course-info?${codesParam
-          .split(",")
-          .map((code) => `course_codes=${encodeURIComponent(code.trim())}`)
-          .join("&")}&page_size=100`
+        .split(",")
+        .map((code) => `course_codes=${encodeURIComponent(code.trim())}`)
+        .join("&")}&page_size=100`
       : null,
     async (url: string) => {
       const response = await fetch(url);

@@ -74,7 +74,7 @@ export default function ScheduleCard({
   // 合併 selectedCourses 與 hoveredCourse（不重複）用於計算範圍
   const coursesForRange =
     hoveredCourse &&
-    !selectedCourses.some((c) => c.course_code === hoveredCourse.course_code)
+      !selectedCourses.some((c) => c.course_code === hoveredCourse.course_code)
       ? [...selectedCourses, hoveredCourse]
       : selectedCourses;
 

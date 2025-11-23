@@ -37,9 +37,10 @@ export default function ScheduleTable({
   onRemoveCourse,
   showTimeProgress = false,
 }: ScheduleTableProps) {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
@@ -53,6 +54,7 @@ export default function ScheduleTable({
   };
 
   const getTimeProgressInPeriod = (period: string): number | null => {
+    if (!currentTime) return null;
     const periodInfo = periodTimeMap[period as keyof typeof periodTimeMap];
     if (!periodInfo) return null;
 
@@ -136,8 +138,8 @@ export default function ScheduleTable({
                           isViewingShared
                             ? "border-dashed border-1 bg-schedule-course-bg/50"
                             : hoveredCourse?.course_code === course.course_code
-                            ? "border-dashed border-1 bg-schedule-course-bg/50"
-                            : "border-solid border-1 bg-schedule-course-bg",
+                              ? "border-dashed border-1 bg-schedule-course-bg/50"
+                              : "border-solid border-1 bg-schedule-course-bg",
                           "relative p-0 sm:p-2 shadow-lg shadow-schedule-course-border/15 border-schedule-course-border rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
                         )}
                       >
