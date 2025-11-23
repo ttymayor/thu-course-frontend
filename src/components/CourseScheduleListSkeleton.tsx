@@ -6,22 +6,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CourseScheduleListSkeleton() {
   return (
     <Card className="w-full max-w-5xl">
-      <CardHeader>
-        <CardTitle>選課時程</CardTitle>
-        <CardDescription>來看看選課時程表吧</CardDescription>
-      </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
