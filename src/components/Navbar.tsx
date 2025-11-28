@@ -39,6 +39,10 @@ const NAVBAR_CONFIG = {
         label: "校園地圖",
         href: "/school-map",
       },
+      {
+        label: "我的書籤",
+        href: "/bookmarks",
+      },
     ],
   },
 };

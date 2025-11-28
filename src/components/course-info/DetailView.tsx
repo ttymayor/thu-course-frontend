@@ -8,6 +8,8 @@ import {
   BookOpen,
   Trophy,
   BarChart3,
+  Bookmark,
+  BookmarkCheck,
 } from "lucide-react";
 import { CourseData } from "@/components/course-info/types";
 import GradingPieChart from "@/components/course-info/GradingPieChart";
@@ -22,8 +24,12 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { courseTimeParser } from "@/lib/courseTimeParser";
+import { Button } from "@/components/ui/button";
+import useBookmark from "@/hooks/useBookmark";
 
 export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
+  const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
+
   return (
     <>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
@@ -41,7 +47,23 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
             </Badge>
           ))}
         </div>
-        <div className="flex gap-4 text-sm sm:ml-auto">
+        <div className="flex items-center gap-4 text-sm sm:ml-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer"
+            onClick={() =>
+              isBookmarked(courseInfo)
+                ? removeBookmark(courseInfo)
+                : addBookmark(courseInfo)
+            }
+          >
+            {isBookmarked(courseInfo) ? (
+              <BookmarkCheck className="h-5 w-5" />
+            ) : (
+              <Bookmark className="h-5 w-5" />
+            )}
+          </Button>
           <a
             href={`https://course.thu.edu.tw/view/114/1/${courseInfo.course_code}`}
             target="_blank"

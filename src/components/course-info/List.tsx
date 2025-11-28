@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Table,
@@ -15,13 +17,17 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { CourseData, CourseTypeMap } from "./types";
-
+import { Button } from "@/components/ui/button";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import useBookmark from "@/hooks/useBookmark";
+
 interface ListProps {
   infos: CourseData[];
 }
 
 export default function List({ infos }: ListProps) {
+  const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
     2: "必選",
@@ -39,6 +45,7 @@ export default function List({ infos }: ListProps) {
             <TableHead className="text-center">教師</TableHead>
             <TableHead className="text-center">時間地點</TableHead>
             <TableHead className="text-center">系所名稱 / 上課年級</TableHead>
+            <TableHead className="text-center">書籤</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -110,6 +117,25 @@ export default function List({ infos }: ListProps) {
               </TableCell>
               <TableCell className="text-center">
                 {item.department_name} / {item.target_class || "-"}
+              </TableCell>
+              <TableCell className="text-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="cursor-pointer"
+                  onClick={
+                    isBookmarked(item)
+                      ? () => removeBookmark(item)
+                      : () => addBookmark(item)
+                  }
+                  disabled={item.is_closed}
+                >
+                  {isBookmarked(item) ? (
+                    <BookmarkCheck className="h-4 w-4" />
+                  ) : (
+                    <Bookmark className="h-4 w-4" />
+                  )}
+                </Button>
               </TableCell>
             </TableRow>
           ))}
