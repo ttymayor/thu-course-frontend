@@ -1,3 +1,5 @@
+"use cache";
+
 import CourseScheduleList from "@/components/CourseScheduleList";
 import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
 import { Button } from "@/components/ui/button";
@@ -65,7 +67,7 @@ const schoolLinks = [
   },
 ] as const;
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl">
       <main className="flex flex-col gap-8 sm:gap-[32px] items-center justify-center">

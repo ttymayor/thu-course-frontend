@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const academic_year = searchParams.get("academic_year") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
   const page_size = parseInt(searchParams.get("page_size") || "10", 10);
-  
+
   // 支援多個 course_codes 查詢
   const course_codes = searchParams.getAll("course_codes");
 
