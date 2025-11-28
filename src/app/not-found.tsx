@@ -1,5 +1,7 @@
+"use cache";
+
 import NotFound from "@/components/NotFound";
 
-export default function NotFoundPage() {
+export default async function NotFoundPage() {
   return <NotFound />;
 }

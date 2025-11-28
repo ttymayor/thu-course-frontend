@@ -1,5 +1,7 @@
+"use cache";
+
 import type { Metadata } from "next";
-import SchoolMap from "../../components/school-map/SchoolMap";
+import SchoolMap from "@/components/school-map/SchoolMap";
 
 export const metadata: Metadata = {
   title: "校園地圖",

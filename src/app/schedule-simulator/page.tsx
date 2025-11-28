@@ -1,3 +1,5 @@
+"use cache";
+
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import ScheduleSimulator from "@/components/schedule-simulator/ScheduleSimulator";
