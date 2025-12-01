@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { CourseData, CourseTypeMap } from "./types";
 import { Button } from "@/components/ui/button";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import useBookmark from "@/hooks/useBookmark";
 
@@ -53,7 +53,7 @@ export default function List({ infos }: ListProps) {
             <TableRow
               key={idx}
               className={`h-12 ${
-                item.is_closed ? "opacity-30 line-through" : ""
+                item.is_closed ? "line-through opacity-30" : ""
               }`}
             >
               <TableCell className="text-center">
@@ -75,7 +75,7 @@ export default function List({ infos }: ListProps) {
                   <Link
                     prefetch={false}
                     href={`/course-info/${item.course_code}`}
-                    className="underline inline-flex items-center gap-2"
+                    className="inline-flex items-center gap-2 underline"
                   >
                     {item.course_name} <LoadingIndicator />
                   </Link>
@@ -131,7 +131,7 @@ export default function List({ infos }: ListProps) {
                   disabled={item.is_closed}
                 >
                   {isBookmarked(item) ? (
-                    <BookmarkCheck className="h-4 w-4" />
+                    <Bookmark fill="currentColor" className="h-4 w-4" />
                   ) : (
                     <Bookmark className="h-4 w-4" />
                   )}
