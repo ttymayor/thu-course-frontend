@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { Search, CalendarDays, Map, Bookmark } from "lucide-react";
 
 // 導航配置
 const NAVBAR_CONFIG = {
@@ -28,20 +29,24 @@ const NAVBAR_CONFIG = {
   navigation: {
     items: [
       {
-        label: "課程查詢",
+        label: "課程資訊",
         href: "/course-info",
+        icon: <Search className="h-5 w-5" />,
       },
       {
-        label: "排課模擬",
+        label: "選課模擬器",
         href: "/schedule-simulator",
+        icon: <CalendarDays className="h-5 w-5" />,
       },
       {
         label: "校園地圖",
         href: "/school-map",
+        icon: <Map className="h-5 w-5" />,
       },
       {
         label: "我的書籤",
         href: "/bookmarks",
+        icon: <Bookmark className="h-5 w-5" />,
       },
     ],
   },
@@ -69,23 +74,23 @@ export default function Navbar() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <div className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-14 items-center">
+    <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 w-full border-b backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         {/* 手機版品牌 */}
         <div className="flex md:hidden">
           <Link className="flex items-center space-x-2" href="/">
-            <span className="font-bold text-base">{NAVBAR_CONFIG.brand}</span>
+            <span className="text-base font-bold">{NAVBAR_CONFIG.brand}</span>
           </Link>
         </div>
 
         {/* 桌面版導航 */}
         <div className="mr-4 hidden md:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">
-            <span className="font-bold flex items-center gap-2">
+            <span className="flex items-center gap-2 font-bold">
               <Badge
                 variant="secondary"
                 className={cn(
-                  getAcademicYearAndSemester() === "" ? "hidden" : ""
+                  getAcademicYearAndSemester() === "" ? "hidden" : "",
                 )}
               >
                 {getAcademicYearAndSemester()}
@@ -99,10 +104,15 @@ export default function Navbar() {
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
                     className={cn(
-                      isActive(item.href) ? "bg-accent/50" : undefined
+                      isActive(item.href) ? "bg-accent/50" : undefined,
                     )}
                   >
-                    <Link href={item.href}>{item.label}</Link>
+                    <Link href={item.href}>
+                      <div className="flex items-center gap-2">
+                        {item.icon}
+                        {item.label}
+                      </div>
+                    </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
@@ -111,7 +121,7 @@ export default function Navbar() {
         </div>
 
         {/* 手機版選單 */}
-        <div className="ml-auto flex md:hidden gap-2 items-center">
+        <div className="ml-auto flex items-center gap-2 md:hidden">
           <ModeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -122,22 +132,30 @@ export default function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="z-[9999]">
               <SheetHeader>
-                <SheetTitle>{NAVBAR_CONFIG.brand}</SheetTitle>
+                <SheetTitle>
+                  <div className="flex items-center gap-2">
+                    <Menu className="h-5 w-5" />
+                    選單
+                  </div>
+                </SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-4 mt-8 px-4">
+              <div className="mt-20 flex flex-col gap-4 px-4">
                 {NAVBAR_CONFIG.navigation.items.map((link, index) => (
                   <Link
                     key={index}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      "text-lg font-medium transition-colors hover:text-primary",
+                      "hover:text-primary text-lg font-medium transition-colors",
                       isActive(link.href)
                         ? "text-foreground"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
                     )}
                   >
-                    {link.label}
+                    <div className="flex items-center gap-2">
+                      {link.icon}
+                      {link.label}
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -146,7 +164,7 @@ export default function Navbar() {
         </div>
 
         {/* 桌面版右側區域 */}
-        <div className="ml-auto hidden md:flex items-center gap-2">
+        <div className="ml-auto hidden items-center gap-2 md:flex">
           <ModeToggle />
         </div>
       </div>
