@@ -69,17 +69,17 @@ const schoolLinks = [
 
 export default async function Home() {
   return (
-    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl">
-      <main className="flex flex-col gap-8 sm:gap-[32px] items-center justify-center">
-        <div className="w-full flex flex-col items-center gap-6">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+      <main className="flex flex-col items-center justify-center gap-8 sm:gap-[32px]">
+        <div className="flex w-full flex-col items-center gap-6">
           <Section
             id="announcement"
             title="公告"
             icon={<Megaphone className="size-5" />}
           >
-            <ScrollVelocityContainer className="w-full max-w-4xl rounded-lg bg-card p-2 overflow-hidden">
+            <ScrollVelocityContainer className="bg-card w-full max-w-4xl overflow-hidden rounded-lg p-2">
               <ScrollVelocityRow>
-                <p className="text-base font-medium text-center px-4 py-2">
+                <p className="px-4 py-2 text-center text-base font-medium">
                   所有資訊皆以{" "}
                   <Link
                     href="https://course.thu.edu.tw/"
@@ -111,31 +111,27 @@ export default async function Home() {
             title="東海大學相關連結"
             icon={<School className="size-5" />}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {schoolLinks.map((link, index) => {
                 const IconComponent = link.icon;
                 return (
                   <Button
                     key={index}
                     variant="secondary"
-                    className="relative h-auto p-4 hover:bg-accent/50 text-center overflow-hidden group"
+                    className="hover:bg-accent/50 group relative h-auto overflow-hidden p-4 text-center"
                     asChild
                   >
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href={link.href} prefetch={false}>
                       <div className="relative z-10 flex flex-col items-center gap-2">
                         <p className="text-base font-bold">{link.title}</p>
                         {link.description && (
-                          <span className="text-sm text-muted-foreground leading-tight break-words whitespace-normal">
+                          <span className="text-muted-foreground text-sm leading-tight break-words whitespace-normal">
                             {link.description}
                           </span>
                         )}
                       </div>
-                      <IconComponent className="size-24 absolute -left-8 opacity-[0.05] transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-20 group-hover:translate-x-5" />
-                    </a>
+                      <IconComponent className="absolute -left-8 size-24 opacity-[0.05] transition-all duration-500 group-hover:translate-x-5 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-20" />
+                    </Link>
                   </Button>
                 );
               })}
@@ -194,7 +190,7 @@ function Section({
   icon: React.ReactNode;
 }>) {
   return (
-    <section id={id} className="w-full max-w-4xl space-y-4 mb-8">
+    <section id={id} className="mb-8 w-full max-w-4xl space-y-4">
       <div className="flex items-center gap-2">
         {icon}
         <h2 className="text-xl font-bold">{title}</h2>

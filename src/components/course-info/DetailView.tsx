@@ -9,7 +9,6 @@ import {
   Trophy,
   BarChart3,
   Bookmark,
-  BookmarkCheck,
 } from "lucide-react";
 import { CourseData } from "@/components/course-info/types";
 import GradingPieChart from "@/components/course-info/GradingPieChart";
@@ -25,29 +24,53 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import useBookmark from "@/hooks/useBookmark";
+import Link from "next/link";
 
 export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
   const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
 
   return (
     <>
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-        <div className="flex items-center gap-2">
-          <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-lg font-semibold">
+      <div className="flex flex-col items-baseline gap-x-4 gap-y-2 sm:flex-row">
+        {/* 課程基本資訊 */}
+
+        <div className="flex flex-wrap items-center gap-2">
+          <code className="bg-muted relative w-fit rounded px-[0.3rem] py-[0.2rem] font-mono text-base font-semibold sm:text-lg">
             {courseInfo.course_code}
           </code>
-          <h1 className="text-2xl font-bold sm:text-3xl">
+          <h1 className="text-xl font-bold sm:text-3xl">
             {courseInfo.course_name ? `${courseInfo.course_name} ` : "-"}
           </h1>
-          <div className="hidden h-1 w-10 bg-muted sm:block" />
           {courseInfo.teachers.map((teacher, index) => (
-            <Badge key={index} variant="secondary" className="text-sm">
+            <Badge
+              key={index}
+              variant="secondary"
+              className="text-xs sm:text-sm"
+            >
               {teacher}
             </Badge>
           ))}
         </div>
-        <div className="flex items-center gap-4 text-sm sm:ml-auto">
+
+        <Separator className="block sm:hidden" />
+
+        <div className="flex items-center justify-between gap-4 text-sm sm:ml-auto sm:justify-end">
+          <div className="flex flex-row gap-2">
+            <Link
+              href={`https://course.thu.edu.tw/view/114/1/${courseInfo.course_code}`}
+              className="font-medium text-nowrap underline"
+            >
+              課程資訊網
+            </Link>
+            <Link
+              href={`http://desc.ithu.tw/114/1/${courseInfo.course_code}`}
+              className="font-medium text-nowrap underline"
+            >
+              授課大綱
+            </Link>
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -59,27 +82,11 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
             }
           >
             {isBookmarked(courseInfo) ? (
-              <BookmarkCheck className="h-5 w-5" />
+              <Bookmark fill="currentColor" className="h-5 w-5" />
             ) : (
               <Bookmark className="h-5 w-5" />
             )}
           </Button>
-          <a
-            href={`https://course.thu.edu.tw/view/114/1/${courseInfo.course_code}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium underline"
-          >
-            課程資訊網
-          </a>
-          <a
-            href={`http://desc.ithu.tw/114/1/${courseInfo.course_code}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium underline"
-          >
-            授課大綱
-          </a>
         </div>
       </div>
 
@@ -102,7 +109,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
                     {entry.day} {entry.periods.join(", ")}
                     {entry.location && `［${entry.location}］`}
                   </span>
-                )
+                ),
               )}
             </li>
             <li>修課對象：{courseInfo.target_class || "-"}</li>
@@ -215,7 +222,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
                             </Badge>
                           </TableCell>
                         </TableRow>
-                      )
+                      ),
                     )}
                   </TableBody>
                 </Table>
@@ -234,7 +241,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="whitespace-pre-line leading-relaxed">
+          <p className="leading-relaxed whitespace-pre-line">
             {courseInfo.teaching_goal || "-"}
           </p>
         </CardContent>
@@ -249,7 +256,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="whitespace-pre-line leading-relaxed">
+          <p className="leading-relaxed whitespace-pre-line">
             {courseInfo.course_description || "-"}
           </p>
         </CardContent>
