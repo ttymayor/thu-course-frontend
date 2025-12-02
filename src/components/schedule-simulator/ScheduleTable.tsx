@@ -37,10 +37,9 @@ export default function ScheduleTable({
   onRemoveCourse,
   showTimeProgress = false,
 }: ScheduleTableProps) {
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
 
   useEffect(() => {
-    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
@@ -71,16 +70,16 @@ export default function ScheduleTable({
   };
 
   return (
-    <Table className="table-fixed w-full bg-card" ref={tableRef}>
+    <Table className="bg-card w-full table-fixed" ref={tableRef}>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-8 sm:w-16 text-center font-medium text-xs sm:text-sm px-1 sm:px-2">
+          <TableHead className="w-8 px-1 text-center text-xs font-medium sm:w-16 sm:px-2 sm:text-sm">
             時段
           </TableHead>
           {days.map((day) => (
             <TableHead
               key={day}
-              className="text-center font-medium text-xs sm:text-sm px-1 sm:px-2"
+              className="px-1 text-center text-xs font-medium sm:px-2 sm:text-sm"
             >
               {day}
             </TableHead>
@@ -94,18 +93,18 @@ export default function ScheduleTable({
 
           return (
             <TableRow key={period}>
-              <TableCell className="text-center font-medium py-2 sm:py-3 px-1 sm:px-2">
+              <TableCell className="px-1 py-2 text-center font-medium sm:px-2 sm:py-3">
                 <div className="flex flex-col">
-                  <span className="text-xs sm:text-sm font-semibold">
+                  <span className="text-xs font-semibold sm:text-sm">
                     {periodTimeMap[period as keyof typeof periodTimeMap].period}
                   </span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-[10px] sm:text-xs">
                     {
                       periodTimeMap[period as keyof typeof periodTimeMap]
                         .startTime
                     }
                   </span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-[10px] sm:text-xs">
                     {
                       periodTimeMap[period as keyof typeof periodTimeMap]
                         .endTime
@@ -116,12 +115,12 @@ export default function ScheduleTable({
               {days.map((day) => (
                 <TableCell
                   key={`${day}-${period}`}
-                  className="p-1 sm:p-2 h-16 sm:h-20 align-top relative"
+                  className="relative h-16 p-1 align-top sm:h-20 sm:p-2"
                 >
                   {/* 現在時間指示線 */}
                   {isCurrentPeriod && showTimeProgress && (
                     <div
-                      className="absolute left-0 w-full h-0.5 bg-red-500/50 z-10 pointer-events-none"
+                      className="pointer-events-none absolute left-0 z-10 h-0.5 w-full bg-red-500/50"
                       style={{
                         top: `${timeProgress! * 100}%`,
                       }}
@@ -130,30 +129,30 @@ export default function ScheduleTable({
                       <div className="absolute right-0 w-1 h-1 bg-red-500 rounded-full -translate-y-1/3" /> */}
                     </div>
                   )}
-                  <div className="h-full flex flex-col">
+                  <div className="flex h-full flex-col">
                     {grid[day]?.[period]?.map((course: CourseData) => (
                       <div
                         key={course.course_code}
                         className={cn(
                           isViewingShared
-                            ? "border-dashed border-1 bg-schedule-course-bg/50"
+                            ? "bg-schedule-course-bg/50 border-1 border-dashed"
                             : hoveredCourse?.course_code === course.course_code
-                              ? "border-dashed border-1 bg-schedule-course-bg/50"
-                              : "border-solid border-1 bg-schedule-course-bg",
-                          "relative p-0 sm:p-2 shadow-lg shadow-schedule-course-border/15 border-schedule-course-border rounded text-[10px] sm:text-xs flex-1 flex flex-col justify-center hover:scale-105 transition-scale duration-300"
+                              ? "bg-schedule-course-bg/50 border-1 border-dashed"
+                              : "bg-schedule-course-bg border-1 border-solid",
+                          "shadow-schedule-course-border/15 border-schedule-course-border transition-scale relative flex flex-1 flex-col justify-center rounded p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
                         )}
                       >
                         <Link
                           href={`/course-info/${course.course_code}`}
-                          className="h-full flex flex-col justify-center"
+                          className="flex h-full flex-col justify-center"
                         >
-                          <code className="text-center text-[9px] sm:text-[12px] leading-tight">
+                          <code className="text-center text-[9px] leading-tight sm:text-[12px]">
                             {course.course_code}
                           </code>
-                          <p className="font-semibold text-center truncate text-[9px] sm:text-[12px] leading-tight mt-0.5">
+                          <p className="mt-0.5 truncate text-center text-[9px] leading-tight font-semibold sm:text-[12px]">
                             {course.course_name}
                           </p>
-                          <p className="text-center text-[9px] sm:text-[10px] leading-tight mt-0.5">
+                          <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
                             {courseLocation(course.class_time)}
                           </p>
                         </Link>
@@ -161,7 +160,7 @@ export default function ScheduleTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute top-0 right-0 h-3 w-3 sm:h-4 sm:w-4 mt-0.5 mr-0.5 sm:mt-1 sm:mr-1 cursor-pointer opacity-0 hover:opacity-100"
+                            className="absolute top-0 right-0 mt-0.5 mr-0.5 h-3 w-3 cursor-pointer opacity-0 hover:opacity-100 sm:mt-1 sm:mr-1 sm:h-4 sm:w-4"
                             onClick={() => onRemoveCourse(course.course_code)}
                           >
                             <X className="h-2 w-2 sm:h-3 sm:w-3" />

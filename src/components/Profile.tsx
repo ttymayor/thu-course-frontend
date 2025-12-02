@@ -1,9 +1,7 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { type Session } from "next-auth";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 
 export default function Profile({ session }: { session: Session }) {
   return (
