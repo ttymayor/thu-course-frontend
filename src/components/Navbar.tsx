@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import ModeToggle from "./ModeToggle";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -17,11 +17,22 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { LogIn, LogOut, Menu, User } from "lucide-react";
 import { useState } from "react";
 import { Search, CalendarDays, Map, Bookmark } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { type Session } from "next-auth";
+import { signOut } from "next-auth/react";
+import Image from "next/image";
 
 // 導航配置
 const NAVBAR_CONFIG = {
@@ -67,8 +78,9 @@ const getAcademicYearAndSemester = () => {
   }
 };
 
-export default function Navbar() {
+export default function Navbar({ session }: { session: Session | null }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (href: string) => pathname === href;
@@ -159,6 +171,43 @@ export default function Navbar() {
                   </Link>
                 ))}
               </div>
+              {session ? (
+                <SheetFooter>
+                  <Button variant="ghost" size="default" asChild>
+                    <Link href="/profile" onClick={() => setIsOpen(false)}>
+                      <User className="h-5 w-5" />
+                      個人資料
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={() => {
+                      signOut();
+                      setIsOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    登出
+                  </Button>
+                </SheetFooter>
+              ) : (
+                <SheetFooter>
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={() => {
+                      setIsOpen(false);
+                    }}
+                    asChild
+                  >
+                    <Link href="/auth/signin">
+                      <LogIn className="h-5 w-5" />
+                      登入
+                    </Link>
+                  </Button>
+                </SheetFooter>
+              )}
             </SheetContent>
           </Sheet>
         </div>
@@ -166,6 +215,40 @@ export default function Navbar() {
         {/* 桌面版右側區域 */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
           <ModeToggle />
+          {session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer items-center justify-center">
+                {session.user?.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt="User Avatar"
+                    width={20}
+                    height={20}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="z-[9999]">
+                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                  <User className="h-5 w-5" />
+                  個人資料
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="h-5 w-5" />
+                  登出
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/auth/signin">
+                <LogIn className="h-5 w-5" />
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>

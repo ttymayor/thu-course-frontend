@@ -11,13 +11,9 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCourseSchedules } from "@/lib/courseSchedule";
-import { Clock } from "lucide-react";
 
 interface CourseScheduleData {
   _id: string;

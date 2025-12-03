@@ -44,9 +44,9 @@ async function CourseData({ filters }: { filters: CourseFilters }) {
 export default async function CourseInfoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const params = await searchParams;
+  const params = searchParams;
 
   const filters: CourseFilters = {
     search: typeof params.search === "string" ? params.search : undefined,

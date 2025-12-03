@@ -7,7 +7,7 @@ import { toast } from "sonner";
 export default function useBookmark() {
   const [bookmarks, setBookmarks] = useLocalStorage<CourseData[]>(
     "bookmarks",
-    []
+    [],
   );
 
   const addBookmark = (course: CourseData) => {
