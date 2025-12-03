@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 type ErrorType = "Configuration" | "AccessDenied" | "Verification" | "Default";
 
 interface ErrorPageProps {
-  searchParams: Promise<{
+  searchParams: {
     error?: string;
-  }>;
+  };
 }
 
 const errorMessages: Record<
@@ -50,9 +50,8 @@ const errorMessages: Record<
   },
 };
 
-export default async function ErrorPage({ searchParams }: ErrorPageProps) {
-  const params = await searchParams;
-  const error = (params.error as ErrorType) || "Default";
+export default function ErrorPage({ searchParams }: ErrorPageProps) {
+  const error = (searchParams.error as ErrorType) || "Default";
   const errorInfo = errorMessages[error] || errorMessages.Default;
 
   return (
