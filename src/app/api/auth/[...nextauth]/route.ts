@@ -1,5 +1,6 @@
 import NextAuth, { type AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { findOrCreateUser } from "@/lib/user";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -10,21 +11,33 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      // 限制特定網域
       const allowedDomains = ["thu.edu.tw", "go.thu.edu.tw"];
       const emailDomain = user.email?.split("@")[1];
       if (emailDomain && allowedDomains.includes(emailDomain)) {
+        // 手動將用戶寫入 MongoDB
+        if (user.email) {
+          try {
+            await findOrCreateUser({
+              email: user.email,
+              name: user.name || null,
+              image: user.image || null,
+            });
+          } catch (error) {
+            console.error("Error saving user to MongoDB:", error);
+            // 即使寫入失敗也允許登入，避免影響用戶體驗
+          }
+        }
         return true;
       }
-      return false; // 拒絕登入
+      return false;
     },
     async session({ session }) {
       return session;
     },
   },
   pages: {
-    signIn: "/auth/signin", // 自訂登入頁面
-    error: "/auth/error", // 錯誤頁面
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
 };
 
