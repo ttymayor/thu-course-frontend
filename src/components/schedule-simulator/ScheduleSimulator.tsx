@@ -21,12 +21,22 @@ export default function ScheduleSimulator() {
   // 從 URL 參數獲取課程代碼
   const codesParam = searchParams.get("codes");
 
+  // 處理並驗證課程代碼參數
+  const validCodes = useMemo(() => {
+    if (!codesParam || !codesParam.trim()) {
+      return [];
+    }
+    return codesParam
+      .split(",")
+      .map((code) => code.trim())
+      .filter((code) => code);
+  }, [codesParam]);
+
   // 使用 SWR 來載入分享的課程
   const { data: sharedCourses, isLoading: isLoadingShared } = useSWR(
-    codesParam
-      ? `/api/course-info?${codesParam
-          .split(",")
-          .map((code) => `course_codes=${encodeURIComponent(code.trim())}`)
+    validCodes.length > 0
+      ? `/api/course-info?${validCodes
+          .map((code) => `course_codes=${encodeURIComponent(code)}`)
           .join("&")}&page_size=100`
       : null,
     async (url: string) => {
@@ -43,10 +53,12 @@ export default function ScheduleSimulator() {
 
   // 決定要顯示的課程：如果有分享參數就顯示分享的課程，否則顯示本地保存的課程
   const displayCourses = useMemo(() => {
-    return codesParam && sharedCourses ? sharedCourses : selectedCourses;
-  }, [codesParam, sharedCourses, selectedCourses]);
+    return validCodes.length > 0 && sharedCourses
+      ? sharedCourses
+      : selectedCourses;
+  }, [validCodes.length, sharedCourses, selectedCourses]);
 
-  const isViewingShared = !!(codesParam && sharedCourses);
+  const isViewingShared = !!(validCodes.length > 0 && sharedCourses);
 
   const handleCourseHover = (hoveredCourse: CourseData | null) => {
     setHoveredCourse(hoveredCourse);
