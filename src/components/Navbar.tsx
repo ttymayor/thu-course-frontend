@@ -77,7 +77,7 @@ const getAcademicYearAndSemester = () => {
   }
 };
 
-export default function Navbar({ session }: { session: Session }) {
+export default function Navbar({ session }: { session: Session | null }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);

@@ -66,7 +66,6 @@ export default function ScheduleSimulator() {
 
   return (
     <Frame>
-      {/* 左側：課程選擇，寬度較窄 */}
       <div className="w-full min-w-0 md:w-1/3 md:pr-4">
         {isViewingShared ? (
           <Card>
@@ -90,7 +89,6 @@ export default function ScheduleSimulator() {
         )}
       </div>
 
-      {/* 右側：課表模擬，寬度較寬 */}
       <div className="w-full min-w-0 md:w-2/3">
         {isLoadingShared ? (
           <ScheduleCard selectedCourses={[]} />

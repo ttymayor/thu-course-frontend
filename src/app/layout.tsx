@@ -9,7 +9,6 @@ import SessionProvider from "@/components/SessionProvider";
 import { Toaster } from "sonner";
 import FirstLoadingAnimation from "@/components/FirstLoadingAnimation";
 import { getSession } from "@/lib/auth";
-import { Session } from "next-auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -103,7 +102,7 @@ export default async function RootLayout({
           >
             <FirstLoadingAnimation />
             <div className="flex min-h-screen flex-col">
-              <Navbar session={session as Session} />
+              <Navbar session={session} />
               <div className="flex-1">{children}</div>
               <Footer />
             </div>
