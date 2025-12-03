@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { type Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 
 // 導航配置
 const NAVBAR_CONFIG = {
@@ -182,7 +183,7 @@ export default function Navbar({ session }: { session: Session | null }) {
                     variant="ghost"
                     size="default"
                     onClick={() => {
-                      signOut({ callbackUrl: "/" });
+                      signOut();
                       setIsOpen(false);
                     }}
                   >
@@ -216,8 +217,18 @@ export default function Navbar({ session }: { session: Session | null }) {
           <ModeToggle />
           {session ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="h-9 w-9 cursor-pointer has-[>svg]:px-2.5">
-                <User className="h-4 w-4" />
+              <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer items-center justify-center">
+                {session.user?.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt="User Avatar"
+                    width={20}
+                    height={20}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-[9999]">
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
@@ -225,7 +236,7 @@ export default function Navbar({ session }: { session: Session | null }) {
                   個人資料
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+                <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="h-5 w-5" />
                   登出
                 </DropdownMenuItem>
