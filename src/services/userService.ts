@@ -1,4 +1,4 @@
-import { User, UserDocument } from "@/models/user";
+import { User, UserDocument } from "@/models/User";
 import connectMongoDB from "@/lib/mongodb";
 import { UpdateQuery } from "mongoose";
 
