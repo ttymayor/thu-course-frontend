@@ -135,11 +135,11 @@ export default function ScheduleTable({
                         key={course.course_code}
                         className={cn(
                           isViewingShared
-                            ? "bg-schedule-course-bg/50 border-1 border-dashed"
+                            ? "bg-secondary/50 border-1 border-dashed"
                             : hoveredCourse?.course_code === course.course_code
-                              ? "bg-schedule-course-bg/50 border-1 border-dashed"
-                              : "bg-schedule-course-bg border-1 border-solid",
-                          "shadow-schedule-course-border/15 border-schedule-course-border transition-scale relative flex flex-1 flex-col justify-center rounded p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
+                              ? "bg-secondary/50 border border-dashed"
+                              : "bg-secondary border border-solid",
+                          "shadow-border/15 transition-scale relative flex flex-1 flex-col justify-center rounded p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
                         )}
                       >
                         <Link
