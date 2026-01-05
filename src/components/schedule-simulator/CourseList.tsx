@@ -71,7 +71,7 @@ export default function CourseList({
                     course.is_closed
                       ? "opacity-30"
                       : hasConflict
-                        ? "bg-destructive/20 opacity-30"
+                        ? "bg-destructive/10"
                         : ""
                   }`}
                   onMouseEnter={() => !hasConflict && onCourseHover?.(course)}
@@ -86,7 +86,7 @@ export default function CourseList({
                       disabled={course.is_closed || hasConflict}
                       className={
                         hasConflict || course.is_closed
-                          ? "cursor-not-allowed opacity-50"
+                          ? "cursor-not-allowed"
                           : "cursor-pointer"
                       }
                     />
