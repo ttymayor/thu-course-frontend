@@ -1,7 +1,8 @@
-import { Course, CourseDocument } from "@/models/Course";
+import { Course as CourseModel, CourseDocument } from "@/models/Course";
 import connectMongoDB from "@/lib/mongodb";
 // import mongoose from "mongoose";
 import { QueryFilter } from "mongoose";
+import { Course } from "@/types/course";
 
 export interface CourseFilter {
   course_code?: string;
@@ -94,7 +95,9 @@ async function buildQueryParams(params: CourseFilter) {
   return query;
 }
 
-export async function getCourses(filter: CourseFilter = {}) {
+export async function getCourses(
+  filter: CourseFilter = {},
+): Promise<{ data: Course[]; total: number }> {
   await connectMongoDB();
   const query = await buildQueryParams(filter);
 
@@ -103,8 +106,11 @@ export async function getCourses(filter: CourseFilter = {}) {
     typeof filter.page_size === "number" ? filter.page_size : 10;
   const skip = (page - 1) * page_size;
 
-  const total = await Course.countDocuments(query);
-  const rawData = await Course.find(query).skip(skip).limit(page_size).lean();
+  const total = await CourseModel.countDocuments(query);
+  const rawData = await CourseModel.find(query)
+    .skip(skip)
+    .limit(page_size)
+    .lean();
 
   const data = rawData.map((course) => ({
     ...course,
@@ -120,9 +126,11 @@ export async function getCourses(filter: CourseFilter = {}) {
   return { data, total };
 }
 
-export async function getCourseByCode(course_code: string) {
+export async function getCourseByCode(
+  course_code: string,
+): Promise<Course | null> {
   await connectMongoDB();
-  const rawCourse = await Course.findOne({ course_code }).lean();
+  const rawCourse = await CourseModel.findOne({ course_code }).lean();
 
   if (rawCourse) {
     return {

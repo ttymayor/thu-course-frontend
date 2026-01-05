@@ -7,7 +7,6 @@ import Pagination from "@/components/course-info/Pagination";
 import { CourseFilters } from "@/components/course-info/types";
 import { getCourses } from "@/services/courseService";
 import type { Metadata } from "next";
-import { Course } from "@/types/course";
 
 export const metadata: Metadata = {
   title: "課程資訊",
@@ -32,10 +31,7 @@ async function CourseData({ filters }: { filters: CourseFilters }) {
     params.course_name = filters.search;
   }
 
-  const { data: courses, total } = (await getCourses(params)) as {
-    data: Course[];
-    total: number;
-  };
+  const { data: courses, total } = await getCourses(params);
 
   return (
     <>

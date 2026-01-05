@@ -27,6 +27,20 @@ interface ScheduleTableProps {
   showTimeProgress?: boolean;
 }
 
+const isSameCourseList = (a: Course[], b: Course[]) => {
+  if (a.length !== b.length) return false;
+  if (a.length === 0) return false;
+  const aIds = a
+    .map((c) => c.course_code)
+    .sort()
+    .join(",");
+  const bIds = b
+    .map((c) => c.course_code)
+    .sort()
+    .join(",");
+  return aIds === bIds;
+};
+
 export default function ScheduleTable({
   tableRef,
   days,
@@ -74,20 +88,6 @@ export default function ScheduleTable({
       string,
       Record<string, { rowSpan: number; show: boolean }>
     > = {};
-
-    const isSameCourseList = (a: Course[], b: Course[]) => {
-      if (a.length !== b.length) return false;
-      if (a.length === 0) return false;
-      const aIds = a
-        .map((c) => c.course_code)
-        .sort()
-        .join(",");
-      const bIds = b
-        .map((c) => c.course_code)
-        .sort()
-        .join(",");
-      return aIds === bIds;
-    };
 
     days.forEach((day) => {
       spans[day] = {};
