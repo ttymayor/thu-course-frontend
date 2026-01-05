@@ -216,7 +216,10 @@ export default function ScheduleCard({
 
   // 計算總學分
   const totalCredits = selectedCourses.reduce(
-    (sum, course) => sum + course.credits_1,
+    (sum, course) =>
+      (process.env.NEXT_PUBLIC_ACADEMIC_SEMESTER as string) === "1"
+        ? sum + course.credits_1
+        : sum + course.credits_2,
     0,
   );
 
@@ -300,7 +303,7 @@ export default function ScheduleCard({
             // 正常模式：顯示原有的分享、下載等按鈕
             <ButtonGroup>
               <Button
-                variant="outline"
+                variant="ghost"
                 className="w-auto cursor-pointer"
                 size="sm"
                 onClick={shareSchedule}
@@ -311,7 +314,7 @@ export default function ScheduleCard({
               <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     className="w-auto cursor-pointer"
                     size="sm"
                     onClick={generateQrCode}
@@ -354,7 +357,7 @@ export default function ScheduleCard({
                 </DialogContent>
               </Dialog>
               <Button
-                variant="outline"
+                variant="ghost"
                 className="w-auto cursor-pointer"
                 size="sm"
                 onClick={downloadSchedule}
@@ -365,7 +368,7 @@ export default function ScheduleCard({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     className="w-auto cursor-pointer"
                     size="sm"
                   >
