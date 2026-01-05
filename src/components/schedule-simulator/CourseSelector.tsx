@@ -69,7 +69,7 @@ function CourseSelectorContent({
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
       : selectedCourses.filter(
-          (c: Course) => c.course_code !== course.course_code,
+          (course) => course.course_code !== course.course_code,
         );
     setSelectedCourses(newSelectedCourses);
   };
@@ -98,9 +98,9 @@ function CourseSelectorContent({
           </div>
         ) : (
           <CourseList
-            infos={showSelectedCourses ? selectedCourses : courses}
+            courses={showSelectedCourses ? selectedCourses : courses}
             selectedCourseCodes={
-              new Set(selectedCourses.map((c: Course) => c.course_code))
+              new Set(selectedCourses.map((course) => course.course_code))
             }
             selectedCourses={selectedCourses}
             onSelectionChange={handleSelectionChange}

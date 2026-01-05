@@ -23,7 +23,7 @@ import { courseTimeParser } from "@/lib/courseTimeParser";
 import { Course } from "@/types/course";
 
 interface CourseListProps {
-  infos: Course[];
+  courses: Course[];
   selectedCourseCodes: Set<string>;
   selectedCourses: Course[];
   onSelectionChange: (course: Course, isSelected: boolean) => void;
@@ -31,7 +31,7 @@ interface CourseListProps {
 }
 
 export default function CourseList({
-  infos,
+  courses,
   selectedCourseCodes,
   selectedCourses,
   onSelectionChange,
@@ -54,38 +54,38 @@ export default function CourseList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {infos.map((item: Course) => {
+            {courses.map((course: Course) => {
               // 檢查是否已選擇
-              const isSelected = selectedCourseCodes.has(item.course_code);
+              const isSelected = selectedCourseCodes.has(course.course_code);
 
               // 檢查是否有時間衝突
               const conflictInfo = !isSelected
-                ? checkScheduleConflict(selectedCourses, item)
+                ? checkScheduleConflict(selectedCourses, course)
                 : null;
               const hasConflict = conflictInfo?.hasConflict || false;
 
               return (
                 <TableRow
-                  key={item.course_code}
+                  key={course.course_code}
                   className={`h-12 ${
-                    item.is_closed
+                    course.is_closed
                       ? "opacity-30"
                       : hasConflict
                         ? "bg-destructive/20 opacity-30"
                         : ""
                   }`}
-                  onMouseEnter={() => !hasConflict && onCourseHover?.(item)}
+                  onMouseEnter={() => !hasConflict && onCourseHover?.(course)}
                   onMouseLeave={() => !hasConflict && onCourseHover?.(null)}
                 >
                   <TableCell className="text-center">
                     <Checkbox
                       checked={isSelected}
                       onCheckedChange={(checked) => {
-                        onSelectionChange(item, !!checked);
+                        onSelectionChange(course, !!checked);
                       }}
-                      disabled={item.is_closed || hasConflict}
+                      disabled={course.is_closed || hasConflict}
                       className={
-                        hasConflict || item.is_closed
+                        hasConflict || course.is_closed
                           ? "cursor-not-allowed opacity-50"
                           : "cursor-pointer"
                       }
@@ -95,16 +95,16 @@ export default function CourseList({
                     <div className="flex items-center space-x-2">
                       <div>
                         <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-                          {item.course_code}
+                          {course.course_code}
                         </code>
                       </div>
                       <div className="flex flex-col">
                         <div>
-                          {item.is_closed ? (
+                          {course.is_closed ? (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <span className="line-through">
-                                  {item.course_name}
+                                  {course.course_name}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -114,18 +114,18 @@ export default function CourseList({
                           ) : (
                             <Link
                               prefetch={false}
-                              href={`/course-info/${item.course_code}`}
+                              href={`/course-info/${course.course_code}`}
                               className="underline"
                             >
-                              {item.course_name}
+                              {course.course_name}
                             </Link>
                           )}
                           <Badge variant={"secondary"} className="ml-2 text-xs">
-                            {courseTypeMap[item.course_type] ||
-                              item.course_type}{" "}
-                            {item.credits_1}-{item.credits_2}
+                            {courseTypeMap[course.course_type] ||
+                              course.course_type}{" "}
+                            {course.credits_1}-{course.credits_2}
                           </Badge>
-                          {!item.basic_info.class_time ? (
+                          {!course.basic_info.class_time ? (
                             <Badge variant={"outline"} className="ml-2 text-xs">
                               無時段
                             </Badge>
@@ -140,20 +140,20 @@ export default function CourseList({
                           )}
                         </div>
                         <div className="text-muted-foreground text-sm">
-                          {item.teachers?.length
-                            ? `${item.teachers.join("、")}`
+                          {course.teachers?.length
+                            ? `${course.teachers.join("、")}`
                             : "-"}
-                          {item.basic_info.class_time && (
+                          {course.basic_info.class_time && (
                             <span>
                               {"｜"}
-                              {courseTimeParser(item.basic_info.class_time).map(
-                                (entry, index) => (
-                                  <span key={index}>
-                                    {entry.day} {entry.periods.join(", ")}
-                                    {entry.location && `［${entry.location}］`}
-                                  </span>
-                                ),
-                              )}
+                              {courseTimeParser(
+                                course.basic_info.class_time,
+                              ).map((entry, index) => (
+                                <span key={index}>
+                                  {entry.day} {entry.periods.join(", ")}
+                                  {entry.location && `［${entry.location}］`}
+                                </span>
+                              ))}
                             </span>
                           )}
                         </div>

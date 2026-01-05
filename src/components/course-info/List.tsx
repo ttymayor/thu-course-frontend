@@ -50,23 +50,23 @@ export default function List({ courses }: ListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {courses.map((item: Course, idx: number) => (
+          {courses.map((course, idx) => (
             <TableRow
               key={idx}
               className={`h-12 ${
-                item.is_closed ? "line-through opacity-30" : ""
+                course.is_closed ? "line-through opacity-30" : ""
               }`}
             >
               <TableCell className="text-center">
                 <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-                  {item.course_code}
+                  {course.course_code}
                 </code>
               </TableCell>
               <TableCell className="text-center">
-                {item.is_closed ? (
+                {course.is_closed ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span>{item.course_name}</span>
+                      <span>{course.course_name}</span>
                     </TooltipTrigger>
                     <TooltipContent>
                       <span>已停開...</span>
@@ -75,38 +75,38 @@ export default function List({ courses }: ListProps) {
                 ) : (
                   <Link
                     prefetch={false}
-                    href={`/course-info/${item.course_code}`}
+                    href={`/course-info/${course.course_code}`}
                     className="inline-flex items-center gap-2 underline"
                   >
-                    {item.course_name} <LoadingIndicator />
+                    {course.course_name} <LoadingIndicator />
                   </Link>
                 )}
               </TableCell>
               <TableCell className="text-center">
                 <Badge variant={"secondary"} className="text-xs">
-                  {courseTypeMap[item.course_type] || item.course_type}{" "}
-                  {item.credits_1}-{item.credits_2}
+                  {courseTypeMap[course.course_type] || course.course_type}{" "}
+                  {course.credits_1}-{course.credits_2}
                 </Badge>
               </TableCell>
               <TableCell className="text-center">
-                {item.teachers?.length
-                  ? `${item.teachers.slice(0, 3).join("、")}`
+                {course.teachers?.length
+                  ? `${course.teachers.slice(0, 3).join("、")}`
                   : "-"}
-                {item.teachers?.length > 3 && (
+                {course.teachers?.length > 3 && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="cursor-pointer">...</span>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {item.teachers.slice(3).join("、")}
+                      {course.teachers.slice(3).join("、")}
                     </TooltipContent>
                   </Tooltip>
                 )}
               </TableCell>
               <TableCell className="text-center">
-                {(item.basic_info?.class_time && (
+                {(course.basic_info?.class_time && (
                   <div className="inline-block text-left">
-                    {courseTimeParser(item.basic_info.class_time).map(
+                    {courseTimeParser(course.basic_info.class_time).map(
                       (entry, index) => (
                         <div key={index}>
                           {entry.day} {entry.periods.join(", ")}
@@ -119,7 +119,8 @@ export default function List({ courses }: ListProps) {
                   "-"}
               </TableCell>
               <TableCell className="text-center">
-                {item.department_name} / {item.basic_info?.target_class || "-"}
+                {course.department_name} /{" "}
+                {course.basic_info?.target_class || "-"}
               </TableCell>
               <TableCell className="text-center">
                 <Button
@@ -127,13 +128,13 @@ export default function List({ courses }: ListProps) {
                   size="sm"
                   className="cursor-pointer"
                   onClick={
-                    isBookmarked(item)
-                      ? () => removeBookmark(item)
-                      : () => addBookmark(item)
+                    isBookmarked(course)
+                      ? () => removeBookmark(course)
+                      : () => addBookmark(course)
                   }
-                  disabled={item.is_closed}
+                  disabled={course.is_closed}
                 >
-                  {isBookmarked(item) ? (
+                  {isBookmarked(course) ? (
                     <Bookmark fill="currentColor" className="h-4 w-4" />
                   ) : (
                     <Bookmark className="h-4 w-4" />
