@@ -1,7 +1,7 @@
 "use client";
 
 import { X, QrCode, Download, Share2, Settings, Check } from "lucide-react";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -40,8 +40,8 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import ScheduleTable from "./ScheduleTable";
 
 interface ScheduleCardProps {
-  selectedCourses: CourseData[];
-  hoveredCourse?: CourseData | null;
+  selectedCourses: Course[];
+  hoveredCourse?: Course | null;
   onRemoveCourse?: (courseCode: string) => void;
   isViewingShared?: boolean;
   onImportShared?: () => void;
@@ -61,11 +61,11 @@ export default function ScheduleCard({
   const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
   const [showAllPeriod, setShowAllPeriod] = useLocalStorage(
     "showAllPeriod",
-    true
+    true,
   );
   const [showTimeProgress, setShowTimeProgress] = useLocalStorage(
     "showTimeProgress",
-    false
+    false,
   );
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -74,7 +74,9 @@ export default function ScheduleCard({
   // 合併 selectedCourses 與 hoveredCourse（不重複）用於計算範圍
   const coursesForRange =
     hoveredCourse &&
-      !selectedCourses.some((c) => c.course_code === hoveredCourse.course_code)
+    !selectedCourses.some(
+      (c: Course) => c.course_code === hoveredCourse.course_code,
+    )
       ? [...selectedCourses, hoveredCourse]
       : selectedCourses;
 
@@ -88,7 +90,7 @@ export default function ScheduleCard({
     let latestIndex = 0; // 初始化為最早
 
     coursesForRange.forEach((course) => {
-      const parsedTimes = courseTimeParser(course.basic_info.class_time);
+      const parsedTimes = courseTimeParser(course.basic_info.class_time || "");
       parsedTimes.forEach((time) => {
         time.periods.forEach((periodStr) => {
           // 將時段字串轉換為在 allPeriods 中的索引
@@ -112,16 +114,19 @@ export default function ScheduleCard({
   const periods = showAllPeriod ? allPeriods : getMinimumPeriodRange();
 
   const grid: ScheduleGrid = days.reduce((acc, day) => {
-    acc[day] = periods.reduce((periodAcc, period) => {
-      periodAcc[period] = [];
-      return periodAcc;
-    }, {} as { [period: string]: CourseData[] });
+    acc[day] = periods.reduce(
+      (periodAcc, period) => {
+        periodAcc[period] = [];
+        return periodAcc;
+      },
+      {} as { [period: string]: Course[] },
+    );
     return acc;
   }, {} as ScheduleGrid);
 
   // 使用 coursesForRange 來填充課表格子
   coursesForRange.forEach((course) => {
-    const parsedTimes = courseTimeParser(course.basic_info.class_time);
+    const parsedTimes = courseTimeParser(course.basic_info.class_time || "");
     parsedTimes.forEach((time) => {
       const dayKey = time.day.replace("星期", "");
       if (days.includes(dayKey)) {
@@ -212,7 +217,7 @@ export default function ScheduleCard({
   // 計算總學分
   const totalCredits = selectedCourses.reduce(
     (sum, course) => sum + course.credits_1,
-    0
+    0,
   );
 
   const downloadSchedule = async () => {
@@ -261,11 +266,11 @@ export default function ScheduleCard({
       <CardHeader>
         <CardTitle>{isViewingShared ? "預覽分享的課表" : "排課模擬"}</CardTitle>
         <CardDescription className="flex flex-row gap-2">
-          <span className="font-medium text-foreground">
+          <span className="text-foreground font-medium">
             {selectedCourses.length}
           </span>
           <span>門課程</span>
-          <span className="font-medium text-foreground">{totalCredits}</span>
+          <span className="text-foreground font-medium">{totalCredits}</span>
           <span>學分</span>
         </CardDescription>
         <CardAction>
@@ -278,7 +283,7 @@ export default function ScheduleCard({
                 size="sm"
                 onClick={onImportShared}
               >
-                <Check className="h-4 w-4 mr-1" />
+                <Check className="mr-1 h-4 w-4" />
                 匯入課表
               </Button>
               <Button
@@ -287,7 +292,7 @@ export default function ScheduleCard({
                 size="sm"
                 onClick={onRejectShared}
               >
-                <X className="h-4 w-4 mr-1" />
+                <X className="mr-1 h-4 w-4" />
                 取消
               </Button>
             </ButtonGroup>
@@ -296,7 +301,7 @@ export default function ScheduleCard({
             <ButtonGroup>
               <Button
                 variant="outline"
-                className="cursor-pointer w-auto"
+                className="w-auto cursor-pointer"
                 size="sm"
                 onClick={shareSchedule}
                 disabled={selectedCourses.length === 0}
@@ -307,7 +312,7 @@ export default function ScheduleCard({
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="cursor-pointer w-auto"
+                    className="w-auto cursor-pointer"
                     size="sm"
                     onClick={generateQrCode}
                     disabled={selectedCourses.length === 0}
@@ -330,17 +335,17 @@ export default function ScheduleCard({
                           alt="課表 QR Code"
                           width={300}
                           height={300}
-                          className="border rounded-lg w-full max-w-[300px]"
+                          className="w-full max-w-[300px] rounded-lg border"
                         />
                         <Button
-                          className="cursor-pointer w-full sm:w-auto"
+                          className="w-full cursor-pointer sm:w-auto"
                           onClick={downloadQrCode}
                           variant="outline"
                         >
                           <Download className="h-4 w-4" />
                           下載 QR Code
                         </Button>
-                        <p className="text-sm text-muted-foreground text-center">
+                        <p className="text-muted-foreground text-center text-sm">
                           共 {selectedCourses.length} 門課程
                         </p>
                       </>
@@ -350,7 +355,7 @@ export default function ScheduleCard({
               </Dialog>
               <Button
                 variant="outline"
-                className="cursor-pointer w-auto"
+                className="w-auto cursor-pointer"
                 size="sm"
                 onClick={downloadSchedule}
                 disabled={selectedCourses.length === 0}
@@ -361,7 +366,7 @@ export default function ScheduleCard({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="cursor-pointer w-auto"
+                    className="w-auto cursor-pointer"
                     size="sm"
                   >
                     <Settings className="h-4 w-4" />
@@ -408,7 +413,7 @@ export default function ScheduleCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="flex items-center justify-center text-center text-sm text-muted-foreground">
+      <CardFooter className="text-muted-foreground flex items-center justify-center text-center text-sm">
         {totalCredits >= 20
           ? "你選的課好多喔，要多休息喔"
           : "祝你穩過這幾學分 ><"}

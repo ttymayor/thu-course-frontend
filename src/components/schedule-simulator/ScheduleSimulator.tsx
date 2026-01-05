@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import ScheduleCard from "@/components/schedule-simulator/ScheduleCard";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ export default function ScheduleSimulator() {
   const searchParams = useSearchParams();
   const { selectedCourses, setSelectedCourses, removeCourse, importCourses } =
     useSelectedCourses();
-  const [hoveredCourse, setHoveredCourse] = useState<CourseData | null>(null);
+  const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
   // 從 URL 參數獲取課程代碼
   const codesParam = searchParams.get("codes");
@@ -47,7 +47,7 @@ export default function ScheduleSimulator() {
         throw new Error("無法載入課程資料");
       }
 
-      return result.data as CourseData[];
+      return result.data as Course[];
     },
   );
 
@@ -60,7 +60,7 @@ export default function ScheduleSimulator() {
 
   const isViewingShared = !!(validCodes.length > 0 && sharedCourses);
 
-  const handleCourseHover = (hoveredCourse: CourseData | null) => {
+  const handleCourseHover = (hoveredCourse: Course | null) => {
     setHoveredCourse(hoveredCourse);
   };
 
