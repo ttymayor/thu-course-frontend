@@ -17,16 +17,17 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CourseData, CourseTypeMap } from "@/components/course-info/types";
+import { CourseTypeMap } from "@/components/course-info/types";
 import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
 import { courseTimeParser } from "@/lib/courseTimeParser";
+import { Course } from "@/types/course";
 
 interface CourseListProps {
-  infos: CourseData[];
+  infos: Course[];
   selectedCourseCodes: Set<string>;
-  selectedCourses: CourseData[];
-  onSelectionChange: (course: CourseData, isSelected: boolean) => void;
-  onCourseHover?: (course: CourseData | null) => void;
+  selectedCourses: Course[];
+  onSelectionChange: (course: Course, isSelected: boolean) => void;
+  onCourseHover?: (course: Course | null) => void;
 }
 
 export default function CourseList({
@@ -44,16 +45,16 @@ export default function CourseList({
 
   return (
     <TooltipProvider>
-      <div className="overflow-x-auto mt-4">
+      <div className="mt-4 overflow-x-auto">
         <Table className="min-w-full">
           <TableHeader>
             <TableRow className="h-12">
-              <TableHead className="text-center w-16">選擇</TableHead>
+              <TableHead className="w-16 text-center">選擇</TableHead>
               <TableHead className="text-center">課程資訊</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {infos.map((item: CourseData) => {
+            {infos.map((item: Course) => {
               // 檢查是否已選擇
               const isSelected = selectedCourseCodes.has(item.course_code);
 
@@ -70,8 +71,8 @@ export default function CourseList({
                     item.is_closed
                       ? "opacity-30"
                       : hasConflict
-                      ? "bg-destructive/20 opacity-30"
-                      : ""
+                        ? "bg-destructive/20 opacity-30"
+                        : ""
                   }`}
                   onMouseEnter={() => !hasConflict && onCourseHover?.(item)}
                   onMouseLeave={() => !hasConflict && onCourseHover?.(null)}
@@ -138,7 +139,7 @@ export default function CourseList({
                             </Badge>
                           )}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                           {item.teachers?.length
                             ? `${item.teachers.join("、")}`
                             : "-"}
@@ -151,7 +152,7 @@ export default function CourseList({
                                     {entry.day} {entry.periods.join(", ")}
                                     {entry.location && `［${entry.location}］`}
                                   </span>
-                                )
+                                ),
                               )}
                             </span>
                           )}

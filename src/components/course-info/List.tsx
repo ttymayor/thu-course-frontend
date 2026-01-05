@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
-import { CourseData, CourseTypeMap } from "./types";
+import { CourseTypeMap } from "./types";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -127,13 +127,13 @@ export default function List({ courses }: ListProps) {
                   size="sm"
                   className="cursor-pointer"
                   onClick={
-                    isBookmarked(item as CourseData)
-                      ? () => removeBookmark(item as CourseData)
-                      : () => addBookmark(item as CourseData)
+                    isBookmarked(item)
+                      ? () => removeBookmark(item)
+                      : () => addBookmark(item)
                   }
                   disabled={item.is_closed}
                 >
-                  {isBookmarked(item as CourseData) ? (
+                  {isBookmarked(item) ? (
                     <Bookmark fill="currentColor" className="h-4 w-4" />
                   ) : (
                     <Bookmark className="h-4 w-4" />

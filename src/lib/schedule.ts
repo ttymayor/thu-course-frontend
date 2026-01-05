@@ -1,4 +1,4 @@
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 
 export const periodTimeMap = {
   A: { period: "A", startTime: "7:10", endTime: "8:00" },
@@ -43,6 +43,6 @@ export const periods = allPeriods; // 預設顯示所有時段
 
 export type ScheduleGrid = {
   [day: string]: {
-    [period: string]: CourseData[];
+    [period: string]: Course[];
   };
 };

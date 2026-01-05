@@ -9,14 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import useBookmark from "@/hooks/useBookmark";
 
-export default function RemoveBookmarkDialog({
-  course,
-}: {
-  course: CourseData;
-}) {
+export default function RemoveBookmarkDialog({ course }: { course: Course }) {
   const { removeBookmark } = useBookmark();
   return (
     <Dialog>

@@ -7,14 +7,14 @@ import Filter from "@/components/course-info/Filter";
 import CourseList from "./CourseList";
 import Pagination from "@/components/course-info/Pagination";
 import CourseListSkeleton from "./CourseListSkeleton";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 
 interface CourseSelectorProps {
-  selectedCourses: CourseData[];
-  setSelectedCourses: (selectedCourses: CourseData[]) => void;
-  onCourseHover: (hoveredCourse: CourseData | null) => void;
+  selectedCourses: Course[];
+  setSelectedCourses: (selectedCourses: Course[]) => void;
+  onCourseHover: (hoveredCourse: Course | null) => void;
 }
 
 function CourseSelectorContent({
@@ -44,7 +44,7 @@ function CourseSelectorContent({
   }
 
   const queryString = new URLSearchParams(
-    Object.entries(params).map(([key, value]) => [key, String(value)])
+    Object.entries(params).map(([key, value]) => [key, String(value)]),
   ).toString();
 
   const swrKey = `/api/course-info?${queryString}`;
@@ -65,20 +65,22 @@ function CourseSelectorContent({
   const courses = data?.data || [];
   const total = data?.total || 0;
 
-  const handleSelectionChange = (course: CourseData, isSelected: boolean) => {
+  const handleSelectionChange = (course: Course, isSelected: boolean) => {
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
-      : selectedCourses.filter((c) => c.course_code !== course.course_code);
+      : selectedCourses.filter(
+          (c: Course) => c.course_code !== course.course_code,
+        );
     setSelectedCourses(newSelectedCourses);
   };
 
   // hover handler
-  const handleCourseHover = (course: CourseData | null) => {
+  const handleCourseHover = (course: Course | null) => {
     onCourseHover(course);
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <Filter />
       <Button
         variant={showSelectedCourses ? "outline" : "default"}
@@ -91,14 +93,14 @@ function CourseSelectorContent({
         {isLoading ? (
           <CourseListSkeleton />
         ) : error ? (
-          <div className="text-center text-destructive py-4">
+          <div className="text-destructive py-4 text-center">
             載入課程資料時發生錯誤，請稍後再試。
           </div>
         ) : (
           <CourseList
             infos={showSelectedCourses ? selectedCourses : courses}
             selectedCourseCodes={
-              new Set(selectedCourses.map((c) => c.course_code))
+              new Set(selectedCourses.map((c: Course) => c.course_code))
             }
             selectedCourses={selectedCourses}
             onSelectionChange={handleSelectionChange}

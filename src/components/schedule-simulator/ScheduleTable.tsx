@@ -12,7 +12,7 @@ import { courseLocation } from "@/lib/courseTimeParser";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import { useState, useEffect } from "react";
 
 interface ScheduleTableProps {
@@ -20,10 +20,10 @@ interface ScheduleTableProps {
   days: string[];
   periods: string[];
   grid: ScheduleGrid;
-  hoveredCourse: CourseData | null;
+  hoveredCourse: Course | null;
   isViewingShared: boolean;
   onRemoveCourse?: (courseCode: string) => void;
-  onCourseHover?: (hoveredCourse: CourseData | null) => void;
+  onCourseHover?: (hoveredCourse: Course | null) => void;
   showTimeProgress?: boolean;
 }
 
@@ -130,13 +130,14 @@ export default function ScheduleTable({
                     </div>
                   )}
                   <div className="flex h-full flex-col">
-                    {grid[day]?.[period]?.map((course: CourseData) => (
+                    {grid[day]?.[period]?.map((course: Course) => (
                       <div
                         key={course.course_code}
                         className={cn(
                           isViewingShared
                             ? "bg-secondary/50 border-1 border-dashed"
-                            : hoveredCourse?.course_code === course.course_code
+                            : hoveredCourse &&
+                                hoveredCourse.course_code === course.course_code
                               ? "bg-secondary/50 border border-dashed"
                               : "bg-secondary border border-solid",
                           "shadow-border/15 transition-scale relative flex flex-1 flex-col justify-center rounded p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",

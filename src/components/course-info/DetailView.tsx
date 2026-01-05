@@ -10,7 +10,7 @@ import {
   BarChart3,
   Bookmark,
 } from "lucide-react";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import GradingPieChart from "@/components/course-info/GradingPieChart";
 import SelectionLineChart from "@/components/course-info/SelectionLineChart";
 import {
@@ -28,7 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import useBookmark from "@/hooks/useBookmark";
 import Link from "next/link";
 
-export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
+export default function DetailView({ courseInfo }: { courseInfo: Course }) {
   const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
 
   return (
