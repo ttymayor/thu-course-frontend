@@ -123,3 +123,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+@theme {
+  --animate-ping-opacity: ping 1s ease-in-out infinite;
+
+  @keyframes ping {
+    0%,
+    100% {
+      opacity: 100%;
+    }
+    50% {
+      opacity: 50%;
+    }
+  }
+}

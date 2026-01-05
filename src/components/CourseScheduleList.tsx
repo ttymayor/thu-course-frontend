@@ -8,10 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCourseSchedules } from "@/lib/courseSchedule";
 
@@ -28,7 +25,7 @@ export default async function CourseScheduleList() {
   const schedules = await getCourseSchedules();
 
   return (
-    <Card className="w-full max-w-5xl">
+    <Card className="w-full max-w-5xl rounded-lg border-0">
       <CardContent>
         <Table>
           <TableHeader>
@@ -42,19 +39,19 @@ export default async function CourseScheduleList() {
           </TableHeader>
           <TableBody>
             {schedules?.map((item: CourseScheduleData, idx: number) => (
-              <TableRow
-                key={item._id || idx}
-                className={item.status === "結束" ? "opacity-30" : ""}
-              >
-                <TableCell className="font-medium text-center">
+              <TableRow key={item._id || idx}>
+                <TableCell className="text-center font-medium">
                   {item.course_stage}
                 </TableCell>
                 <TableCell className="text-center">
-                  {item.status === "結束" || item.status === "關閉" ? (
-                    <Badge variant="outline">{item.status}</Badge>
-                  ) : (
-                    <Badge>{item.status}</Badge>
-                  )}
+                  <Badge variant="outline">
+                    {item.status === "開放" ? (
+                      <div className="animate-ping-opacity size-2 rounded-full bg-green-500"></div>
+                    ) : (
+                      <div className="size-2 rounded-full bg-gray-500"></div>
+                    )}
+                    {item.status}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-center">
                   {formatDate(item.start_time)}
@@ -84,6 +81,7 @@ function formatDate(dateStr: string) {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
+    hourCycle: "h23",
     hour: "2-digit",
     minute: "2-digit",
   });
