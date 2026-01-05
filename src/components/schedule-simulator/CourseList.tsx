@@ -124,7 +124,7 @@ export default function CourseList({
                               item.course_type}{" "}
                             {item.credits_1}-{item.credits_2}
                           </Badge>
-                          {!item.class_time ? (
+                          {!item.basic_info.class_time ? (
                             <Badge variant={"outline"} className="ml-2 text-xs">
                               無時段
                             </Badge>
@@ -142,10 +142,10 @@ export default function CourseList({
                           {item.teachers?.length
                             ? `${item.teachers.join("、")}`
                             : "-"}
-                          {item.class_time && (
+                          {item.basic_info.class_time && (
                             <span>
                               {"｜"}
-                              {courseTimeParser(item.class_time).map(
+                              {courseTimeParser(item.basic_info.class_time).map(
                                 (entry, index) => (
                                   <span key={index}>
                                     {entry.day} {entry.periods.join(", ")}

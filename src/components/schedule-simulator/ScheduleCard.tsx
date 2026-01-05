@@ -88,7 +88,7 @@ export default function ScheduleCard({
     let latestIndex = 0; // 初始化為最早
 
     coursesForRange.forEach((course) => {
-      const parsedTimes = courseTimeParser(course.class_time);
+      const parsedTimes = courseTimeParser(course.basic_info.class_time);
       parsedTimes.forEach((time) => {
         time.periods.forEach((periodStr) => {
           // 將時段字串轉換為在 allPeriods 中的索引
@@ -121,7 +121,7 @@ export default function ScheduleCard({
 
   // 使用 coursesForRange 來填充課表格子
   coursesForRange.forEach((course) => {
-    const parsedTimes = courseTimeParser(course.class_time);
+    const parsedTimes = courseTimeParser(course.basic_info.class_time);
     parsedTimes.forEach((time) => {
       const dayKey = time.day.replace("星期", "");
       if (days.includes(dayKey)) {

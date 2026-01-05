@@ -10,16 +10,12 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const page_size = parseInt(searchParams.get("page_size") || "10", 10);
 
-  // 支援多個 course_codes 查詢
-  const course_codes = searchParams.getAll("course_codes");
-
   try {
     const { data, total } = await getCourses({
       course_code,
       course_name,
       department_code,
       department_name,
-      course_codes,
       page,
       page_size,
     });
@@ -29,15 +25,20 @@ export async function GET(request: Request) {
       {
         headers: {
           "Cache-Control": "public, max-age=3600, s-maxage=3600",
-          "X-Data-Source": "database",
+          "Content-Type": "application/json",
         },
-      }
+      },
     );
   } catch (error) {
-    console.error("/api/course-info error:", error);
+    console.error(error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch course info" },
-      { status: 500 }
+      { success: false, error: "Internal Server Error" },
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
     );
   }
 }

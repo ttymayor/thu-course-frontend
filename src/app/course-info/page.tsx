@@ -5,8 +5,9 @@ import List from "@/components/course-info/List";
 import ListSkeleton from "@/components/course-info/ListSkeleton";
 import Pagination from "@/components/course-info/Pagination";
 import { CourseFilters } from "@/components/course-info/types";
-import { getCourses } from "@/lib/course";
+import { getCourses } from "@/services/courseService";
 import type { Metadata } from "next";
+import { Course } from "@/types/course";
 
 export const metadata: Metadata = {
   title: "課程資訊",
@@ -31,11 +32,14 @@ async function CourseData({ filters }: { filters: CourseFilters }) {
     params.course_name = filters.search;
   }
 
-  const { data: infos, total } = await getCourses(params);
+  const { data: courses, total } = (await getCourses(params)) as {
+    data: Course[];
+    total: number;
+  };
 
   return (
     <>
-      <List infos={infos} />
+      <List courses={courses} />
       <Pagination total={total} />
     </>
   );

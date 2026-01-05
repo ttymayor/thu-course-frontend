@@ -153,7 +153,7 @@ export default function ScheduleTable({
                             {course.course_name}
                           </p>
                           <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
-                            {courseLocation(course.class_time)}
+                            {courseLocation(course.basic_info.class_time)}
                           </p>
                         </Link>
                         {onRemoveCourse && (

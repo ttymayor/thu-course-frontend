@@ -1,7 +1,7 @@
 "use cache";
 
 import { Suspense } from "react";
-import { getCourse } from "@/lib/course";
+import { getCourseByCode } from "@/services/courseService";
 import DetailView from "@/components/course-info/DetailView";
 import DetailViewSkeleton from "@/components/course-info/DetailViewSkeleton";
 import DetailFrame from "@/components/course-info/DetailFrame";
@@ -14,7 +14,7 @@ export default async function CourseDetailPage({
 }) {
   const { courseCode } = await params;
 
-  const courseInfo = await getCourse(courseCode);
+  const courseInfo = await getCourseByCode(courseCode);
 
   if (!courseInfo) {
     return notFound();

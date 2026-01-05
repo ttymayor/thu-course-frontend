@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { getAllDepartments } from "@/lib/course";
+import { getDepartments } from "@/services/departmentService";
+import { Department } from "@/types/department";
 
 export async function GET() {
   try {
-    const departments = await getCachedDepartments();
+    const departments: Department[] = await getDepartments();
 
     return NextResponse.json({
       success: true,
@@ -13,13 +14,7 @@ export async function GET() {
     console.error("Error fetching departments:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch departments" },
-      { status: 500 }
+      { status: 500 },
     );
   }
-}
-
-async function getCachedDepartments() {
-  "use cache";
-  const cachedDepartments = await getAllDepartments();
-  return cachedDepartments;
 }

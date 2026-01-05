@@ -30,12 +30,12 @@ export function checkScheduleConflict(
   };
 
   // 如果新課程沒有上課時間，則不會有衝突
-  if (!newCourse.class_time) {
+  if (!newCourse.basic_info.class_time) {
     return conflictInfo;
   }
 
   // 解析新課程的時間
-  const newCourseTimeSlots = courseTimeParser(newCourse.class_time);
+  const newCourseTimeSlots = courseTimeParser(newCourse.basic_info.class_time);
 
   // 檢查每個已存在的課程
   for (const existingCourse of existingCourses) {
@@ -45,12 +45,14 @@ export function checkScheduleConflict(
     }
 
     // 如果現有課程沒有上課時間，跳過
-    if (!existingCourse.class_time) {
+    if (!existingCourse.basic_info.class_time) {
       continue;
     }
 
     // 解析現有課程的時間
-    const existingTimeSlots = courseTimeParser(existingCourse.class_time);
+    const existingTimeSlots = courseTimeParser(
+      existingCourse.basic_info.class_time
+    );
 
     // 檢查時間衝突
     const conflictingSlots = findTimeConflicts(existingTimeSlots, newCourseTimeSlots);

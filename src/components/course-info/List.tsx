@@ -21,12 +21,13 @@ import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import useBookmark from "@/hooks/useBookmark";
+import { Course } from "@/types/course";
 
 interface ListProps {
-  infos: CourseData[];
+  courses: Course[];
 }
 
-export default function List({ infos }: ListProps) {
+export default function List({ courses }: ListProps) {
   const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
@@ -49,7 +50,7 @@ export default function List({ infos }: ListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {infos.map((item: CourseData, idx: number) => (
+          {courses.map((item: Course, idx: number) => (
             <TableRow
               key={idx}
               className={`h-12 ${
@@ -103,20 +104,22 @@ export default function List({ infos }: ListProps) {
                 )}
               </TableCell>
               <TableCell className="text-center">
-                {(item.class_time && (
+                {(item.basic_info?.class_time && (
                   <div className="inline-block text-left">
-                    {courseTimeParser(item.class_time).map((entry, index) => (
-                      <div key={index}>
-                        {entry.day} {entry.periods.join(", ")}
-                        {entry.location && `［${entry.location}］`}
-                      </div>
-                    ))}
+                    {courseTimeParser(item.basic_info.class_time).map(
+                      (entry, index) => (
+                        <div key={index}>
+                          {entry.day} {entry.periods.join(", ")}
+                          {entry.location && `［${entry.location}］`}
+                        </div>
+                      ),
+                    )}
                   </div>
                 )) ||
                   "-"}
               </TableCell>
               <TableCell className="text-center">
-                {item.department_name} / {item.target_class || "-"}
+                {item.department_name} / {item.basic_info?.target_class || "-"}
               </TableCell>
               <TableCell className="text-center">
                 <Button
@@ -124,13 +127,13 @@ export default function List({ infos }: ListProps) {
                   size="sm"
                   className="cursor-pointer"
                   onClick={
-                    isBookmarked(item)
-                      ? () => removeBookmark(item)
-                      : () => addBookmark(item)
+                    isBookmarked(item as CourseData)
+                      ? () => removeBookmark(item as CourseData)
+                      : () => addBookmark(item as CourseData)
                   }
                   disabled={item.is_closed}
                 >
-                  {isBookmarked(item) ? (
+                  {isBookmarked(item as CourseData) ? (
                     <Bookmark fill="currentColor" className="h-4 w-4" />
                   ) : (
                     <Bookmark className="h-4 w-4" />

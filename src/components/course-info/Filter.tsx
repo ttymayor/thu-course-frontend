@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Department } from "@/components/course-info/types";
+import { Department } from "@/types/department";
 import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -41,7 +41,7 @@ export default function Filter() {
 
   const [searchQuery, setSearchQuery] = useState(currentSearchQuery);
   const [selectedDepartment, setSelectedDepartment] = useState(
-    currentSelectedDepartment
+    currentSelectedDepartment,
   );
 
   const [open, setOpen] = useState(false);
@@ -51,51 +51,30 @@ export default function Filter() {
     "/api/departments",
     async (key: string) => {
       return (await fetch(key).then((res) => res.json())).data as Department[];
-    }
+    },
   );
 
-  // 學院映射
-  const collegeMap = {
-    1: "文學院",
-    2: "理學院",
-    3: "工學院",
-    4: "管理學院",
-    5: "社會科學院",
-    6: "農學院",
-    7: "創藝學院",
-    8: "法律學院",
-    9: "國際學院",
-  };
-
-  // 根據系所代碼獲取學院
-  const getCollegeByDeptCode = (deptCode: string): number => {
-    const firstDigit = parseInt(deptCode.charAt(0), 10);
-    return firstDigit >= 1 && firstDigit <= 9 ? firstDigit : 0;
-  };
-
-  // 按學院分類系所
-  const departmentsByCollege = departments?.reduce((acc, dept) => {
-    const collegeId = getCollegeByDeptCode(dept.department_code);
-    if (collegeId > 0) {
-      if (!acc[collegeId]) {
-        acc[collegeId] = [];
+  // 按學院分類系所 - 使用 category_code 和 category_name
+  const departmentsByCollege = departments?.reduce(
+    (acc, dept) => {
+      const categoryCode = dept.category_code;
+      if (!acc[categoryCode]) {
+        acc[categoryCode] = {
+          categoryName: dept.category_name,
+          departments: [],
+        };
       }
-      acc[collegeId].push(dept);
-    } else {
-      // 其他分類 (使用 0 作為 key)
-      if (!acc[0]) {
-        acc[0] = [];
-      }
-      acc[0].push(dept);
-    }
-    return acc;
-  }, {} as Record<number, Department[]>);
+      acc[categoryCode].departments.push(dept);
+      return acc;
+    },
+    {} as Record<string, { categoryName: string; departments: Department[] }>,
+  );
 
   // 獲取當前選中的系所名稱
   const getSelectedDeptName = () => {
     if (!selectedDepartment || selectedDepartment === "all") return "所有系所";
     const dept = departments?.find(
-      (d) => d.department_code === selectedDepartment
+      (d) => d.department_code === selectedDepartment,
     );
     return dept ? dept.department_name : "所有系所";
   };
@@ -140,9 +119,9 @@ export default function Filter() {
   };
 
   return (
-    <div className="mb-2 flex gap-2 flex-wrap items-center">
+    <div className="mb-2 flex flex-wrap items-center gap-2">
       {isLoading ? (
-        <Skeleton className="w-full h-10" />
+        <Skeleton className="h-10 w-full" />
       ) : (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -150,7 +129,7 @@ export default function Filter() {
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full cursor-pointer justify-between text-sm px-3 py-2"
+              className="w-full cursor-pointer justify-between px-3 py-2 text-sm"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -160,7 +139,7 @@ export default function Filter() {
             <Command>
               <CommandInput
                 placeholder="搜尋系所..."
-                className="h-10 text-sm px-3"
+                className="h-10 px-3 text-sm"
               />
               <CommandList>
                 <CommandEmpty>找不到系所。</CommandEmpty>
@@ -176,7 +155,7 @@ export default function Filter() {
                     <Check
                       className={cn(
                         "h-4 w-4",
-                        selectedDepartment === "" ? "opacity-100" : "opacity-0"
+                        selectedDepartment === "" ? "opacity-100" : "opacity-0",
                       )}
                     />
                     所有系所
@@ -184,50 +163,43 @@ export default function Filter() {
                 </CommandGroup>
                 {departmentsByCollege &&
                   Object.entries(departmentsByCollege)
-                    .sort(([a], [b]) => {
-                      // 將其他分組(0)排在最後
-                      if (parseInt(a) === 0) return 1;
-                      if (parseInt(b) === 0) return -1;
-                      return parseInt(a) - parseInt(b);
-                    })
-                    .map(([collegeId, depts]) => (
-                      <CommandGroup
-                        key={collegeId}
-                        heading={
-                          parseInt(collegeId) === 0
-                            ? "其他"
-                            : collegeMap[
-                                parseInt(collegeId) as keyof typeof collegeMap
-                              ]
-                        }
-                      >
-                        {depts
-                          .sort((a, b) =>
-                            a.department_code.localeCompare(b.department_code)
-                          )
-                          .map((dept) => (
-                            <CommandItem
-                              key={dept.department_code}
-                              value={`${dept.department_name} ${dept.department_code}`}
-                              onSelect={() => {
-                                handleDepartmentChange(dept.department_code);
-                                setOpen(false);
-                              }}
-                              className="cursor-pointer"
-                            >
-                              <Check
-                                className={cn(
-                                  "h-4 w-4",
-                                  selectedDepartment === dept.department_code
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {dept.department_name}
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
-                    ))}
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .map(
+                      ([
+                        categoryCode,
+                        { categoryName, departments: depts },
+                      ]) => (
+                        <CommandGroup key={categoryCode} heading={categoryName}>
+                          {depts
+                            .sort((a, b) =>
+                              a.department_code.localeCompare(
+                                b.department_code,
+                              ),
+                            )
+                            .map((dept) => (
+                              <CommandItem
+                                key={dept.department_code}
+                                value={`${dept.department_name} ${dept.department_code}`}
+                                onSelect={() => {
+                                  handleDepartmentChange(dept.department_code);
+                                  setOpen(false);
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Check
+                                  className={cn(
+                                    "h-4 w-4",
+                                    selectedDepartment === dept.department_code
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {dept.department_name}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      ),
+                    )}
               </CommandList>
             </Command>
           </PopoverContent>
@@ -243,7 +215,7 @@ export default function Filter() {
           placeholder="搜尋課程代碼或課程名稱..."
           value={searchQuery}
           onChange={handleSearchChange}
-          className="w-full h-10 text-sm px-3 py-2"
+          className="h-10 w-full px-3 py-2 text-sm"
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton
