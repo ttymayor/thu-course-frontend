@@ -69,7 +69,7 @@ function CourseSelectorContent({
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
       : selectedCourses.filter(
-          (course) => course.course_code !== course.course_code,
+          (c) => c.course_code !== course.course_code,
         );
     setSelectedCourses(newSelectedCourses);
   };
