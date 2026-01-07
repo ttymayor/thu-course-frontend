@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDepartments } from "@/services/departmentService";
-import { Department } from "@/types/department";
 
 export async function GET() {
   try {
-    const departments: Department[] = await getDepartments();
+    const { data } = await getDepartments();
 
     return NextResponse.json({
       success: true,
-      data: departments,
+      data,
     });
   } catch (error) {
     console.error("Error fetching departments:", error);
