@@ -17,11 +17,11 @@ export default function ThemeColorToggle() {
 
   const colors = [
     { name: "coffee", label: "咖啡（Coffee）", color: "bg-[#ffdfb5]" },
-    { name: "blue", label: "糖果藍 (Candy Blue)", color: "bg-[#a0d1e6]" },
-    { name: "green", label: "靜默綠 (Silent Green)", color: "bg-[#7c9082]" },
+    { name: "blue", label: "糖果藍（Candy Blue）", color: "bg-[#a0d1e6]" },
+    { name: "green", label: "靜默綠（Silent Green）", color: "bg-[#7c9082]" },
     {
       name: "purple",
-      label: "紫水晶薄霧 (Amethyst Haze)",
+      label: "紫水晶薄霧（Amethyst Haze）",
       color: "bg-[#a995c9]",
     },
   ] as const;
