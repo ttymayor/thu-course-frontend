@@ -164,11 +164,7 @@ export default async function Home() {
                   發現了不可預期的錯誤？
                 </AccordionTrigger>
                 <AccordionContent>
-                  請至{" "}
-                  <Link href="https://github.com/ttymayor/thu-course-frontend/issues">
-                    GitHub Issues
-                  </Link>{" "}
-                  提出，我們會盡快處理。
+                  歡迎登入後，點選頭像到意見回饋頁面提供資訊
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
