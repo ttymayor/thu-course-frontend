@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface CourseDocument extends Document {
+  academic_year: number;
+  academic_semester: number;
   course_code: string;
   course_name: string;
   department_code: string;

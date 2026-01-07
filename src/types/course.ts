@@ -20,6 +20,8 @@ export interface BasicInfo {
 
 export interface Course {
   _id?: string;
+  academic_year: number;
+  academic_semester: number;
   course_code: string;
   course_name: string;
   department_code: string;

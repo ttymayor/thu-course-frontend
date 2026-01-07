@@ -28,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { allPeriods, allDays, ScheduleGrid } from "@/lib/schedule";
@@ -215,13 +216,15 @@ export default function ScheduleCard({
   };
 
   // 計算總學分
-  const totalCredits = selectedCourses.reduce(
-    (sum, course) =>
-      (process.env.NEXT_PUBLIC_ACADEMIC_SEMESTER as string) === "1"
-        ? sum + course.credits_1
-        : sum + course.credits_2,
-    0,
-  );
+  const totalCredits = selectedCourses.reduce((sum, course) => {
+    if (course.academic_semester === 1) {
+      return sum + course.credits_1;
+    } else if (course.academic_semester === 2) {
+      return sum + course.credits_2;
+    } else {
+      return sum;
+    }
+  }, 0);
 
   const downloadSchedule = async () => {
     if (!tableRef.current) return;
@@ -269,12 +272,10 @@ export default function ScheduleCard({
       <CardHeader>
         <CardTitle>{isViewingShared ? "預覽分享的課表" : "排課模擬"}</CardTitle>
         <CardDescription className="flex flex-row gap-2">
-          <span className="text-foreground font-medium">
-            {selectedCourses.length}
-          </span>
-          <span>門課程</span>
-          <span className="text-foreground font-medium">{totalCredits}</span>
-          <span>學分</span>
+          <Badge className="rounded-full">
+            {selectedCourses.length} 門課程
+          </Badge>
+          <Badge className="rounded-full">{totalCredits} 學分</Badge>
         </CardDescription>
         <CardAction>
           {isViewingShared ? (
