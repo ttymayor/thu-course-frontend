@@ -26,6 +26,7 @@ import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from "@/components/ui/scroll-based-velocity";
+import { Section } from "@/components/Section";
 
 // 學校相關連結配置
 const schoolLinks = [
@@ -148,7 +149,8 @@ export default async function Home() {
                   我們會蒐集您的個人資料嗎？
                 </AccordionTrigger>
                 <AccordionContent>
-                  不會，我們不會蒐集您的個人資料。本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器也僅在本地端進行計算，不會上傳任何資料到我們的伺服器。
+                  不會，我們不會蒐集您的個人資料。本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器也僅在本地端進行計算，不會上傳任何資料到我們的伺服器。登入功能會記錄您的登入
+                  Email，目前僅額外提供意見回饋。
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
@@ -172,26 +174,5 @@ export default async function Home() {
         </div>
       </main>
     </div>
-  );
-}
-
-function Section({
-  id,
-  title,
-  icon,
-  children,
-}: React.PropsWithChildren<{
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-}>) {
-  return (
-    <section id={id} className="mb-8 w-full max-w-4xl space-y-4">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-xl font-bold">{title}</h2>
-      </div>
-      {children}
-    </section>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableHeader,
@@ -14,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Course } from "@/types/course";
 import { useState, useEffect, useMemo } from "react";
+import { motion } from "motion/react";
 
 interface ScheduleTableProps {
   tableRef?: React.RefObject<HTMLTableElement | null>;
@@ -201,7 +204,10 @@ export default function ScheduleTable({
                     )}
                     <div className="flex h-full flex-col">
                       {grid[day]?.[period]?.map((course: Course) => (
-                        <div
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: Math.random() * 0.75 }}
                           key={course.course_code}
                           className={cn(
                             isViewingShared
@@ -240,7 +246,7 @@ export default function ScheduleTable({
                               <X className="h-2 w-2 sm:h-3 sm:w-3" />
                             </Button>
                           )}
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </TableCell>
