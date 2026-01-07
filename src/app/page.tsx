@@ -119,19 +119,21 @@ export default async function Home() {
                   <Button
                     key={index}
                     variant="secondary"
-                    className="hover:bg-accent/50 group relative h-auto overflow-hidden p-4 text-center"
+                    className="bg-card hover:bg-secondary/50 group relative h-auto overflow-hidden p-4 text-center"
                     asChild
                   >
                     <Link href={link.href} prefetch={false}>
                       <div className="relative z-10 flex flex-col items-center gap-2">
-                        <p className="text-base font-bold">{link.title}</p>
+                        <p className="text-foreground font-bold">
+                          {link.title}
+                        </p>
                         {link.description && (
                           <span className="text-muted-foreground text-sm leading-tight break-words whitespace-normal">
                             {link.description}
                           </span>
                         )}
                       </div>
-                      <IconComponent className="absolute -left-8 size-24 opacity-[0.05] transition-all duration-500 group-hover:translate-x-5 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-20" />
+                      <IconComponent className="text-secondary absolute -left-8 size-24 opacity-[0.20] transition-all duration-500 group-hover:translate-x-5 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-40" />
                     </Link>
                   </Button>
                 );

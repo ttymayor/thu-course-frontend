@@ -211,7 +211,7 @@ export default function ScheduleTable({
                           key={course.course_code}
                           className={cn(
                             isViewingShared
-                              ? "bg-secondary/50 border-1 border-dashed"
+                              ? "bg-secondary/50 border border-dashed"
                               : hoveredCourse &&
                                   hoveredCourse.course_code ===
                                     course.course_code
@@ -224,10 +224,10 @@ export default function ScheduleTable({
                             href={`/course-info/${course.course_code}`}
                             className="flex h-full flex-col justify-center"
                           >
-                            <code className="text-center text-[9px] leading-tight sm:text-[12px]">
+                            <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
                               {course.course_code}
                             </code>
-                            <p className="mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
+                            <p className="text-secondary-foreground mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
                               {course.course_name}
                             </p>
                             <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">

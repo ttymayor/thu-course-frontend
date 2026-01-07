@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import ModeToggle from "./ModeToggle";
+import ThemeColorToggle from "./ThemeColorToggle";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -140,6 +141,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
         {/* 手機版選單 */}
         <div className="ml-auto flex items-center gap-2 md:hidden">
+          <ThemeColorToggle />
           <ModeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -226,6 +228,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
         {/* 桌面版右側區域 */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
+          <ThemeColorToggle />
           <ModeToggle />
           {session ? (
             <DropdownMenu>
