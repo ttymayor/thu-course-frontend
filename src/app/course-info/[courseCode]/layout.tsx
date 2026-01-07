@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { getCourse } from "@/lib/course";
+import { getCourseByCode } from "@/services/courseService";
 
 export async function generateMetadata({
   params,
@@ -8,7 +8,7 @@ export async function generateMetadata({
   params: Promise<{ courseCode: string }>;
 }): Promise<Metadata> {
   const { courseCode } = await params;
-  const courseInfo = await getCourse(courseCode);
+  const courseInfo = await getCourseByCode(courseCode);
 
   const baseUrl = "https://thc.ttymayor.com";
   const ogImageUrl = `${baseUrl}/api/og/course-info/${encodeURIComponent(

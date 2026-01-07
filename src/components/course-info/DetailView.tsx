@@ -10,7 +10,7 @@ import {
   BarChart3,
   Bookmark,
 } from "lucide-react";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import GradingPieChart from "@/components/course-info/GradingPieChart";
 import SelectionLineChart from "@/components/course-info/SelectionLineChart";
 import {
@@ -28,7 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import useBookmark from "@/hooks/useBookmark";
 import Link from "next/link";
 
-export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
+export default function DetailView({ courseInfo }: { courseInfo: Course }) {
   const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
 
   return (
@@ -102,7 +102,7 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
           <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
             <li className="">
               上課時間：
-              {courseTimeParser(courseInfo.class_time || "").map(
+              {courseTimeParser(courseInfo.basic_info.class_time || "").map(
                 (entry, index) => (
                   <span key={entry.day}>
                     {index > 0 && "、"}
@@ -112,9 +112,9 @@ export default function DetailView({ courseInfo }: { courseInfo: CourseData }) {
                 ),
               )}
             </li>
-            <li>修課對象：{courseInfo.target_class || "-"}</li>
-            <li>修課年級：{courseInfo.target_grade || "-"}</li>
-            <li>選課說明：{courseInfo.enrollment_notes || "-"}</li>
+            <li>修課對象：{courseInfo.basic_info.target_class || "-"}</li>
+            <li>修課年級：{courseInfo.basic_info.target_grade || "-"}</li>
+            <li>選課說明：{courseInfo.basic_info.enrollment_notes || "-"}</li>
           </ul>
         </CardContent>
       </Card>

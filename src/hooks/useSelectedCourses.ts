@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import { toast } from "sonner";
 
 export default function useSelectedCourses() {
-  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
   // 從 Local Storage 載入已選課程
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function useSelectedCourses() {
     }
   };
 
-  const importCourses = (courses: CourseData[]) => {
+  const importCourses = (courses: Course[]) => {
     setSelectedCourses(courses);
     toast.success("成功匯入課表！", {
       description: `已匯入 ${courses.length} 門課程到您的課表中。`,

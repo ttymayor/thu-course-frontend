@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import { CourseTypeMap } from "@/components/course-info/types";
 import RemoveBookmarkDialog from "@/components/bookmarks/RemoveBookmarkDialog";
 
@@ -21,7 +21,7 @@ const courseTypeMap: CourseTypeMap = {
   3: "選修",
 };
 
-export default function BookmarkCard({ course }: { course: CourseData }) {
+export default function BookmarkCard({ course }: { course: Course }) {
   return (
     <Card className="group relative h-full overflow-hidden">
       <Bookmark className="text-muted absolute -top-20 -right-20 size-60 transition-all group-hover:fill-current" />
@@ -53,17 +53,19 @@ export default function BookmarkCard({ course }: { course: CourseData }) {
         <ul className="list-none [&>li]:my-2">
           <li className="">
             上課時間：
-            {courseTimeParser(course.class_time || "").map((entry, index) => (
-              <span key={entry.day}>
-                {index > 0 && "、"}
-                {entry.day} {entry.periods.join(", ")}
-                {entry.location && `［${entry.location}］`}
-              </span>
-            ))}
+            {courseTimeParser(course.basic_info.class_time || "").map(
+              (entry, index) => (
+                <span key={entry.day}>
+                  {index > 0 && "、"}
+                  {entry.day} {entry.periods.join(", ")}
+                  {entry.location && `［${entry.location}］`}
+                </span>
+              ),
+            )}
           </li>
-          <li>修課對象：{course.target_class || "-"}</li>
-          <li>修課年級：{course.target_grade || "-"}</li>
-          <li>選課說明：{course.enrollment_notes || "-"}</li>
+          <li>修課對象：{course.basic_info.target_class || "-"}</li>
+          <li>修課年級：{course.basic_info.target_grade || "-"}</li>
+          <li>選課說明：{course.basic_info.enrollment_notes || "-"}</li>
         </ul>
       </CardContent>
       <CardFooter className="flex justify-between">

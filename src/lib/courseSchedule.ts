@@ -15,6 +15,6 @@ const CourseSchedule =
 
 export async function getCourseSchedules() {
   await connectMongoDB();
-  const schedules = await CourseSchedule.find({});
+  const schedules = await CourseSchedule.find({}).lean();
   return schedules;
 }

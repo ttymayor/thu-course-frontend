@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { getCourse } from "@/lib/course";
+import { getCourseByCode } from "@/services/courseService";
 import { generateDefaultOGImage } from "@/lib/ogImage";
 
 export async function GET(
@@ -12,7 +12,7 @@ export async function GET(
     const { courseCode } = await params;
 
     // 獲取課程資訊
-    const courseInfo = await getCourse(courseCode);
+    const courseInfo = await getCourseByCode(courseCode);
 
     // 載入字體
     const LineSeedRegular = await readFile(

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCourses } from "@/lib/course";
+import { getCourses } from "@/services/courseService";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,8 +7,6 @@ export async function GET(request: Request) {
   const course_name = searchParams.get("course_name") || "";
   const department_code = searchParams.get("department_code") || "";
   const department_name = searchParams.get("department_name") || "";
-  const academic_semester = searchParams.get("academic_semester") || "";
-  const academic_year = searchParams.get("academic_year") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
   const page_size = parseInt(searchParams.get("page_size") || "10", 10);
 
@@ -21,8 +19,6 @@ export async function GET(request: Request) {
       course_name,
       department_code,
       department_name,
-      academic_semester,
-      academic_year,
       course_codes,
       page,
       page_size,

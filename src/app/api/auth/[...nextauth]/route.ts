@@ -1,6 +1,6 @@
 import NextAuth, { type AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { findOrCreateUser } from "@/lib/user";
+import { findOrCreateUser } from "@/services/userService";
 
 export const authOptions: AuthOptions = {
   providers: [

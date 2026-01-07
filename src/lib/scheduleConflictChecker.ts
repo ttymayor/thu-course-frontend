@@ -1,4 +1,4 @@
-import { CourseData } from "@/components/course-info/types";
+import { Course } from "@/types/course";
 import { courseTimeParser } from "./courseTimeParser";
 
 export interface TimeSlot {
@@ -11,8 +11,8 @@ export interface TimeSlot {
 export interface ConflictInfo {
   hasConflict: boolean;
   conflictingCourses: {
-    existingCourse: CourseData;
-    newCourse: CourseData;
+    existingCourse: Course;
+    newCourse: Course;
     conflictingSlots: {
       day: string;
       periods: number[];
@@ -21,8 +21,8 @@ export interface ConflictInfo {
 }
 
 export function checkScheduleConflict(
-  existingCourses: CourseData[],
-  newCourse: CourseData
+  existingCourses: Course[],
+  newCourse: Course,
 ): ConflictInfo {
   const conflictInfo: ConflictInfo = {
     hasConflict: false,
@@ -30,12 +30,12 @@ export function checkScheduleConflict(
   };
 
   // 如果新課程沒有上課時間，則不會有衝突
-  if (!newCourse.class_time) {
+  if (!newCourse.basic_info.class_time) {
     return conflictInfo;
   }
 
   // 解析新課程的時間
-  const newCourseTimeSlots = courseTimeParser(newCourse.class_time);
+  const newCourseTimeSlots = courseTimeParser(newCourse.basic_info.class_time);
 
   // 檢查每個已存在的課程
   for (const existingCourse of existingCourses) {
@@ -45,15 +45,20 @@ export function checkScheduleConflict(
     }
 
     // 如果現有課程沒有上課時間，跳過
-    if (!existingCourse.class_time) {
+    if (!existingCourse.basic_info.class_time) {
       continue;
     }
 
     // 解析現有課程的時間
-    const existingTimeSlots = courseTimeParser(existingCourse.class_time);
+    const existingTimeSlots = courseTimeParser(
+      existingCourse.basic_info.class_time,
+    );
 
     // 檢查時間衝突
-    const conflictingSlots = findTimeConflicts(existingTimeSlots, newCourseTimeSlots);
+    const conflictingSlots = findTimeConflicts(
+      existingTimeSlots,
+      newCourseTimeSlots,
+    );
 
     if (conflictingSlots.length > 0) {
       conflictInfo.hasConflict = true;
@@ -70,7 +75,7 @@ export function checkScheduleConflict(
 
 function findTimeConflicts(
   timeSlots1: Array<{ day: string; periods: number[] }>,
-  timeSlots2: Array<{ day: string; periods: number[] }>
+  timeSlots2: Array<{ day: string; periods: number[] }>,
 ): Array<{ day: string; periods: number[] }> {
   const conflicts: Array<{ day: string; periods: number[] }> = [];
 
@@ -79,8 +84,8 @@ function findTimeConflicts(
       // 檢查是否為同一天
       if (slot1.day === slot2.day) {
         // 找出重疊的節次
-        const overlappingPeriods = slot1.periods.filter(period =>
-          slot2.periods.includes(period)
+        const overlappingPeriods = slot1.periods.filter((period) =>
+          slot2.periods.includes(period),
         );
 
         if (overlappingPeriods.length > 0) {

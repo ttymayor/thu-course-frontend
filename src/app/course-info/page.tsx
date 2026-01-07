@@ -5,7 +5,7 @@ import List from "@/components/course-info/List";
 import ListSkeleton from "@/components/course-info/ListSkeleton";
 import Pagination from "@/components/course-info/Pagination";
 import { CourseFilters } from "@/components/course-info/types";
-import { getCourses } from "@/lib/course";
+import { getCourses } from "@/services/courseService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -31,11 +31,11 @@ async function CourseData({ filters }: { filters: CourseFilters }) {
     params.course_name = filters.search;
   }
 
-  const { data: infos, total } = await getCourses(params);
+  const { data: courses, total } = await getCourses(params);
 
   return (
     <>
-      <List infos={infos} />
+      <List courses={courses} />
       <Pagination total={total} />
     </>
   );
@@ -44,9 +44,9 @@ async function CourseData({ filters }: { filters: CourseFilters }) {
 export default async function CourseInfoPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const params = searchParams;
+  const params = await searchParams;
 
   const filters: CourseFilters = {
     search: typeof params.search === "string" ? params.search : undefined,
@@ -56,9 +56,9 @@ export default async function CourseInfoPage({
   };
 
   return (
-    <div className="bg-background mx-auto py-4 sm:py-8 px-4 sm:px-6">
-      <main className="flex flex-col gap-8 sm:gap-[32px] items-center justify-center">
-        <div className="w-full flex justify-center">
+    <div className="bg-background mx-auto px-4 py-4 sm:px-6 sm:py-8">
+      <main className="flex flex-col items-center justify-center gap-8 sm:gap-[32px]">
+        <div className="flex w-full justify-center">
           <Frame>
             <Filter />
             <Suspense fallback={<ListSkeleton />}>
