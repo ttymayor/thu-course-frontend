@@ -98,7 +98,7 @@ export default function Navbar({ session }: { session: Session | null }) {
                 className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
               >
                 {getAcademicYearAndSemester()}
-              </Badge>{" "}
+              </Badge>
               {NAVBAR_CONFIG.brand}
             </span>
           </Link>
@@ -113,7 +113,7 @@ export default function Navbar({ session }: { session: Session | null }) {
                 className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
               >
                 {getAcademicYearAndSemester()}
-              </Badge>{" "}
+              </Badge>
               {NAVBAR_CONFIG.brand}
             </span>
           </Link>

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useState } from "react";
+import Link from "next/link";
 import { useVercount } from "vercount-react";
 
 const FOOTER_CONFIG = {
@@ -15,116 +10,147 @@ const FOOTER_CONFIG = {
 };
 
 export default function Footer() {
-  const [touchTimes, setTouchTimes] = useState(0);
+  // const [touchTimes, setTouchTimes] = useState(0);
   const { sitePv, siteUv } = useVercount();
 
   return (
-    <div className="w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+    <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 w-full border-t backdrop-blur">
+      <div className="mx-auto max-w-7xl p-6 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
           {/* 品牌資訊 */}
-          <div className="flex flex-col items-center md:items-start space-y-1">
-            <span
-              className="font-bold text-foreground cursor-pointer select-none"
-              onClick={() => setTouchTimes(touchTimes + 1)}
-            >
-              東海課程資訊{" "}
-              {touchTimes > 0 && touchTimes < 3
-                ? "點什麼點？"
-                : touchTimes === 3
-                ? "給你看瀏覽次數"
-                : touchTimes > 3 && touchTimes < 10
-                ? "別點了"
-                : touchTimes >= 10 && touchTimes < 20
-                ? "？"
-                : touchTimes >= 20
-                ? "6"
-                : ""}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              一個更好的東海課程資訊網站
-            </span>
-          </div>
-
-          {/* 開發者資訊 */}
-          <div className="flex flex-col items-center text-center space-y-1">
-            {touchTimes === 3 && (
-              <span className="text-sm text-muted-foreground">
-                From 2025/10/30
-                <br />
-                Site Page Views: {sitePv}
-                <br />
-                Unique Visitors: {siteUv}
-              </span>
-            )}
-
-            <span className="text-sm text-muted-foreground">
+          <section className="footer-container">
+            <h2 className="footer-heading text-lg">東海課程資訊</h2>
+            <span className="footer-text">一個更好的東海課程資訊網站</span>
+            <span className="footer-text">
               Developed by{" "}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a
-                    href={FOOTER_CONFIG.github}
-                    className="text-primary hover:text-primary/80 underline font-medium transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    tantuyu
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>我真的不是電神...</p>
-                </TooltipContent>
-              </Tooltip>
+              <Link
+                href={FOOTER_CONFIG.github}
+                className="footer-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                prefetch={false}
+              >
+                tantuyu
+              </Link>
             </span>
-
-            {/* contributor */}
-            <span className="text-sm text-muted-foreground">
+            <span className="footer-text">
               Contributor:{" "}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a
-                    href="https://github.com/pan93412"
-                    className="text-primary hover:text-primary/80 underline font-medium transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Pan
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>這才是真的電神...</p>
-                </TooltipContent>
-              </Tooltip>
+              <Link
+                href="https://github.com/pan93412"
+                className="footer-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                prefetch={false}
+              >
+                Pan
+              </Link>
             </span>
-          </div>
+          </section>
+
+          {/* 相關連結 */}
+          <section className="footer-container">
+            <h4 className="footer-heading">相關連結</h4>
+
+            <ol className="footer-list">
+              <li>
+                <Link
+                  href="https://course.thu.edu.tw/"
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  課程資訊網
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://www.thu.edu.tw/"
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  東海學校首頁
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://fsis.thu.edu.tw/"
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  學生資訊系統
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://ilearn.thu.edu.tw/"
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  東海 iLearn
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://www.thu.edu.tw/web/calendar/page.php?scid=23&sid=36"
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  東海行事曆
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://www.thu.edu.tw/web/pages/page.php?scid=66&sid=147"
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  新生入學網
+                </Link>
+              </li>
+            </ol>
+          </section>
 
           {/* 連結區域 */}
-          <div className="flex items-center space-x-6">
-            <a
-              href={FOOTER_CONFIG.github_thu_course_frontend}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              前端專案
-            </a>
-            <a
-              href={FOOTER_CONFIG.github_thu_course_crawler}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              爬蟲專案
-            </a>
-            <a
-              href={FOOTER_CONFIG.github}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-            </a>
-          </div>
+          <section className="footer-container">
+            <h4 className="footer-heading">專案連結</h4>
+
+            <ol className="footer-list">
+              <li>
+                <Link
+                  href={FOOTER_CONFIG.github_thu_course_frontend}
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  前端專案
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={FOOTER_CONFIG.github_thu_course_crawler}
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  爬蟲專案
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={FOOTER_CONFIG.github}
+                  prefetch={false}
+                  className="footer-link"
+                >
+                  GitHub
+                </Link>
+              </li>
+            </ol>
+          </section>
+
+          <section className="footer-container">
+            <div>
+              <p className="footer-text">瀏覽人數 {siteUv}</p>
+              <p className="footer-text">頁面瀏覽 {sitePv}</p>
+            </div>
+            <div className="footer-text">© 2025-2026 tantuyu</div>
+          </section>
         </div>
       </div>
     </div>

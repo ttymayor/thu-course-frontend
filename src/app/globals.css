@@ -257,6 +257,30 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* 
+  a {
+    @apply no-underline hover:underline;
+  } */
+
+  .footer-list {
+    @apply flex flex-col gap-1 text-sm sm:items-start;
+  }
+
+  .footer-link {
+    @apply text-muted-foreground hover:text-foreground text-sm no-underline transition-all hover:underline;
+  }
+
+  .footer-heading {
+    @apply font-bold;
+  }
+
+  .footer-container {
+    @apply flex flex-col items-start gap-2;
+  }
+
+  .footer-text {
+    @apply text-muted-foreground text-sm;
+  }
 }
 
 @theme {
