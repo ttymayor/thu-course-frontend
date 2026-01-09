@@ -9,8 +9,8 @@ export function Section({
   children,
 }: React.PropsWithChildren<{
   id: string;
-  title: string;
-  icon: React.ReactNode;
+  title?: string;
+  icon?: React.ReactNode;
 }>) {
   return (
     <motion.section
@@ -20,10 +20,12 @@ export function Section({
       id={id}
       className="mb-8 w-full max-w-4xl space-y-4"
     >
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-xl font-bold">{title}</h2>
-      </div>
+      {title && (
+        <div className="flex items-center gap-2">
+          {icon}
+          <h2 className="text-xl font-bold">{title}</h2>
+        </div>
+      )}
       {children}
     </motion.section>
   );

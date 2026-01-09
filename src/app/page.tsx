@@ -10,7 +10,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  Megaphone,
   School,
   BookOpen,
   Users,
@@ -22,11 +21,8 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
-import {
-  ScrollVelocityContainer,
-  ScrollVelocityRow,
-} from "@/components/ui/scroll-based-velocity";
 import { Section } from "@/components/Section";
+import { NewRelease } from "@/components/NewRelease";
 
 // 學校相關連結配置
 const schoolLinks = [
@@ -73,7 +69,9 @@ export default async function Home() {
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       <main className="flex flex-col items-center justify-center gap-8 sm:gap-[32px]">
         <div className="flex w-full flex-col items-center gap-6">
-          <Section
+          <NewRelease />
+
+          {/* <Section
             id="announcement"
             title="公告"
             icon={<Megaphone className="size-5" />}
@@ -94,8 +92,7 @@ export default async function Home() {
                 </p>
               </ScrollVelocityRow>
             </ScrollVelocityContainer>
-          </Section>
-
+          </Section> */}
           <Section
             id="course-schedule"
             title="選課時程"
@@ -105,7 +102,6 @@ export default async function Home() {
               <CourseScheduleList />
             </Suspense>
           </Section>
-
           {/* 學校相關連結區塊 */}
           <Section
             id="school-links"
