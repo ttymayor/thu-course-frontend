@@ -16,7 +16,7 @@ export function NewRelease() {
       <Link href={"/course-info"}>
         <Badge variant={"outline"} className="hover:bg-muted">
           <div className="size-2 rounded-full bg-blue-500"></div>
-          你知道嗎？現在課程資訊有卡片模式，並且點擊教師的{" "}
+          你知道嗎？卡片模式點擊
           <ExternalLink className="size-4" /> 可透過 Dcard 搜尋相關文章
           <MoveRight className="size-4" />
         </Badge>
