@@ -30,10 +30,11 @@ export async function GET(
     // 處理課程名稱長度，避免過長
     const courseName = courseInfo.course_name || "";
     const teacher = courseInfo.teachers.slice(0, 3).join("、");
-    const displayCourse =
-      (courseName + teacher).length > 20
-        ? courseName.substring(0, 20) + "..."
-        : courseName + " - " + teacher;
+const fullDisplayString = `${courseName} - ${teacher}`;
+const displayCourse =
+  fullDisplayString.length > 28
+    ? `${fullDisplayString.substring(0, 28)}...`
+    : fullDisplayString;
 
     return new ImageResponse(
       <div
