@@ -32,6 +32,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if (subject.length > 200 || message.length > 300) {
+      return NextResponse.json(
+        { success: false, message: "Subject or message is too long." },
+        { status: 400 },
+      );
+    }
+
     await connectMongoDB();
 
     const newFeedback = await Feedback.create({
