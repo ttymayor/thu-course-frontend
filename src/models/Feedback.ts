@@ -31,7 +31,7 @@ const feedbackSchema = new Schema<FeedbackDocument>(
     message: {
       type: String,
       required: true,
-      maxlength: 2000,
+      maxlength: 300,
     },
     status: {
       type: String,
