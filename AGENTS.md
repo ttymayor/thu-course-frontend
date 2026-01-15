@@ -24,7 +24,7 @@ This document provides guidelines for agentic coding agents working in the THU C
 
 ### Tech Stack
 
-- **Framework**: Next.js 16.1.1 with App Router
+- **Framework**: Next.js 16.1.2 with App Router
 - **UI**: React 19.2.3 with TypeScript
 - **Styling**: Tailwind CSS v4.1.18
 - **Database**: MongoDB with Mongoose
