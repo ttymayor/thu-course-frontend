@@ -10,7 +10,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  Megaphone,
   School,
   BookOpen,
   Users,
@@ -22,10 +21,8 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
-import {
-  ScrollVelocityContainer,
-  ScrollVelocityRow,
-} from "@/components/ui/scroll-based-velocity";
+import { Section } from "@/components/Section";
+import { NewRelease } from "@/components/NewRelease";
 
 // 學校相關連結配置
 const schoolLinks = [
@@ -72,7 +69,9 @@ export default async function Home() {
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       <main className="flex flex-col items-center justify-center gap-8 sm:gap-[32px]">
         <div className="flex w-full flex-col items-center gap-6">
-          <Section
+          <NewRelease />
+
+          {/* <Section
             id="announcement"
             title="公告"
             icon={<Megaphone className="size-5" />}
@@ -93,8 +92,7 @@ export default async function Home() {
                 </p>
               </ScrollVelocityRow>
             </ScrollVelocityContainer>
-          </Section>
-
+          </Section> */}
           <Section
             id="course-schedule"
             title="選課時程"
@@ -104,7 +102,6 @@ export default async function Home() {
               <CourseScheduleList />
             </Suspense>
           </Section>
-
           {/* 學校相關連結區塊 */}
           <Section
             id="school-links"
@@ -118,19 +115,21 @@ export default async function Home() {
                   <Button
                     key={index}
                     variant="secondary"
-                    className="hover:bg-accent/50 group relative h-auto overflow-hidden p-4 text-center"
+                    className="bg-card hover:bg-secondary/50 group relative h-auto overflow-hidden p-4 text-center"
                     asChild
                   >
                     <Link href={link.href} prefetch={false}>
                       <div className="relative z-10 flex flex-col items-center gap-2">
-                        <p className="text-base font-bold">{link.title}</p>
+                        <p className="text-foreground font-bold">
+                          {link.title}
+                        </p>
                         {link.description && (
                           <span className="text-muted-foreground text-sm leading-tight break-words whitespace-normal">
                             {link.description}
                           </span>
                         )}
                       </div>
-                      <IconComponent className="absolute -left-8 size-24 opacity-[0.05] transition-all duration-500 group-hover:translate-x-5 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-20" />
+                      <IconComponent className="text-secondary absolute -left-8 size-24 opacity-[0.20] transition-all duration-500 group-hover:translate-x-5 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-40" />
                     </Link>
                   </Button>
                 );
@@ -148,7 +147,8 @@ export default async function Home() {
                   我們會蒐集您的個人資料嗎？
                 </AccordionTrigger>
                 <AccordionContent>
-                  不會，我們不會蒐集您的個人資料。本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器也僅在本地端進行計算，不會上傳任何資料到我們的伺服器。
+                  不會，我們不會蒐集您的個人資料。本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器也僅在本地端進行計算，不會上傳任何資料到我們的伺服器。登入功能會記錄您的登入
+                  Email，目前僅額外提供意見回饋。
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
@@ -164,11 +164,7 @@ export default async function Home() {
                   發現了不可預期的錯誤？
                 </AccordionTrigger>
                 <AccordionContent>
-                  請至{" "}
-                  <Link href="https://github.com/ttymayor/thu-course-frontend/issues">
-                    GitHub Issues
-                  </Link>{" "}
-                  提出，我們會盡快處理。
+                  歡迎登入後，點選頭像到意見回饋頁面提供資訊
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -176,26 +172,5 @@ export default async function Home() {
         </div>
       </main>
     </div>
-  );
-}
-
-function Section({
-  id,
-  title,
-  icon,
-  children,
-}: React.PropsWithChildren<{
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-}>) {
-  return (
-    <section id={id} className="mb-8 w-full max-w-4xl space-y-4">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-xl font-bold">{title}</h2>
-      </div>
-      {children}
-    </section>
   );
 }

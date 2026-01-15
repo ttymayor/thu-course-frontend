@@ -59,13 +59,13 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
         <div className="flex items-center justify-between gap-4 text-sm sm:ml-auto sm:justify-end">
           <div className="flex flex-row gap-2">
             <Link
-              href={`https://course.thu.edu.tw/view/114/1/${courseInfo.course_code}`}
+              href={`https://course.thu.edu.tw/view/${courseInfo.academic_year}/${courseInfo.academic_semester}/${courseInfo.course_code}`}
               className="font-medium text-nowrap underline"
             >
               課程資訊網
             </Link>
             <Link
-              href={`http://desc.ithu.tw/114/1/${courseInfo.course_code}`}
+              href={`http://desc.ithu.tw/${courseInfo.academic_year}/${courseInfo.academic_semester}/${courseInfo.course_code}`}
               className="font-medium text-nowrap underline"
             >
               授課大綱

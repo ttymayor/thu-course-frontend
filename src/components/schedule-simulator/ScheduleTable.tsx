@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableHeader,
@@ -14,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Course } from "@/types/course";
 import { useState, useEffect, useMemo } from "react";
+import { motion } from "motion/react";
 
 interface ScheduleTableProps {
   tableRef?: React.RefObject<HTMLTableElement | null>;
@@ -201,27 +204,30 @@ export default function ScheduleTable({
                     )}
                     <div className="flex h-full flex-col">
                       {grid[day]?.[period]?.map((course: Course) => (
-                        <div
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: Math.random() * 0.75 }}
                           key={course.course_code}
                           className={cn(
                             isViewingShared
-                              ? "bg-secondary/50 border-1 border-dashed"
+                              ? "bg-secondary/50 border border-dashed"
                               : hoveredCourse &&
                                   hoveredCourse.course_code ===
                                     course.course_code
                                 ? "bg-secondary/50 border border-dashed"
                                 : "bg-secondary border border-solid",
-                            "shadow-border/15 transition-scale relative flex flex-1 flex-col justify-center rounded p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
+                            "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-lg p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
                           )}
                         >
                           <Link
                             href={`/course-info/${course.course_code}`}
                             className="flex h-full flex-col justify-center"
                           >
-                            <code className="text-center text-[9px] leading-tight sm:text-[12px]">
+                            <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
                               {course.course_code}
                             </code>
-                            <p className="mt-0.5 truncate text-center text-[9px] leading-tight font-semibold sm:text-[12px]">
+                            <p className="text-secondary-foreground mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
                               {course.course_name}
                             </p>
                             <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
@@ -240,7 +246,7 @@ export default function ScheduleTable({
                               <X className="h-2 w-2 sm:h-3 sm:w-3" />
                             </Button>
                           )}
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </TableCell>

@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import ModeToggle from "./ModeToggle";
+import ThemeColorToggle from "./ThemeColorToggle";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -20,7 +21,7 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, Menu, User } from "lucide-react";
+import { LogIn, LogOut, Menu, User, MessageSquarePlus } from "lucide-react";
 import { useState } from "react";
 import { Search, CalendarDays, Map, Bookmark } from "lucide-react";
 import {
@@ -68,7 +69,7 @@ const getAcademicYearAndSemester = () => {
   const academicSemester = process.env.NEXT_PUBLIC_ACADEMIC_SEMESTER as string;
 
   if (!academicYear || !academicSemester) {
-    return "";
+    return null;
   }
 
   if (academicSemester === "1") {
@@ -91,22 +92,28 @@ export default function Navbar({ session }: { session: Session | null }) {
         {/* 手機版品牌 */}
         <div className="flex md:hidden">
           <Link className="flex items-center space-x-2" href="/">
-            <span className="text-base font-bold">{NAVBAR_CONFIG.brand}</span>
+            <span className="flex items-center gap-2 text-lg font-bold">
+              <Badge
+                variant="secondary"
+                className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
+              >
+                {getAcademicYearAndSemester()}
+              </Badge>
+              {NAVBAR_CONFIG.brand}
+            </span>
           </Link>
         </div>
 
         {/* 桌面版導航 */}
         <div className="mr-4 hidden md:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">
-            <span className="flex items-center gap-2 font-bold">
+            <span className="flex items-center gap-2 text-lg font-bold">
               <Badge
                 variant="secondary"
-                className={cn(
-                  getAcademicYearAndSemester() === "" ? "hidden" : "",
-                )}
+                className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
               >
                 {getAcademicYearAndSemester()}
-              </Badge>{" "}
+              </Badge>
               {NAVBAR_CONFIG.brand}
             </span>
           </Link>
@@ -134,6 +141,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
         {/* 手機版選單 */}
         <div className="ml-auto flex items-center gap-2 md:hidden">
+          <ThemeColorToggle />
           <ModeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -179,6 +187,12 @@ export default function Navbar({ session }: { session: Session | null }) {
                       個人資料
                     </Link>
                   </Button>
+                  <Button variant="ghost" size="default" asChild>
+                    <Link href="/feedback" onClick={() => setIsOpen(false)}>
+                      <MessageSquarePlus className="h-5 w-5" />
+                      意見回饋
+                    </Link>
+                  </Button>
                   <Button
                     variant="ghost"
                     size="default"
@@ -214,6 +228,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
         {/* 桌面版右側區域 */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
+          <ThemeColorToggle />
           <ModeToggle />
           {session ? (
             <DropdownMenu>
@@ -234,6 +249,10 @@ export default function Navbar({ session }: { session: Session | null }) {
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   <User className="h-5 w-5" />
                   個人資料
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/feedback")}>
+                  <MessageSquarePlus className="h-5 w-5" />
+                  意見回饋
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>

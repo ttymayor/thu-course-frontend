@@ -46,7 +46,7 @@ export default function GradingPieChart({
           label: item.method,
           color: COLORS[index % COLORS.length],
         },
-      ])
+      ]),
     ),
   } satisfies ChartConfig;
 
@@ -54,7 +54,7 @@ export default function GradingPieChart({
     <>
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square w-full max-h-[300px]"
+        className="mx-auto aspect-square max-h-75 w-full"
       >
         <PieChart>
           <ChartTooltip
