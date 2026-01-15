@@ -240,7 +240,7 @@ export default function List({ courses }: ListProps) {
                       )}
 
                       <Link
-                        href={`https://www.dcard.tw/search?query=${course.teachers.slice(0, 3).join("、")}&forum=thu`}
+                        href={`https://www.dcard.tw/search?query=${encodeURIComponent(course.teachers.slice(0, 3).join("、"))}&forum=thu`}
                         className="flex"
                         target="_blank"
                         rel="noopener noreferrer"
