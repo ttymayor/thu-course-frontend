@@ -339,7 +339,7 @@ export default function ScheduleCard({
                           alt="課表 QR Code"
                           width={300}
                           height={300}
-                          className="w-full max-w-[300px] rounded-lg border"
+                          className="w-full max-w-75 rounded-lg border"
                         />
                         <Button
                           className="w-full cursor-pointer sm:w-auto"

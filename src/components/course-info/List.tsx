@@ -181,7 +181,7 @@ export default function List({ courses }: ListProps) {
                 <CardHeader className="">
                   <CardTitle className="flex items-center justify-between">
                     <div>
-                      <code className="bg-muted mr-1 rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                      <code className="bg-muted mr-1 rounded border px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
                         {course.course_code}
                       </code>
                       {course.course_name}
@@ -216,11 +216,9 @@ export default function List({ courses }: ListProps) {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center text-sm">
                       <Star className="mr-1 size-4" />
-                      {/* <Badge variant={"secondary"} className=""> */}
                       {courseTypeMap[course.course_type] ||
                         course.course_type}{" "}
                       {course.credits_1}-{course.credits_2}
-                      {/* </Badge> */}
                     </div>
 
                     <div className="flex items-center text-sm">
