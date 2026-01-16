@@ -177,7 +177,7 @@ export default function List({ courses }: ListProps) {
         <TabsContent value="card">
           <div className="grid gap-2 sm:grid-cols-2">
             {courses.map((course, idx) => (
-              <Card className="bg-accent border-0" key={course._id || idx}>
+              <Card className="bg-secondary/35" key={course._id || idx}>
                 <CardHeader className="">
                   <CardTitle className="flex items-center justify-between">
                     <div>
@@ -195,8 +195,8 @@ export default function List({ courses }: ListProps) {
                   <CardAction>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="cursor-pointer"
+                      size="icon-sm"
+                      className="text-secondary-foreground cursor-pointer"
                       onClick={
                         isBookmarked(course)
                           ? () => removeBookmark(course)
@@ -212,7 +212,7 @@ export default function List({ courses }: ListProps) {
                     </Button>
                   </CardAction>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-secondary-foreground">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center text-sm">
                       <Star className="mr-1 size-4" />
