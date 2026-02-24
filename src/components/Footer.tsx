@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useVercount } from "vercount-react";
+import { VersionLogDialog } from "@/components/VersionLogDialog";
+import { Tag } from "lucide-react";
 
 const FOOTER_CONFIG = {
   github_thu_course_frontend: "https://github.com/ttymayor/thu-course-frontend",
@@ -14,7 +16,7 @@ export default function Footer() {
   const { sitePv, siteUv } = useVercount();
 
   return (
-    <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 w-full border-t backdrop-blur">
+    <div className="bg-background/95 supports-backdrop-filter:bg-background/60 w-full border-t backdrop-blur">
       <div className="mx-auto max-w-7xl p-6 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
           {/* 品牌資訊 */}
@@ -149,6 +151,15 @@ export default function Footer() {
               <p className="footer-text">瀏覽人數 {siteUv}</p>
               <p className="footer-text">頁面瀏覽 {sitePv}</p>
             </div>
+            <VersionLogDialog>
+              <button
+                className="footer-link flex items-center text-sm hover:underline"
+                type="button"
+              >
+                <Tag className="mr-1 h-3 w-3" />
+                版本 v1.4.0
+              </button>
+            </VersionLogDialog>
             <div className="footer-text">© 2025-2026 tantuyu</div>
           </section>
         </div>

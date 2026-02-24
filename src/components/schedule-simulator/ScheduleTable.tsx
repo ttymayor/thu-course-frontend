@@ -207,7 +207,8 @@ export default function ScheduleTable({
                         <motion.div
                           initial={{ opacity: 0, scale: 0 }}
                           whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: Math.random() * 0.75 }}
+                          transition={{ delay: Math.random() * 0.25 }}
+                          viewport={{ once: true }}
                           key={course.course_code}
                           className={cn(
                             isViewingShared

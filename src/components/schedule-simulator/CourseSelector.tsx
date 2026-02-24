@@ -68,9 +68,7 @@ function CourseSelectorContent({
   const handleSelectionChange = (course: Course, isSelected: boolean) => {
     const newSelectedCourses = isSelected
       ? [...selectedCourses, course]
-      : selectedCourses.filter(
-          (c) => c.course_code !== course.course_code,
-        );
+      : selectedCourses.filter((c) => c.course_code !== course.course_code);
     setSelectedCourses(newSelectedCourses);
   };
 
@@ -80,7 +78,7 @@ function CourseSelectorContent({
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col px-6">
       <Filter />
       <Button
         variant={showSelectedCourses ? "outline" : "default"}
@@ -89,7 +87,7 @@ function CourseSelectorContent({
       >
         {showSelectedCourses ? "顯示所有課程" : "顯示已選課程"}
       </Button>
-      <div className="flex-grow">
+      <div className="flex-grow overflow-hidden">
         {isLoading ? (
           <CourseListSkeleton />
         ) : error ? (
@@ -97,15 +95,17 @@ function CourseSelectorContent({
             載入課程資料時發生錯誤，請稍後再試。
           </div>
         ) : (
-          <CourseList
-            courses={showSelectedCourses ? selectedCourses : courses}
-            selectedCourseCodes={
-              new Set(selectedCourses.map((course) => course.course_code))
-            }
-            selectedCourses={selectedCourses}
-            onSelectionChange={handleSelectionChange}
-            onCourseHover={handleCourseHover}
-          />
+          <div className="h-full overflow-auto">
+            <CourseList
+              courses={showSelectedCourses ? selectedCourses : courses}
+              selectedCourseCodes={
+                new Set(selectedCourses.map((course) => course.course_code))
+              }
+              selectedCourses={selectedCourses}
+              onSelectionChange={handleSelectionChange}
+              onCourseHover={handleCourseHover}
+            />
+          </div>
         )}
       </div>
       {!showSelectedCourses && <Pagination total={total} />}
@@ -119,7 +119,7 @@ export default function CourseSelector(props: CourseSelectorProps) {
       <CardHeader>
         <CardTitle>課程選擇</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <Suspense fallback={<CourseListSkeleton />}>
           <CourseSelectorContent {...props} />
         </Suspense>

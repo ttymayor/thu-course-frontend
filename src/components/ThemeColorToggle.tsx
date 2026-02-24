@@ -17,7 +17,7 @@ export default function ThemeColorToggle() {
 
   const colors = [
     { name: "coffee", label: "咖啡（Coffee）", color: "bg-[#ffdfb5]" },
-    { name: "blue", label: "糖果藍（Candy Blue）", color: "bg-[#a0d1e6]" },
+    // { name: "blue", label: "糖果藍（Candy Blue）", color: "bg-[#a0d1e6]" },
     { name: "green", label: "靜默綠（Silent Green）", color: "bg-[#7c9082]" },
     {
       name: "purple",
@@ -50,7 +50,7 @@ export default function ThemeColorToggle() {
                 className={cn(
                   "h-4 w-4 rounded-full border",
                   color.name === "coffee" && "bg-[#ffdfb5]",
-                  color.name === "blue" && "bg-[#a0d1e6]",
+                  // color.name === "blue" && "bg-[#a0d1e6]",
                   color.name === "green" && "bg-[#7c9082]",
                   color.name === "purple" && "bg-[#a995c9]",
                 )}

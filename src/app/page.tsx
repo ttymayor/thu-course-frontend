@@ -71,28 +71,6 @@ export default async function Home() {
         <div className="flex w-full flex-col items-center gap-6">
           <NewRelease />
 
-          {/* <Section
-            id="announcement"
-            title="公告"
-            icon={<Megaphone className="size-5" />}
-          >
-            <ScrollVelocityContainer className="bg-card w-full max-w-4xl overflow-hidden rounded-lg p-2">
-              <ScrollVelocityRow>
-                <p className="px-4 py-2 text-center text-base font-medium">
-                  所有資訊皆以{" "}
-                  <Link
-                    href="https://course.thu.edu.tw/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline"
-                  >
-                    東海大學課程資訊網
-                  </Link>{" "}
-                  為準！
-                </p>
-              </ScrollVelocityRow>
-            </ScrollVelocityContainer>
-          </Section> */}
           <Section
             id="course-schedule"
             title="選課時程"

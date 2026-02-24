@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeColorProvider } from "@/components/ThemeColorProvider";
 import SessionProvider from "@/components/SessionProvider";
 import { Toaster } from "sonner";
-import FirstLoadingAnimation from "@/components/FirstLoadingAnimation";
+import WelcomeDialog from "@/components/WelcomeDialog";
 import { getSession } from "@/lib/auth";
 
 const geistSans = Geist({
@@ -102,7 +102,7 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <FirstLoadingAnimation />
+              <WelcomeDialog />
               <div className="flex min-h-screen flex-col">
                 <Navbar session={session} />
                 <div className="flex-1">{children}</div>

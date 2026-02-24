@@ -20,6 +20,7 @@ import { CourseTypeMap } from "./types";
 import { Button } from "@/components/ui/button";
 import {
   Bookmark,
+  Clock,
   ExternalLink,
   MapPin,
   School,
@@ -53,8 +54,8 @@ export default function List({ courses }: ListProps) {
 
   return (
     <div className="overflow-x-auto">
-      <Tabs defaultValue="list">
-        <TabsList>
+      <Tabs defaultValue="card">
+        <TabsList className="gap-1">
           <TabsTrigger value="list" className="cursor-pointer">
             列表
           </TabsTrigger>
@@ -177,54 +178,65 @@ export default function List({ courses }: ListProps) {
         <TabsContent value="card">
           <div className="grid gap-2 sm:grid-cols-2">
             {courses.map((course, idx) => (
-              <Card className="bg-accent border-0" key={course._id || idx}>
+              <Card
+                className="bg-primary/5 hover:border-primary/40 group shadow-sm transition-all hover:shadow-lg"
+                key={course._id || idx}
+              >
                 <CardHeader className="">
-                  <CardTitle className="flex items-center justify-between">
-                    <div>
-                      <code className="bg-muted mr-1 rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className="text-muted-foreground border-secondary font-mono text-xs"
+                      >
                         {course.course_code}
-                      </code>
-                      {course.course_name}
+                      </Badge>
+                      {course.is_closed && (
+                        <Badge variant="destructive">已停開</Badge>
+                      )}
                     </div>
-                  </CardTitle>
-                  <CardDescription className="truncate">
-                    {course.course_description
-                      ? course.course_description
-                      : "課程沒有留下任何說明..."}
-                  </CardDescription>
-                  <CardAction>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="cursor-pointer"
-                      onClick={
+                      size="icon"
+                      className="text-muted-foreground h-8 w-8 transition-all"
+                      onClick={() =>
                         isBookmarked(course)
-                          ? () => removeBookmark(course)
-                          : () => addBookmark(course)
+                          ? removeBookmark(course)
+                          : addBookmark(course)
                       }
-                      disabled={course.is_closed}
                     >
-                      {isBookmarked(course) ? (
-                        <Bookmark fill="currentColor" className="h-4 w-4" />
-                      ) : (
-                        <Bookmark className="h-4 w-4" />
-                      )}
+                      <Bookmark
+                        className="h-4 w-4"
+                        fill={isBookmarked(course) ? "currentColor" : "none"}
+                      />
                     </Button>
-                  </CardAction>
+                  </div>
+                  {/* 第二層：課程名稱 */}
+                  <CardTitle className="text-lg leading-tight">
+                    <Link
+                      href={`/course-info/${course.course_code}`}
+                      prefetch={false}
+                      className="hover:text-primary underline-offset-4 transition-all hover:underline"
+                    >
+                      {course.course_name}
+                    </Link>
+                  </CardTitle>
+                  {/* 第三層：課程簡介 */}
+                  <CardDescription className="line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed">
+                    {course.course_description || "課程沒有留下任何說明..."}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="">
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center text-sm">
-                      <Star className="mr-1 size-4" />
-                      {/* <Badge variant={"secondary"} className=""> */}
+                    <div className="flex items-center gap-2 text-sm">
+                      <Star className="size-4" />
                       {courseTypeMap[course.course_type] ||
                         course.course_type}{" "}
                       {course.credits_1}-{course.credits_2}
-                      {/* </Badge> */}
                     </div>
 
-                    <div className="flex items-center text-sm">
-                      <User className="mr-1 size-4" />
+                    <div className="flex items-center gap-2 text-sm">
+                      <User className="size-4" />
                       {course.teachers?.length
                         ? `${course.teachers.slice(0, 3).join("、")}`
                         : "-"}
@@ -244,20 +256,31 @@ export default function List({ courses }: ListProps) {
                         className="flex"
                         target="_blank"
                         rel="noopener noreferrer"
+                        prefetch={false}
                       >
-                        <ExternalLink className="ml-1 size-4" />
+                        <ExternalLink className="-ml-1 size-4" />
                       </Link>
                     </div>
 
-                    <div className="flex items-center text-sm">
-                      <MapPin className="mr-1 size-4" />
+                    <div className="flex items-start gap-2 text-sm">
+                      <Clock className="mt-0.5 size-4" />
                       {(course.basic_info?.class_time && (
                         <div className="inline-block text-left">
                           {courseTimeParser(course.basic_info.class_time).map(
                             (entry, index) => (
-                              <div key={index}>
-                                {entry.day} {entry.periods.join(", ")}
-                                {entry.location && `［${entry.location}］`}
+                              <div
+                                key={index}
+                                className="flex items-center gap-2"
+                              >
+                                <span>
+                                  {entry.day} {entry.periods.join(", ")}
+                                </span>
+                                {entry.location && (
+                                  <span className="text-muted-foreground/70 bg-secondary/50 flex items-center rounded px-1.5 text-xs">
+                                    <MapPin className="mr-1 inline size-3" />
+                                    {entry.location}
+                                  </span>
+                                )}
                               </div>
                             ),
                           )}
@@ -266,8 +289,8 @@ export default function List({ courses }: ListProps) {
                         "-"}
                     </div>
 
-                    <div className="flex items-center text-sm">
-                      <School className="mr-1 size-4" />
+                    <div className="flex items-center gap-2 text-sm">
+                      <School className="size-4" />
                       {course.department_name} /{" "}
                       {course.basic_info?.target_class || "-"}
                     </div>
