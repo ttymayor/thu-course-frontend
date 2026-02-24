@@ -21,6 +21,17 @@ interface VersionLog {
 
 const VERSION_LOGS: VersionLog[] = [
   {
+    version: "v1.5.0",
+    date: "2026-02-24",
+    changes: [
+      "✨ Replace FirstLoadingAnimation with WelcomeDialog (privacy notice on first visit)",
+      "🔄 Refactor CourseScheduleList: compute status (開放/關閉/結束) client-side from datetime",
+      "🐛 Fix Mongoose ObjectId toJSON serialization error when passing data to client components",
+      "🐛 Fix hydration mismatch in date formatting by using deterministic UTC+8 formatter",
+      "🔧 Bump dependencies (Next.js 16.1.6, React 19.2.4, mongoose, motion, lucide-react, etc.)",
+    ],
+  },
+  {
     version: "v1.4.0",
     date: "2026-01-16",
     changes: [

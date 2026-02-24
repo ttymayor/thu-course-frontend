@@ -157,7 +157,7 @@ export default function Footer() {
                 type="button"
               >
                 <Tag className="mr-1 h-3 w-3" />
-                版本 v1.4.0
+                版本 v1.5.0
               </button>
             </VersionLogDialog>
             <div className="footer-text">© 2025-2026 tantuyu</div>
