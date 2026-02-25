@@ -13,7 +13,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-const STORAGE_KEY = "first-loading";
+const STORAGE_KEY = "first-welcome";
+
+/**
+ * Remove on v1.7.0
+ */
+const STORAGE_KEY_REMOVE = "first-loading";
+function removeFirstLoading() {
+  if (localStorage.getItem(STORAGE_KEY_REMOVE) === null) {
+    localStorage.removeItem(STORAGE_KEY_REMOVE);
+  }
+}
 
 export default function WelcomeDialog() {
   const [open, setOpen] = useState(false);
@@ -23,6 +33,7 @@ export default function WelcomeDialog() {
     if (localStorage.getItem(STORAGE_KEY) === null) {
       setOpen(true);
     }
+    removeFirstLoading();
   }, []);
 
   function handleClose() {

@@ -67,7 +67,7 @@ const schoolLinks = [
 export default async function Home() {
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-      <main className="flex flex-col items-center justify-center gap-8 sm:gap-[32px]">
+      <main className="flex flex-col items-center justify-center gap-8 sm:gap-8">
         <div className="flex w-full flex-col items-center gap-6">
           <NewRelease />
 
@@ -102,7 +102,7 @@ export default async function Home() {
                           {link.title}
                         </p>
                         {link.description && (
-                          <span className="text-muted-foreground text-sm leading-tight break-words whitespace-normal">
+                          <span className="text-muted-foreground text-sm leading-tight wrap-break-word whitespace-normal">
                             {link.description}
                           </span>
                         )}
