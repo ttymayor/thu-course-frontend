@@ -21,6 +21,11 @@ interface VersionLog {
 
 const VERSION_LOGS: VersionLog[] = [
   {
+    version: "v1.5.1",
+    date: "2026-02-25",
+    changes: ["🔧 Fix first welcome dialog would not show on first time"],
+  },
+  {
     version: "v1.5.0",
     date: "2026-02-24",
     changes: [
