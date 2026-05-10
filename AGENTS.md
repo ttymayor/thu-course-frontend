@@ -10,15 +10,6 @@ This document provides guidelines for agentic coding agents working in the THU C
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint to check code quality
-- `pnpm test` - Run all tests with Vitest
-
-### Testing Commands
-
-- `pnpm test` - Run all tests
-- `pnpm vitest run` - Run tests once (single run)
-- `pnpm vitest run __tests__/Page.test.tsx` - Run specific test file
-- `pnpm vitest --watch` - Run tests in watch mode
-- `pnpm vitest --ui` - Run tests with visual interface
 
 ## Project Architecture
 
@@ -28,7 +19,6 @@ This document provides guidelines for agentic coding agents working in the THU C
 - **UI**: React 19.2.3 with TypeScript
 - **Styling**: Tailwind CSS v4.1.18
 - **Database**: MongoDB with Mongoose
-- **Testing**: Vitest with React Testing Library
 - **Authentication**: NextAuth.js
 - **State Management**: React hooks, SWR for data fetching
 
@@ -238,28 +228,6 @@ try {
   toast.error("Failed to load courses");
 }
 ```
-
-## Testing Guidelines
-
-### Test Structure
-
-```typescript
-import { render, screen } from "@testing-library/react";
-import { describe, test, expect, vi } from "vitest";
-import Component from "@/components/Component";
-
-describe("Component", () => {
-  test("renders correctly", async () => {
-    render(<Component />);
-
-    expect(screen.getByTestId("element")).toBeInTheDocument();
-  });
-});
-```
-
-### Mocks Setup
-
-Use `__tests__/setup.ts` for global mocks. Database and external API calls should be mocked in tests.
 
 ## UI/UX Guidelines
 

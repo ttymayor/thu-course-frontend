@@ -8,16 +8,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev          # Start development server
 pnpm build        # Production build
 pnpm lint         # ESLint
-pnpm test         # Run all tests (Vitest watch mode)
-pnpm vitest run   # Run tests once
-pnpm vitest run __tests__/Page.test.tsx  # Run a single test file
 ```
 
 ## Architecture
 
 THU Course Frontend is a Next.js 16 app (App Router) providing a better UI for Tunghai University course registration info. It is deployed at `https://thc.ttymayor.com`.
 
-**Stack**: React 19, TypeScript, Tailwind CSS v4, MongoDB/Mongoose, NextAuth.js (Google OAuth), SWR, shadcn/ui + Radix UI, Vitest.
+**Stack**: React 19, TypeScript, Tailwind CSS v4, MongoDB/Mongoose, NextAuth.js (Google OAuth), SWR, shadcn/ui + Radix UI.
 
 **Notable Next.js config** (`next.config.ts`): React Compiler is enabled (`reactCompiler: true`) and `experimental.useCache` is on. These affect how components and data fetching work.
 
@@ -42,7 +39,6 @@ NextAuth.js with Google OAuth. Sign-in is **restricted to `@thu.edu.tw` and `@go
 - `src/services/` — DB service functions (`courseService.ts`, `departmentService.ts`, `userService.ts`)
 - `src/models/` — Mongoose schemas (`Course.ts`, `Department.ts`, `User.ts`, `Feedback.ts`)
 - `src/lib/` — Shared utilities: `mongodb.ts` (connection), `auth.ts` (session helpers), `courseSchedule.ts`, `scheduleConflictChecker.ts`, `courseTimeParser.ts`
-- `__tests__/` — Test files with `setup.ts` that globally mocks MongoDB, mongoose, and `getCourseSchedules`
 
 ## Environment Variables
 
