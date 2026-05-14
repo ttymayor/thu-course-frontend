@@ -268,7 +268,7 @@ export default function ScheduleCard({
   };
 
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader>
         <CardTitle>{isViewingShared ? "預覽分享的課表" : "排課模擬"}</CardTitle>
         <CardDescription className="flex flex-row gap-2">

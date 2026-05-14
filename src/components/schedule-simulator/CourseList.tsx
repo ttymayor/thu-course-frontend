@@ -60,11 +60,11 @@ export default function CourseList({
     <TooltipProvider>
       <div className="mt-4">
         <Tabs defaultValue="card" className="w-full">
-          <TabsList className="w-full gap-1">
-            <TabsTrigger value="list" className="cursor-pointer">
+          <TabsList className="w-full gap-1 rounded-sm">
+            <TabsTrigger value="list" className="cursor-pointer rounded-sm">
               列表
             </TabsTrigger>
-            <TabsTrigger value="card" className="cursor-pointer">
+            <TabsTrigger value="card" className="cursor-pointer rounded-sm">
               卡片
             </TabsTrigger>
           </TabsList>
@@ -144,7 +144,9 @@ export default function CourseList({
                                 ) : (
                                   <button
                                     className="cursor-pointer underline"
-                                    onClick={() => setDetailCode(course.course_code)}
+                                    onClick={() =>
+                                      setDetailCode(course.course_code)
+                                    }
                                   >
                                     {course.course_name}
                                   </button>
@@ -221,7 +223,7 @@ export default function CourseList({
                   return (
                     <Card
                       className={cn(
-                        "relative flex gap-4 rounded-xl transition-all duration-300 ease-out",
+                        "relative flex gap-4 rounded-sm transition-all duration-300 ease-out",
                         !isSelected &&
                           !hasConflict &&
                           !course.is_closed &&
@@ -305,8 +307,10 @@ export default function CourseList({
                               </span>
                             ) : (
                               <button
-                                className="hover:text-primary decoration-primary/50 text-left text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline cursor-pointer"
-                                onClick={() => setDetailCode(course.course_code)}
+                                className="hover:text-primary decoration-primary/50 cursor-pointer text-left text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline"
+                                onClick={() =>
+                                  setDetailCode(course.course_code)
+                                }
                               >
                                 {course.course_name}
                               </button>
@@ -363,10 +367,6 @@ export default function CourseList({
           </TabsContent>
         </Tabs>
       </div>
-      <CourseDetailDialog
-        courseCode={detailCode}
-        onClose={() => setDetailCode(null)}
-      />
     </TooltipProvider>
   );
 }

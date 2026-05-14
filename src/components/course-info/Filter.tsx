@@ -129,7 +129,7 @@ export default function Filter() {
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full cursor-pointer justify-between px-3 py-2 text-sm"
+              className="w-full cursor-pointer justify-between rounded-sm px-3 py-2 text-sm"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -205,7 +205,7 @@ export default function Filter() {
           </PopoverContent>
         </Popover>
       )}
-      <InputGroup className="w-full">
+      <InputGroup className="w-full rounded-sm">
         <InputGroupAddon>
           {isPending ? <Spinner /> : <Search className="h-4 w-4" />}
         </InputGroupAddon>

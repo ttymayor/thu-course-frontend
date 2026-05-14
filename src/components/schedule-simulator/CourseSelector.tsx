@@ -82,12 +82,12 @@ function CourseSelectorContent({
       <Filter />
       <Button
         variant={showSelectedCourses ? "outline" : "default"}
-        className="cursor-pointer"
+        className="cursor-pointer rounded-sm"
         onClick={() => setShowSelectedCourses(!showSelectedCourses)}
       >
         {showSelectedCourses ? "顯示所有課程" : "顯示已選課程"}
       </Button>
-      <div className="flex-grow overflow-hidden">
+      <div className="grow overflow-hidden">
         {isLoading ? (
           <CourseListSkeleton />
         ) : error ? (
@@ -115,7 +115,7 @@ function CourseSelectorContent({
 
 export default function CourseSelector(props: CourseSelectorProps) {
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader>
         <CardTitle>課程選擇</CardTitle>
       </CardHeader>

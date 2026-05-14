@@ -67,7 +67,7 @@ export default function HomeScheduleView() {
       {/* Left: course selector */}
       <div className="w-full min-w-0 md:w-1/3 md:pr-4">
         {isViewingShared ? (
-          <Card>
+          <Card className="rounded-sm">
             <CardHeader>
               <CardTitle className="text-center">
                 查看分享課表時無法選擇課程
