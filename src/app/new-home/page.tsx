@@ -11,9 +11,9 @@ import { Section } from "@/components/Section";
 import CourseScheduleList from "@/components/CourseScheduleList";
 import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
 import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
-import HomeScheduleView from "./new-home/HomeScheduleView";
+import HomeScheduleView from "./HomeScheduleView";
 
-export default function Home() {
+export default function NewHomePage() {
   return (
     <BaseLayout>
       <div className="flex w-full flex-col items-center gap-6">

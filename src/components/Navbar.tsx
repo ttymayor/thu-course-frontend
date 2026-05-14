@@ -41,16 +41,6 @@ const NAVBAR_CONFIG = {
   navigation: {
     items: [
       {
-        label: "課程資訊",
-        href: "/course-info",
-        icon: <Search className="h-5 w-5" />,
-      },
-      {
-        label: "選課模擬器",
-        href: "/schedule-simulator",
-        icon: <CalendarDays className="h-5 w-5" />,
-      },
-      {
         label: "校園地圖",
         href: "/school-map",
         icon: <Map className="h-5 w-5" />,
@@ -87,23 +77,8 @@ export default function Navbar({ session }: { session: Session | null }) {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 w-full border-b backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-        {/* 手機版品牌 */}
-        <div className="flex md:hidden">
-          <Link className="flex items-center space-x-2" href="/">
-            <span className="flex items-center gap-2 text-lg font-bold">
-              <Badge
-                variant="secondary"
-                className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
-              >
-                {getAcademicYearAndSemester()}
-              </Badge>
-              {NAVBAR_CONFIG.brand}
-            </span>
-          </Link>
-        </div>
-
+    <div className="fixed bottom-0 z-50 w-full sm:sticky sm:top-0 sm:p-4">
+      <div className="border-muted mx-auto flex max-w-7xl items-center rounded border-t border-t-white/10 bg-white/3 px-4 py-2 backdrop-blur">
         {/* 桌面版導航 */}
         <div className="mr-4 hidden md:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">
@@ -150,7 +125,7 @@ export default function Navbar({ session }: { session: Session | null }) {
                 <span className="sr-only">切換選單</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="z-[9999]">
+            <SheetContent side="right" className="z-9999">
               <SheetHeader>
                 <SheetTitle>
                   <div className="flex items-center gap-2">
@@ -245,7 +220,7 @@ export default function Navbar({ session }: { session: Session | null }) {
                   <User className="h-5 w-5" />
                 )}
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="z-[9999]">
+              <DropdownMenuContent align="end" className="z-9999">
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   <User className="h-5 w-5" />
                   個人資料
