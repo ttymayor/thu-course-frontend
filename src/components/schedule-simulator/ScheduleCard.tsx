@@ -270,7 +270,7 @@ export default function ScheduleCard({
   return (
     <Card className="rounded-sm">
       <CardHeader>
-        <CardTitle>{isViewingShared ? "預覽分享的課表" : "排課模擬"}</CardTitle>
+        <CardTitle>{isViewingShared ? "預覽分享的課表" : "你的課表"}</CardTitle>
         <CardDescription className="flex flex-row gap-2">
           <Badge className="rounded-full">
             {selectedCourses.length} 門課程
