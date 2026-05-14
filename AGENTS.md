@@ -1,361 +1,63 @@
 # AGENTS.md
 
-This document provides guidelines for agentic coding agents working in the THU Course Frontend repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
+## Commands
 
-### Core Commands
-
-- `pnpm dev` - Start development server (Next.js)
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint to check code quality
-- `pnpm test` - Run all tests with Vitest
-
-### Testing Commands
-
-- `pnpm test` - Run all tests
-- `pnpm vitest run` - Run tests once (single run)
-- `pnpm vitest run __tests__/Page.test.tsx` - Run specific test file
-- `pnpm vitest --watch` - Run tests in watch mode
-- `pnpm vitest --ui` - Run tests with visual interface
-
-## Project Architecture
-
-### Tech Stack
-
-- **Framework**: Next.js 16.1.2 with App Router
-- **UI**: React 19.2.3 with TypeScript
-- **Styling**: Tailwind CSS v4.1.18
-- **Database**: MongoDB with Mongoose
-- **Testing**: Vitest with React Testing Library
-- **Authentication**: NextAuth.js
-- **State Management**: React hooks, SWR for data fetching
-
-### Directory Structure
-
-```
-src/
-├── app/                 # Next.js App Router pages and API routes
-├── components/          # React components
-│   ├── ui/             # Reusable UI components (shadcn/ui)
-│   ├── course-info/    # Course-related components
-│   ├── schedule-simulator/ # Schedule simulation components
-│   └── school-map/     # Map components
-├── lib/                # Utility functions and configurations
-├── models/             # MongoDB schemas
-├── services/           # Business logic and data services
-├── types/              # TypeScript type definitions
-└── hooks/              # Custom React hooks
+```bash
+pnpm dev          # Start development server
+pnpm build        # Production build
+pnpm lint         # ESLint
 ```
 
-## Code Style Guidelines
+## Architecture
 
-### Import Organization
+THU Course Frontend is a Next.js 16 app (App Router) providing a better UI for Tunghai University course registration info. It is deployed at `https://thc.ttymayor.com`.
 
-```typescript
-// 1. React imports (with type imports when needed)
-import * as React from "react";
-import { useState, useEffect } from "react";
+**Stack**: React 19, TypeScript, Tailwind CSS v4, MongoDB/Mongoose, NextAuth.js (Google OAuth), SWR, shadcn/ui + Radix UI.
 
-// 2. Third-party library imports
-import { NextResponse } from "next/server";
-import mongoose from "mongoose";
+**Notable Next.js config** (`next.config.ts`): React Compiler is enabled (`reactCompiler: true`) and `experimental.useCache` is on. These affect how components and data fetching work.
 
-// 3. Internal imports (use @/ alias)
-import { CalendarEvent } from "@/models/CalendarEvent";
-import { CalendarCache } from "@/lib/calendarCache";
-import { Button } from "@/components/ui/button";
+### Data flow
+
+```
+API Route (src/app/api/) → Service (src/services/) → Model (src/models/) → MongoDB
 ```
 
-### TypeScript Best Practices
+- **API routes** handle HTTP and return `NextResponse.json()`
+- **Services** contain all business logic and DB queries; always call `connectMongoDB()` before querying
+- **Models** define Mongoose schemas with the `mongoose.models.X || mongoose.model(...)` pattern (required for Next.js hot reload safety)
 
-- **Always use strict mode** - enabled in tsconfig.json
-- **Prefer interfaces over types** for object shapes
-- **Use proper type imports** for type-only imports
-- **Define return types** for API routes and utility functions
-- **Use generic types** for reusable components
+### Authentication
 
-Example:
+NextAuth.js with Google OAuth. Sign-in is **restricted to `@thu.edu.tw` and `@go.thu.edu.tw` email domains** — this check is in `src/app/api/auth/[...nextauth]/route.ts`. The middleware file is named `proxy.ts` (not `middleware.ts`) and protects `/profile/` and `/feedback/` routes.
 
-```typescript
-interface CourseFilter {
-  course_code?: string;
-  course_name?: string;
-  page?: number;
-  page_size?: number;
-}
+### Key directories
 
-async function getCourses(
-  filter: CourseFilter,
-): Promise<{ data: Course[]; total: number }> {
-  // implementation
-}
+- `src/app/` — App Router pages and API routes (`api/course-info`, `api/auth`, `api/og`, `api/feedback`, `api/departments`)
+- `src/components/` — React components; `ui/` contains shadcn/ui base components
+- `src/services/` — DB service functions (`courseService.ts`, `departmentService.ts`, `userService.ts`)
+- `src/models/` — Mongoose schemas (`Course.ts`, `Department.ts`, `User.ts`, `Feedback.ts`)
+- `src/lib/` — Shared utilities: `mongodb.ts` (connection), `auth.ts` (session helpers), `courseSchedule.ts`, `scheduleConflictChecker.ts`, `courseTimeParser.ts`
+
+## Environment Variables
+
+```
+MONGODB_URI
+MONGODB_DB_NAME
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+NEXTAUTH_URL
+NEXTAUTH_SECRET
+NEXT_PUBLIC_ACADEMIC_YEAR
+NEXT_PUBLIC_ACADEMIC_SEMESTER
 ```
 
-### Component Patterns
-
-#### Functional Components with TypeScript
-
-```typescript
-"use client"; // Required for client-side components
-
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-
-interface CourseCardProps {
-  course: Course;
-  onSelect?: (course: Course) => void;
-  className?: string;
-}
-
-export function CourseCard({ course, onSelect, className }: CourseCardProps) {
-  return (
-    <div className={cn("p-4 border rounded", className)}>
-      {/* component content */}
-    </div>
-  );
-}
-```
-
-#### Custom Hooks
-
-```typescript
-import { useState, useEffect } from "react";
-import { Course } from "@/types/course";
-
-export function useCourses(filter: CourseFilter) {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // implementation
-
-  return { courses, loading };
-}
-```
-
-### API Route Patterns
-
-```typescript
-import { NextResponse } from "next/server";
-
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const param = searchParams.get("param") || "";
-
-    // business logic
-
-    return NextResponse.json({
-      success: true,
-      data: result,
-    });
-  } catch (error) {
-    console.error("API Error:", error);
-    const message =
-      error instanceof Error ? error.message : "Internal Server Error";
-    return NextResponse.json(
-      { error: message, success: false },
-      { status: 500 },
-    );
-  }
-}
-```
-
-### Database Patterns
-
-```typescript
-import mongoose from "mongoose";
-import connectMongoDB from "@/lib/mongodb";
-
-export async function someDatabaseOperation() {
-  if (mongoose.connection.readyState !== 1) {
-    await connectMongoDB();
-  }
-
-  // database operations
-}
-```
-
-## Naming Conventions
-
-### Files and Directories
-
-- **Components**: PascalCase (e.g., `CourseCard.tsx`)
-- **Utilities**: camelCase (e.g., `calendarCache.ts`)
-- **Hooks**: camelCase with `use` prefix (e.g., `useCourses.ts`)
-- **API Routes**: lowercase with hyphens (e.g., `course-info/route.ts`)
-- **Types**: PascalCase interfaces (e.g., `CourseFilter.ts`)
-
-### Variables and Functions
-
-- **Variables**: camelCase (e.g., `courseList`, `isLoading`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `CACHE_TTL_HOURS`)
-- **Functions**: camelCase with descriptive names (e.g., `getCoursesByDepartment`)
-- **Components**: PascalCase (e.g., `CourseList`, `FilterModal`)
-
-### TypeScript Interfaces
-
-```typescript
-// Descriptive, meaningful names
-interface CourseSchedule {
-  stage: string;
-  status: "open" | "closed" | "upcoming";
-  startTime: Date;
-  endTime: Date;
-}
-
-// Use generic types when appropriate
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
-```
-
-## Error Handling
-
-### API Routes
-
-```typescript
-try {
-  // operation
-} catch (error) {
-  console.error("Descriptive error message:", error);
-  const message = error instanceof Error ? error.message : "Unknown error";
-  return NextResponse.json({ error: message, success: false }, { status: 500 });
-}
-```
-
-### Client-side Error Handling
-
-```typescript
-try {
-  await operation();
-} catch (error) {
-  console.error("Operation failed:", error);
-  // Show user-friendly error using toast or UI
-  toast.error("Failed to load courses");
-}
-```
-
-## Testing Guidelines
-
-### Test Structure
-
-```typescript
-import { render, screen } from "@testing-library/react";
-import { describe, test, expect, vi } from "vitest";
-import Component from "@/components/Component";
-
-describe("Component", () => {
-  test("renders correctly", async () => {
-    render(<Component />);
-
-    expect(screen.getByTestId("element")).toBeInTheDocument();
-  });
-});
-```
-
-### Mocks Setup
-
-Use `__tests__/setup.ts` for global mocks. Database and external API calls should be mocked in tests.
-
-## UI/UX Guidelines
-
-### Component Library
-
-- Use **shadcn/ui** components as base (in `src/components/ui/`)
-- Customize with `cn()` utility for Tailwind class merging
-- Follow existing design patterns in the app
-
-### Styling
-
-- **Tailwind CSS** for all styling
-- Use **CSS variables** for theme colors
-- **Responsive design** with Tailwind responsive prefixes
-- **Dark mode** support with `next-themes`
-
-### Accessibility
-
-- Use semantic HTML elements
-- Include ARIA labels where needed
-- Ensure keyboard navigation support
-- Test with screen readers
-
-## Performance Guidelines
-
-### React Optimization
-
-- Use `React.memo()` for expensive components
-- Implement proper dependency arrays in `useEffect`
-- Use `useMemo()` and `useCallback()` for expensive computations
-- Implement code splitting with `dynamic` imports
-
-### API Optimization
-
-- Implement proper caching strategies
-- Use pagination for large datasets
-- Add appropriate error boundaries
-- Optimize database queries with indexes
-
-## Security Guidelines
-
-- Never commit sensitive data (API keys, secrets)
-- Validate all user inputs
-- Use HTTPS for all API calls
-- Implement proper authentication and authorization
-- Sanitize user-generated content
-
-## Git Workflow
-
-### Commit Messages
-
-- Use conventional commits: `feat:`, `fix:`, `refactor:`, etc.
-- Be descriptive but concise
-- Reference issue numbers when applicable
-
-### Branch Naming
-
-- `feature/description` for new features
-- `fix/description` for bug fixes
-- `refactor/description` for refactoring
-
-## Environment Configuration
-
-Required environment variables:
-
-- `MONGODB_URI` - MongoDB connection string
-- `MONGODB_DB_NAME` - Database name
-- NextAuth.js configuration variables
-
-## Build and Deployment
-
-1. Always run `pnpm lint` before committing
-2. Run `pnpm test` to ensure tests pass
-3. Use `pnpm build` to verify production build
-4. Check for TypeScript errors
-
-## Common Patterns
-
-### Data Fetching with SWR
-
-```typescript
-import useSWR from "swr";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-function useCourses() {
-  const { data, error, isLoading } = useSWR("/api/courses", fetcher);
-  return { courses: data, error, isLoading };
-}
-```
-
-### Form Handling
-
-- Use React hooks for form state
-- Implement proper validation
-- Show loading states during submission
-- Handle errors gracefully
-
-Remember to always follow existing patterns in the codebase and maintain consistency with the current architecture.
+## Code Conventions
+
+- Use `@/` path alias for all internal imports
+- Import order: React → third-party → internal (`@/`)
+- Prefer `interface` over `type` for object shapes
+- Client components require `"use client"` directive
+- Use `cn()` from `@/lib/utils` for Tailwind class merging
+- Server functions that should be cached use the `"use cache"` directive (experimental Next.js feature, enabled via `experimental.useCache` in `next.config.ts`). Currently used in `departmentService.ts` and `src/app/api/departments/route.ts`.

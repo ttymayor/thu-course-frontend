@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useVercount } from "vercount-react";
 import { VersionLogDialog } from "@/components/VersionLogDialog";
 import { Tag } from "lucide-react";
 
@@ -12,9 +11,6 @@ const FOOTER_CONFIG = {
 };
 
 export default function Footer() {
-  // const [touchTimes, setTouchTimes] = useState(0);
-  const { sitePv, siteUv } = useVercount();
-
   return (
     <div className="bg-background/95 supports-backdrop-filter:bg-background/60 w-full border-t backdrop-blur">
       <div className="mx-auto max-w-7xl p-6 sm:px-6 lg:px-8">
@@ -147,17 +143,13 @@ export default function Footer() {
           </section>
 
           <section className="footer-container">
-            <div>
-              <p className="footer-text">瀏覽人數 {siteUv}</p>
-              <p className="footer-text">頁面瀏覽 {sitePv}</p>
-            </div>
             <VersionLogDialog>
               <button
                 className="footer-link flex items-center text-sm hover:underline"
                 type="button"
               >
                 <Tag className="mr-1 h-3 w-3" />
-                版本 v1.5.0
+                版本 v1.5.1
               </button>
             </VersionLogDialog>
             <div className="footer-text">© 2025-2026 tantuyu</div>
