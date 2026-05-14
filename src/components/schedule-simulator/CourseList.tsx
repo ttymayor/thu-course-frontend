@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import {
   Table,
   TableBody,
@@ -48,6 +49,7 @@ export default function CourseList({
   onSelectionChange,
   onCourseHover,
 }: CourseListProps) {
+  const [detailCode, setDetailCode] = useState<string | null>(null);
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
     2: "必選",
@@ -140,13 +142,12 @@ export default function CourseList({
                                     </TooltipContent>
                                   </Tooltip>
                                 ) : (
-                                  <Link
-                                    prefetch={false}
-                                    href={`/course-info/${course.course_code}`}
-                                    className="underline"
+                                  <button
+                                    className="cursor-pointer underline"
+                                    onClick={() => setDetailCode(course.course_code)}
                                   >
                                     {course.course_name}
-                                  </Link>
+                                  </button>
                                 )}
                                 <Badge
                                   variant={"secondary"}
@@ -303,13 +304,12 @@ export default function CourseList({
                                 {course.course_name}
                               </span>
                             ) : (
-                              <Link
-                                prefetch={false}
-                                href={`/course-info/${course.course_code}`}
-                                className="hover:text-primary decoration-primary/50 text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline"
+                              <button
+                                className="hover:text-primary decoration-primary/50 text-left text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline cursor-pointer"
+                                onClick={() => setDetailCode(course.course_code)}
                               >
                                 {course.course_name}
-                              </Link>
+                              </button>
                             )}
                           </div>
                         </div>
@@ -363,6 +363,10 @@ export default function CourseList({
           </TabsContent>
         </Tabs>
       </div>
+      <CourseDetailDialog
+        courseCode={detailCode}
+        onClose={() => setDetailCode(null)}
+      />
     </TooltipProvider>
   );
 }

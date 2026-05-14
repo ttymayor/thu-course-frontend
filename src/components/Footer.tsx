@@ -144,13 +144,15 @@ export default function Footer() {
 
           <section className="footer-container">
             <VersionLogDialog>
-              <button
-                className="footer-link flex items-center text-sm hover:underline"
-                type="button"
-              >
-                <Tag className="mr-1 h-3 w-3" />
-                版本 v1.5.1
-              </button>
+              {(version) => (
+                <button
+                  className="footer-link flex items-center text-sm hover:underline"
+                  type="button"
+                >
+                  <Tag className="mr-1 h-3 w-3" />
+                  版本 {version ?? "..."}
+                </button>
+              )}
             </VersionLogDialog>
             <div className="footer-text">© 2025-2026 tantuyu</div>
           </section>
