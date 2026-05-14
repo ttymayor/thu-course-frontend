@@ -10,108 +10,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { GitBranch, Calendar } from "lucide-react";
-import { Tag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { GitBranch, Calendar, Tag, ChevronDown } from "lucide-react";
 
 interface VersionLog {
   version: string;
   date: string;
   changes: string[];
 }
-
-const VERSION_LOGS: VersionLog[] = [
-  {
-    version: "v1.5.1",
-    date: "2026-02-25",
-    changes: ["🔧 Fix first welcome dialog would not show on first time"],
-  },
-  {
-    version: "v1.5.0",
-    date: "2026-02-24",
-    changes: [
-      "✨ Replace FirstLoadingAnimation with WelcomeDialog (privacy notice on first visit)",
-      "🔄 Refactor CourseScheduleList: compute status (開放/關閉/結束) client-side from datetime",
-      "🐛 Fix Mongoose ObjectId toJSON serialization error when passing data to client components",
-      "🐛 Fix hydration mismatch in date formatting by using deterministic UTC+8 formatter",
-      "🔧 Bump dependencies (Next.js 16.1.6, React 19.2.4, mongoose, motion, lucide-react, etc.)",
-    ],
-  },
-  {
-    version: "v1.4.0",
-    date: "2026-01-16",
-    changes: [
-      "🔧 Update dependencies (Next.js 16.1.1 → 16.1.2, TypeScript, etc.)",
-      "🎨 Improve course info components (DetailView, GradingPieChart)",
-      "📝 Add AGENTS.md documentation with coding guidelines",
-      "✨ Implement feedback feature with form and API integration",
-      "🎯 Add theme color provider and toggle for enhanced UI customization",
-      "📊 Enhance OG image generation for course information",
-      "🆕 Add NewRelease component and enhance course list display",
-      "📱 Enhance footer component with new layout and links",
-    ],
-  },
-  {
-    version: "v1.3.0",
-    date: "2026-01-08",
-    changes: [
-      "🔐 Implement Google OAuth authentication with next-auth",
-      "📚 Add bookmarks feature with BookmarkList component",
-      "📱 Add mobile menu for improved navigation",
-      "🔧 Refactor course service and API response handling",
-      "✨ Implement course and department management with API routes",
-      "⚡ Use lean() for get course schedules query to improve performance",
-      "👤 Implement user creation in MongoDB during sign-in process",
-    ],
-  },
-  {
-    version: "v1.2.0",
-    date: "2025-11-24",
-    changes: [
-      "🏠 Enhance layout with announcements, course schedule, school links, and FAQs",
-      "📅 Implement schedule simulator with course display, sharing, and export",
-      "🔢 Integrate vercount-react for site analytics",
-      "🎨 Add accordion component for FAQ section",
-      "📦 Update dependencies and add @radix-ui/react-label",
-    ],
-  },
-  {
-    version: "v1.1.0",
-    date: "2025-10-22",
-    changes: [
-      "🔧 Upgrade Next.js to version 16.0.0",
-      "⚙️ Enable reactCompiler option in configuration",
-      "🕐 Add time progress indicator to ScheduleTable",
-      "🛠️ Remove temporary data migration logic",
-      "🔧 Correct path separator for Next.js type definitions",
-    ],
-  },
-  {
-    version: "v1.0.1",
-    date: "2025-10-15",
-    changes: [
-      "🐛 Fix schedule simulator data migration logic",
-      "🔄 Implement temporary data migration from localStorage",
-      "📊 Add hoveredCourse prop to preview schedule",
-      "🔧 Extract ScheduleTable component and create schedule lib",
-      "🗺️ Fix DrawPolyline's issue with accessing ref during rendering",
-      "🎨 Fix rendering warning on first load animation",
-    ],
-  },
-  {
-    version: "v1.0.0",
-    date: "2025-10-13",
-    changes: [
-      "🎉 Initial release",
-      "📋 Course information query functionality",
-      "📊 Course detail view with grading and selection data",
-      "📅 Schedule simulator with course selection",
-      "🗺️ School map with bus routes and location marker",
-      "🎨 Enhanced UI with loading skeletons and animations",
-      "🔍 Implement search and filter functionality",
-      "📈 Add charts for course grading and selection data",
-    ],
-  },
-];
 
 function VersionLogItem({ log }: { log: VersionLog }) {
   return (
@@ -127,12 +34,26 @@ function VersionLogItem({ log }: { log: VersionLog }) {
         </div>
       </div>
       <ul className="list-inside list-disc space-y-1 text-sm">
-        {log.changes.map((change, index) => (
-          <li key={index} className="list-item items-start pl-4">
+        {log.changes.map((change, i) => (
+          <li key={i} className="list-item items-start pl-4">
             <span className="leading-tight">{change}</span>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function VersionLogSkeleton() {
+  return (
+    <div className="space-y-3 border-b pb-4">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-16 rounded-full" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+      <Skeleton className="h-3 w-full" />
+      <Skeleton className="h-3 w-5/6" />
+      <Skeleton className="h-3 w-4/6" />
     </div>
   );
 }
@@ -142,8 +63,31 @@ interface VersionLogDialogProps {
 }
 
 export function VersionLogDialog({ children }: VersionLogDialogProps) {
+  const [open, setOpen] = React.useState(false);
+  const [logs, setLogs] = React.useState<VersionLog[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [hasMore, setHasMore] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const fetchPage = React.useCallback(async (p: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/git-log?page=${p}`);
+      const data = await res.json();
+      setLogs((prev) => (p === 0 ? data.logs : [...prev, ...data.logs]));
+      setHasMore(data.hasMore);
+      setPage(p);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (open && logs.length === 0) fetchPage(0);
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-150">
         <DialogHeader>
@@ -157,10 +101,30 @@ export function VersionLogDialog({ children }: VersionLogDialogProps) {
         </DialogHeader>
         <div className="h-100 w-full overflow-y-auto rounded-md border p-4">
           <div className="space-y-4">
-            {VERSION_LOGS.map((log) => (
+            {logs.map((log) => (
               <VersionLogItem key={log.version} log={log} />
             ))}
+            {loading &&
+              Array.from({ length: 3 }).map((_, i) => (
+                <VersionLogSkeleton key={i} />
+              ))}
+            {!loading && logs.length === 0 && (
+              <p className="text-muted-foreground text-center text-sm">
+                無法載入版本資訊
+              </p>
+            )}
           </div>
+          {hasMore && !loading && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-4 w-full"
+              onClick={() => fetchPage(page + 1)}
+            >
+              <ChevronDown className="mr-1 h-4 w-4" />
+              顯示更多
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
