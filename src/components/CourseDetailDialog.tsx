@@ -38,7 +38,11 @@ export function CourseDetailDialog({
 
   return (
     <Dialog open={!!courseCode} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] min-w-[75vw] overflow-y-auto">
+      <DialogContent
+        className="max-h-[90vh] min-w-[75vw] overflow-y-auto"
+        showCloseButton={false}
+        aria-describedby={undefined}
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>{course?.course_name ?? courseCode}</DialogTitle>
         </DialogHeader>
