@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
 import useSWR from "swr";
 import { toast } from "sonner";
-import CourseTimeInfoPanel from "./CourseTimeInfoPanel";
 
 export default function HomeScheduleView() {
   const searchParams = useSearchParams();

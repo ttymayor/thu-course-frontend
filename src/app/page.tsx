@@ -11,7 +11,7 @@ import { Section } from "@/components/Section";
 import CourseScheduleList from "@/components/CourseScheduleList";
 import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
 import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
-import HomeScheduleView from "./new-home/HomeScheduleView";
+import HomeScheduleView from "@/components/schedule-simulator/HomeScheduleView";
 
 export default function Home() {
   return (
