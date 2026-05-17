@@ -65,7 +65,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
 
   return (
     <>
-      <div className="flex flex-col gap-6 border-b pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-6 border-b pb-6 md:flex-row md:items-center md:justify-between">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="px-2 py-1 font-mono text-lg">

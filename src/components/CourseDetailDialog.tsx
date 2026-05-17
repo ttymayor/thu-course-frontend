@@ -39,7 +39,7 @@ export function CourseDetailDialog({
   return (
     <Dialog open={!!courseCode} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="max-h-[90vh] min-w-[75vw] overflow-y-auto"
+        className="max-h-[90vh] max-w-[85vw] overflow-y-auto sm:min-w-[75vw]"
         showCloseButton={false}
         aria-describedby={undefined}
       >
