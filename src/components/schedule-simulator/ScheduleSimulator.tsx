@@ -11,8 +11,9 @@ import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkelet
 import useSWR from "swr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
+import type { Session } from "next-auth";
 
-export default function ScheduleSimulator() {
+export default function ScheduleSimulator({ session = null }: { session?: Session | null }) {
   const searchParams = useSearchParams();
   const {
     selectedCourses,
@@ -20,8 +21,9 @@ export default function ScheduleSimulator() {
     removeCourse,
     importCourses,
     syncSchedule,
+    restoreFromDb,
     isSyncing,
-    lastSyncedAt,
+    isDirty,
   } = useSelectedCourses();
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
@@ -110,7 +112,7 @@ export default function ScheduleSimulator() {
 
       <div className="w-full min-w-0 md:w-2/3">
         {isLoadingShared ? (
-          <ScheduleCard selectedCourses={[]} />
+          <ScheduleCard selectedCourses={[]} session={null} />
         ) : (
           <ScheduleCard
             selectedCourses={displayCourses}
@@ -120,8 +122,10 @@ export default function ScheduleSimulator() {
             onImportShared={handleImportShared}
             onRejectShared={handleRejectShared}
             onSyncSchedule={syncSchedule}
+            onRestoreFromDb={restoreFromDb}
             isSyncing={isSyncing}
-            lastSyncedAt={lastSyncedAt}
+            isDirty={isDirty}
+            session={session}
           />
         )}
       </div>

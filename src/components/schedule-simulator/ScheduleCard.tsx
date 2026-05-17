@@ -1,6 +1,16 @@
 "use client";
 
-import { X, QrCode, Download, Share2, Settings, Check, CloudUpload, Loader2 } from "lucide-react";
+import {
+  X,
+  QrCode,
+  Download,
+  Share2,
+  Settings,
+  Check,
+  CloudUpload,
+  Loader2,
+  RotateCcw,
+} from "lucide-react";
 import { Course } from "@/types/course";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +49,8 @@ import { useLocalStorage } from "foxact/use-local-storage";
 import { toPng } from "html-to-image";
 import { ButtonGroup } from "@/components/ui/button-group";
 import ScheduleTable from "./ScheduleTable";
+import type { Session } from "next-auth";
+import Link from "next/link";
 
 interface ScheduleCardProps {
   selectedCourses: Course[];
@@ -48,8 +60,10 @@ interface ScheduleCardProps {
   onImportShared?: () => void;
   onRejectShared?: () => void;
   onSyncSchedule?: () => Promise<void>;
+  onRestoreFromDb?: () => Promise<void>;
   isSyncing?: boolean;
-  lastSyncedAt?: Date | null;
+  isDirty?: boolean;
+  session: Session | null;
 }
 
 export default function ScheduleCard({
@@ -60,8 +74,10 @@ export default function ScheduleCard({
   onImportShared,
   onRejectShared,
   onSyncSchedule,
+  onRestoreFromDb,
   isSyncing = false,
-  lastSyncedAt,
+  isDirty = false,
+  session,
 }: ScheduleCardProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
@@ -314,8 +330,8 @@ export default function ScheduleCard({
                 className="w-auto cursor-pointer"
                 size="sm"
                 onClick={onSyncSchedule}
-                disabled={isSyncing}
-                title="同步課表到雲端"
+                disabled={isSyncing || (!!session && !isDirty)}
+                title={session ? "同步課表到雲端" : "儲存課表到本地"}
               >
                 {isSyncing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -443,10 +459,48 @@ export default function ScheduleCard({
             ? "你選的課好多喔，要多休息喔"
             : "祝你穩過這幾學分 ><"}
         </span>
-        {lastSyncedAt && (
-          <span className="text-xs">
-            上次同步 {lastSyncedAt.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}
-          </span>
+        {session ? (
+          <div className="flex items-center gap-2">
+            {isDirty && (
+              <Button
+                variant="ghost"
+                className="w-auto cursor-pointer"
+                size="sm"
+                onClick={onRestoreFromDb}
+                title="復原雲端課表"
+              >
+                <RotateCcw className="h-4 w-4" />
+                復原
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              className="w-auto cursor-pointer"
+              size="sm"
+              onClick={onSyncSchedule}
+              disabled={isSyncing || !isDirty}
+              title="同步課表到雲端"
+            >
+              {isSyncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CloudUpload className="h-4 w-4" />
+              )}
+              {isSyncing ? "儲存中..." : "儲存課表"}
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Button
+              variant="link"
+              className="cursor-pointer"
+              onClick={() => {
+                window.location.href = "/auth/signin";
+              }}
+            >
+              <Link href="/auth/signin">登入以跨裝置同步課表</Link>
+            </Button>
+          </>
         )}
       </CardFooter>
     </Card>

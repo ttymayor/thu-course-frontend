@@ -12,8 +12,10 @@ import CourseScheduleList from "@/components/CourseScheduleList";
 import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
 import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
 import HomeScheduleView from "@/components/schedule-simulator/HomeScheduleView";
+import { getSession } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
   return (
     <BaseLayout>
       <div className="flex w-full flex-col items-center gap-6">
@@ -27,11 +29,15 @@ export default function Home() {
           }
         >
           <Suspense fallback={<ScheduleSimulatorSkeleton />}>
-            <HomeScheduleView />
+            <HomeScheduleView session={session} />
           </Suspense>
         </Section>
 
-        <Section id="faq" title="常見問題 FAQ" icon={<HelpCircle className="size-5" />}>
+        <Section
+          id="faq"
+          title="常見問題 FAQ"
+          icon={<HelpCircle className="size-5" />}
+        >
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-base font-medium">

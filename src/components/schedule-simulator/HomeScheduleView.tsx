@@ -11,11 +11,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
 import useSWR from "swr";
 import { toast } from "sonner";
+import type { Session } from "next-auth";
 
-export default function HomeScheduleView() {
+interface HomeScheduleViewProps {
+  session: Session | null;
+}
+
+export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
   const searchParams = useSearchParams();
-  const { selectedCourses, setSelectedCourses, removeCourse, importCourses, syncSchedule, isSyncing, lastSyncedAt } =
-    useSelectedCourses();
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    removeCourse,
+    importCourses,
+    syncSchedule,
+    restoreFromDb,
+    isSyncing,
+    isDirty,
+  } = useSelectedCourses();
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
   const codesParam = searchParams.get("codes");
@@ -90,7 +103,7 @@ export default function HomeScheduleView() {
       {/* Right: schedule grid + time info */}
       <div className="w-full min-w-0 md:w-2/3">
         {isLoadingShared ? (
-          <ScheduleCard selectedCourses={[]} />
+          <ScheduleCard selectedCourses={[]} session={null} />
         ) : (
           <ScheduleCard
             selectedCourses={displayCourses}
@@ -100,8 +113,10 @@ export default function HomeScheduleView() {
             onImportShared={handleImportShared}
             onRejectShared={handleRejectShared}
             onSyncSchedule={syncSchedule}
+            onRestoreFromDb={restoreFromDb}
             isSyncing={isSyncing}
-            lastSyncedAt={lastSyncedAt}
+            isDirty={isDirty}
+            session={session}
           />
         )}
       </div>

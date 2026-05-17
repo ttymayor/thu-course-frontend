@@ -9,7 +9,7 @@ export default function ScheduleSimulatorSkeleton() {
         <CourseListSkeleton />
       </div>
       <div className="md:w-2/3 w-full min-w-0">
-        <ScheduleCard selectedCourses={[]} />
+        <ScheduleCard selectedCourses={[]} session={null} />
       </div>
     </Frame>
   );
