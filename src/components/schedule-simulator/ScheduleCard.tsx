@@ -329,20 +329,6 @@ export default function ScheduleCard({
                 variant="ghost"
                 className="w-auto cursor-pointer"
                 size="sm"
-                onClick={onSyncSchedule}
-                disabled={isSyncing || (!!session && !isDirty)}
-                title={session ? "同步課表到雲端" : "儲存課表到本地"}
-              >
-                {isSyncing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CloudUpload className="h-4 w-4" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-auto cursor-pointer"
-                size="sm"
                 onClick={shareSchedule}
                 disabled={selectedCourses.length === 0}
               >
