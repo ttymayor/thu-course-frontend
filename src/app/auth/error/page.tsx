@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import {
   Card,
   CardContent,
@@ -9,12 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 type ErrorType = "Configuration" | "AccessDenied" | "Verification" | "Default";
-
-interface ErrorPageProps {
-  searchParams: {
-    error?: string;
-  };
-}
 
 const errorMessages: Record<
   ErrorType,
@@ -46,26 +44,35 @@ const errorMessages: Record<
   },
 };
 
-export default function ErrorPage({ searchParams }: ErrorPageProps) {
-  const error = (searchParams.error as ErrorType) || "Default";
+function ErrorContent() {
+  const searchParams = useSearchParams();
+  const error = (searchParams.get("error") as ErrorType) || "Default";
   const errorInfo = errorMessages[error] || errorMessages.Default;
 
   return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle className="text-destructive">{errorInfo.title}</CardTitle>
+        <CardDescription>{errorInfo.description}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Button asChild className="w-full">
+          <Link href="/auth/signin">返回登入頁面</Link>
+        </Button>
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/">返回首頁</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function ErrorPage() {
+  return (
     <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-destructive">{errorInfo.title}</CardTitle>
-          <CardDescription>{errorInfo.description}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button asChild className="w-full">
-            <Link href="/auth/signin">返回登入頁面</Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/">返回首頁</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <Suspense>
+        <ErrorContent />
+      </Suspense>
     </div>
   );
 }

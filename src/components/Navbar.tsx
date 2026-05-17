@@ -31,8 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type Session } from "next-auth";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 // 導航配置
@@ -69,7 +68,8 @@ const getAcademicYearAndSemester = () => {
   }
 };
 
-export default function Navbar({ session }: { session: Session | null }) {
+export default function Navbar() {
+  const { data: session } = useSession();
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);

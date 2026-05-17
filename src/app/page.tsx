@@ -13,11 +13,13 @@ import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton"
 import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
 import HomeScheduleView from "@/components/schedule-simulator/HomeScheduleView";
 import { getSession } from "@/lib/auth";
+import WelcomeDialog from "@/components/WelcomeDialog";
 
 export default async function Home() {
   const session = await getSession();
   return (
     <BaseLayout>
+      <WelcomeDialog />
       <div className="flex w-full flex-col items-center gap-6">
         <Section
           id="schedule-simulator"
@@ -47,7 +49,8 @@ export default async function Home() {
                 本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器預設僅在本地端（瀏覽器）儲存您的選課記錄，不會上傳任何資料。
                 <br />
                 <br />
-                若您選擇登入並使用「儲存課表」同步功能，您的課程選擇將會被記錄至我們的伺服器，以便跨裝置存取。登入功能僅供東海大學（@go.thu.edu.tw）電子郵件使用，並會記錄您的 Email，目前僅用於意見回饋功能。
+                若您選擇登入並使用「儲存課表」同步功能，您的課程選擇將會被記錄至我們的伺服器，以便跨裝置存取。登入功能僅供東海大學（@go.thu.edu.tw）電子郵件使用，並會記錄您的
+                Email，目前僅用於意見回饋功能。
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">

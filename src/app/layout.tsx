@@ -16,8 +16,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeColorProvider } from "@/components/ThemeColorProvider";
 import SessionProvider from "@/components/SessionProvider";
 import { Toaster } from "sonner";
-import WelcomeDialog from "@/components/WelcomeDialog";
-import { getSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://thc.ttymayor.com"),
@@ -78,13 +76,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <GoogleAnalytics gaId="G-8CG8PZK1MJ" />
@@ -100,9 +96,8 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <WelcomeDialog />
               <div className="flex min-h-screen flex-col">
-                <Navbar session={session} />
+                <Navbar />
                 <div className="flex-1">{children}</div>
                 <Footer />
               </div>
