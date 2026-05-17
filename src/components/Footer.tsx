@@ -158,6 +158,11 @@ export default function Footer() {
           </section>
         </div>
       </div>
+      <div
+        id="nav-space-placeholder"
+        aria-hidden="true"
+        className="h-[53px] sm:hidden"
+      />
     </div>
   );
 }
