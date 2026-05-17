@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 export default function HomeScheduleView() {
   const searchParams = useSearchParams();
-  const { selectedCourses, setSelectedCourses, removeCourse, importCourses } =
+  const { selectedCourses, setSelectedCourses, removeCourse, importCourses, syncSchedule, isSyncing, lastSyncedAt } =
     useSelectedCourses();
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
@@ -99,6 +99,9 @@ export default function HomeScheduleView() {
             isViewingShared={isViewingShared}
             onImportShared={handleImportShared}
             onRejectShared={handleRejectShared}
+            onSyncSchedule={syncSchedule}
+            isSyncing={isSyncing}
+            lastSyncedAt={lastSyncedAt}
           />
         )}
       </div>

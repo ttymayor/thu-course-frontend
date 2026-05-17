@@ -14,8 +14,15 @@ import useSelectedCourses from "@/hooks/useSelectedCourses";
 
 export default function ScheduleSimulator() {
   const searchParams = useSearchParams();
-  const { selectedCourses, setSelectedCourses, removeCourse, importCourses } =
-    useSelectedCourses();
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    removeCourse,
+    importCourses,
+    syncSchedule,
+    isSyncing,
+    lastSyncedAt,
+  } = useSelectedCourses();
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
   // 從 URL 參數獲取課程代碼
@@ -112,6 +119,9 @@ export default function ScheduleSimulator() {
             isViewingShared={isViewingShared}
             onImportShared={handleImportShared}
             onRejectShared={handleRejectShared}
+            onSyncSchedule={syncSchedule}
+            isSyncing={isSyncing}
+            lastSyncedAt={lastSyncedAt}
           />
         )}
       </div>

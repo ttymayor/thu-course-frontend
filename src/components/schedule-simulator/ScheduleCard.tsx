@@ -1,6 +1,6 @@
 "use client";
 
-import { X, QrCode, Download, Share2, Settings, Check } from "lucide-react";
+import { X, QrCode, Download, Share2, Settings, Check, CloudUpload, Loader2 } from "lucide-react";
 import { Course } from "@/types/course";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +47,9 @@ interface ScheduleCardProps {
   isViewingShared?: boolean;
   onImportShared?: () => void;
   onRejectShared?: () => void;
+  onSyncSchedule?: () => Promise<void>;
+  isSyncing?: boolean;
+  lastSyncedAt?: Date | null;
 }
 
 export default function ScheduleCard({
@@ -56,6 +59,9 @@ export default function ScheduleCard({
   isViewingShared = false,
   onImportShared,
   onRejectShared,
+  onSyncSchedule,
+  isSyncing = false,
+  lastSyncedAt,
 }: ScheduleCardProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
@@ -307,6 +313,20 @@ export default function ScheduleCard({
                 variant="ghost"
                 className="w-auto cursor-pointer"
                 size="sm"
+                onClick={onSyncSchedule}
+                disabled={isSyncing}
+                title="同步課表到雲端"
+              >
+                {isSyncing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CloudUpload className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-auto cursor-pointer"
+                size="sm"
                 onClick={shareSchedule}
                 disabled={selectedCourses.length === 0}
               >
@@ -417,10 +437,17 @@ export default function ScheduleCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="text-muted-foreground flex items-center justify-center text-center text-sm">
-        {totalCredits >= 20
-          ? "你選的課好多喔，要多休息喔"
-          : "祝你穩過這幾學分 ><"}
+      <CardFooter className="text-muted-foreground flex items-center justify-between text-center text-sm">
+        <span>
+          {totalCredits >= 20
+            ? "你選的課好多喔，要多休息喔"
+            : "祝你穩過這幾學分 ><"}
+        </span>
+        {lastSyncedAt && (
+          <span className="text-xs">
+            上次同步 {lastSyncedAt.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}
+          </span>
+        )}
       </CardFooter>
     </Card>
   );
