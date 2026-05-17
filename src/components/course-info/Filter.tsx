@@ -142,6 +142,7 @@ export default function Filter() {
             <Button
               variant="outline"
               role="combobox"
+              aria-controls="course-info-department-combobox"
               aria-expanded={open}
               className="w-full cursor-pointer justify-between rounded-sm px-3 py-2 text-sm"
             >

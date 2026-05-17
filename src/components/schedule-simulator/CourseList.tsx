@@ -1,38 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { CourseDetailDialog } from "@/components/CourseDetailDialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CourseTypeMap } from "@/components/course-info/types";
 import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { Course } from "@/types/course";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, Clock, MapPin, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface CourseListProps {
   courses: Course[];
@@ -49,7 +28,6 @@ export default function CourseList({
   onSelectionChange,
   onCourseHover,
 }: CourseListProps) {
-  const [detailCode, setDetailCode] = useState<string | null>(null);
   const courseTypeMap: CourseTypeMap = {
     1: "必修",
     2: "必選",
@@ -155,12 +133,12 @@ export default function CourseList({
                             {course.course_name}
                           </span>
                         ) : (
-                          <button
+                          <Link
+                            href={`/course-info/${course.course_code}`}
                             className="hover:text-primary decoration-primary/50 cursor-pointer text-left text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline"
-                            onClick={() => setDetailCode(course.course_code)}
                           >
                             {course.course_name}
-                          </button>
+                          </Link>
                         )}
                       </div>
                     </div>

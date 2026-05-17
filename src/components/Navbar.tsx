@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut, Menu, User, MessageSquarePlus } from "lucide-react";
 import { useState } from "react";
-import { Search, CalendarDays, Map, Bookmark } from "lucide-react";
+import { Map, Bookmark } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

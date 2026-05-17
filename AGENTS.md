@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 pnpm dev          # Start development server
 pnpm build        # Production build
-pnpm lint         # ESLint
+pnpm lint         # OXLint
 ```
 
 ## Architecture
