@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Search, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Department } from "@/types/department";
 import useSWR from "swr";
@@ -31,10 +32,18 @@ import { Spinner } from "@/components/ui/spinner";
 import { useDebounceTransition } from "@/lib/debounceTransition";
 import { InputGroup } from "@/components/ui/input-group";
 
+function guessStudentDeptCode(email: string | null | undefined): string | null {
+  if (!email) return null;
+  const id = email.split("@")[0].toUpperCase();
+  const match = id.match(/^[A-Z]\d{2}(\d{3})\d{3}$/);
+  return match ? match[1] : null;
+}
+
 export default function Filter() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
   const currentSearchQuery = searchParams.get("search") || "";
   const currentSelectedDepartment = searchParams.get("department") || "";
@@ -53,6 +62,11 @@ export default function Filter() {
       return (await fetch(key).then((res) => res.json())).data as Department[];
     },
   );
+
+  const guessedDeptCode = guessStudentDeptCode(session?.user?.email);
+  const guessedDept = guessedDeptCode
+    ? departments?.find((d) => d.department_code === guessedDeptCode)
+    : null;
 
   // 按學院分類系所 - 使用 category_code 和 category_name
   const departmentsByCollege = departments?.reduce(
@@ -161,6 +175,29 @@ export default function Filter() {
                     所有系所
                   </CommandItem>
                 </CommandGroup>
+                {guessedDept && (
+                  <CommandGroup heading="猜你喜歡...">
+                    <CommandItem
+                      key={guessedDept.department_code}
+                      value={`${guessedDept.department_name} ${guessedDept.department_code}`}
+                      onSelect={() => {
+                        handleDepartmentChange(guessedDept.department_code);
+                        setOpen(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Check
+                        className={cn(
+                          "h-4 w-4",
+                          selectedDepartment === guessedDept.department_code
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                      />
+                      {guessedDept.department_name}
+                    </CommandItem>
+                  </CommandGroup>
+                )}
                 {departmentsByCollege &&
                   Object.entries(departmentsByCollege)
                     .sort(([a], [b]) => a.localeCompare(b))
