@@ -116,6 +116,9 @@ importers:
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
+      rate-limiter-flexible:
+        specifier: ^11.1.0
+        version: 11.1.0
       react:
         specifier: 19.2.6
         version: 19.2.6
@@ -3413,6 +3416,9 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  rate-limiter-flexible@11.1.0:
+    resolution: {integrity: sha512-lyyC0SqKz+dE5JoHZ4JMqdrM3LSZKBxzuAFAyKCYAnmHnPz/Rb6iDquxoL4CMipDXoR0G+QRhOzYWL3JKihbNw==}
 
   react-dom@19.2.6:
     resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
@@ -7164,6 +7170,8 @@ snapshots:
       yargs: 15.4.1
 
   queue-microtask@1.2.3: {}
+
+  rate-limiter-flexible@11.1.0: {}
 
   react-dom@19.2.6(react@19.2.6):
     dependencies:

@@ -3,8 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectMongoDB from "@/lib/mongodb";
 import { Feedback } from "@/models/Feedback";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
+  const limited = await rateLimit("feedback");
+  if (limited) return limited;
+
   try {
     const session = await getServerSession(authOptions);
 
