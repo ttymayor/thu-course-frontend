@@ -30,10 +30,6 @@ const errorMessages: Record<
       <>
         此帳號未獲授權，請使用東海大學（
         <code className="font-bold text-blue-500 underline">
-          @thu.edu.tw
-        </code>{" "}
-        或{" "}
-        <code className="font-bold text-blue-500 underline">
           @go.thu.edu.tw
         </code>
         ）的 Google 帳號登入

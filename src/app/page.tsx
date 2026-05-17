@@ -44,8 +44,10 @@ export default async function Home() {
                 我們會蒐集您的個人資料嗎？
               </AccordionTrigger>
               <AccordionContent>
-                不會，我們不會蒐集您的個人資料。本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器也僅在本地端進行計算，不會上傳任何資料到我們的伺服器。登入功能會記錄您的登入
-                Email，目前僅額外提供意見回饋。
+                本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器預設僅在本地端（瀏覽器）儲存您的選課記錄，不會上傳任何資料。
+                <br />
+                <br />
+                若您選擇登入並使用「儲存課表」同步功能，您的課程選擇將會被記錄至我們的伺服器，以便跨裝置存取。登入功能僅供東海大學（@go.thu.edu.tw）電子郵件使用，並會記錄您的 Email，目前僅用於意見回饋功能。
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
