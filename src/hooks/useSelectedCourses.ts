@@ -18,7 +18,7 @@ async function fetchCoursesByCode(codes: string[]): Promise<Course[]> {
 function writeLocalStorage(courses: Course[]) {
   localStorage.setItem(
     "selectedCourseCodes",
-    courses.map((c) => c.course_code).join(",")
+    courses.map((c) => c.course_code).join(","),
   );
 }
 
@@ -56,7 +56,7 @@ export default function useSelectedCourses() {
     if (!isAuthenticated) {
       if (localCodes.length > 0) {
         fetchCoursesByCode(localCodes).then((courses) =>
-          _setSelectedCourses(courses)
+          _setSelectedCourses(courses),
         );
       }
       return;
@@ -89,7 +89,7 @@ export default function useSelectedCourses() {
 
   const removeCourse = (courseCode: string) => {
     const courseToRemove = selectedCourses.find(
-      (c) => c.course_code === courseCode
+      (c) => c.course_code === courseCode,
     );
     if (courseToRemove) {
       const next = selectedCourses.filter((c) => c.course_code !== courseCode);

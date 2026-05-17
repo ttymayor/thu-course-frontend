@@ -123,7 +123,7 @@ export default function ScheduleTable({
 
   const getSpanTimeProgress = (
     startPeriodIndex: number,
-    span: number
+    span: number,
   ): number | null => {
     for (let i = 0; i < span; i++) {
       const pIndex = startPeriodIndex + i;
@@ -191,7 +191,7 @@ export default function ScheduleTable({
 
                   const cellProgress = getSpanTimeProgress(
                     periodIndex,
-                    rowSpan
+                    rowSpan,
                   );
                   const showProgressLine =
                     cellProgress !== null && showTimeProgress;
@@ -237,7 +237,7 @@ export default function ScheduleTable({
                                       course.course_code
                                   ? "bg-secondary/50 border border-dashed"
                                   : "bg-secondary border border-solid",
-                              "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-sm p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs"
+                              "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-sm p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
                             )}
                           >
                             <button
@@ -252,7 +252,7 @@ export default function ScheduleTable({
                               </p>
                               <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
                                 {courseLocation(
-                                  course.basic_info.class_time || ""
+                                  course.basic_info.class_time || "",
                                 )}
                               </p>
                             </button>

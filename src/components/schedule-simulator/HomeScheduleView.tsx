@@ -51,13 +51,13 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
       if (!result.success || !result.data?.length)
         throw new Error("無法載入課程資料");
       return result.data as Course[];
-    }
+    },
   );
 
   const displayCourses = useMemo(
     () =>
       validCodes.length > 0 && sharedCourses ? sharedCourses : selectedCourses,
-    [validCodes.length, sharedCourses, selectedCourses]
+    [validCodes.length, sharedCourses, selectedCourses],
   );
 
   const isViewingShared = !!(validCodes.length > 0 && sharedCourses);

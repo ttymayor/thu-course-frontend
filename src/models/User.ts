@@ -34,7 +34,7 @@ const userSchema = new Schema<UserDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const User: Model<UserDocument> =

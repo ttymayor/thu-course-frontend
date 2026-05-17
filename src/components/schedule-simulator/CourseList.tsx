@@ -62,7 +62,7 @@ export default function CourseList({
                     hasConflict &&
                       "border-destructive/60 bg-destructive/10 ring-destructive/30 ring-1",
                     course.is_closed &&
-                      "pointer-events-none opacity-50 grayscale"
+                      "pointer-events-none opacity-50 grayscale",
                   )}
                   key={course.course_code}
                   onMouseEnter={() => !hasConflict && onCourseHover?.(course)}
@@ -177,7 +177,7 @@ export default function CourseList({
                                     </span>
                                   )}
                                 </div>
-                              )
+                              ),
                             )}
                           </div>
                         </div>

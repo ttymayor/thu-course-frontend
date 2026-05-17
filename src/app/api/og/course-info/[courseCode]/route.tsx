@@ -6,7 +6,7 @@ import { generateDefaultOGImage } from "@/lib/ogImage";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ courseCode: string }> }
+  { params }: { params: Promise<{ courseCode: string }> },
 ) {
   try {
     const { courseCode } = await params;
@@ -16,10 +16,10 @@ export async function GET(
 
     // 載入字體
     const LineSeedRegular = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf")
+      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf"),
     );
     const LineSeedBold = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf")
+      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf"),
     );
 
     // 如果找不到課程資訊，回傳預設的 OG 圖片
@@ -119,7 +119,7 @@ export async function GET(
             style: "normal",
           },
         ],
-      }
+      },
     );
   } catch (error) {
     console.error("Error generating dynamic OG image:", error);

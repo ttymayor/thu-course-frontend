@@ -61,7 +61,7 @@ export default function ScheduleSimulator({
       }
 
       return result.data as Course[];
-    }
+    },
   );
 
   // 決定要顯示的課程：如果有分享參數就顯示分享的課程，否則顯示本地保存的課程

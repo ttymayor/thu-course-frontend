@@ -26,7 +26,7 @@ export default function useBookmark() {
       : null;
   const { data: coursesRes } = useSWR(
     isAuthenticated && codesQuery ? `/api/course-info?${codesQuery}` : null,
-    fetcher
+    fetcher,
   );
   const bookmarks: Course[] = coursesRes?.data ?? [];
 
@@ -62,7 +62,7 @@ export default function useBookmark() {
     }
     mutateCodes(
       { data: bookmarkCodes.filter((c) => c !== course.course_code) },
-      false
+      false,
     );
     try {
       await fetch("/api/bookmarks", {

@@ -5,5 +5,5 @@
   "sortPackageJson": false,
   "ignorePatterns": [],
   "tabWidth": 2,
-  "trailingComma": "es5"
+  "trailingComma": "all"
 }

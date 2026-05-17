@@ -22,7 +22,7 @@ export interface ConflictInfo {
 
 export function checkScheduleConflict(
   existingCourses: Course[],
-  newCourse: Course
+  newCourse: Course,
 ): ConflictInfo {
   const conflictInfo: ConflictInfo = {
     hasConflict: false,
@@ -51,13 +51,13 @@ export function checkScheduleConflict(
 
     // 解析現有課程的時間
     const existingTimeSlots = courseTimeParser(
-      existingCourse.basic_info.class_time
+      existingCourse.basic_info.class_time,
     );
 
     // 檢查時間衝突
     const conflictingSlots = findTimeConflicts(
       existingTimeSlots,
-      newCourseTimeSlots
+      newCourseTimeSlots,
     );
 
     if (conflictingSlots.length > 0) {
@@ -75,7 +75,7 @@ export function checkScheduleConflict(
 
 function findTimeConflicts(
   timeSlots1: Array<{ day: string; periods: number[] }>,
-  timeSlots2: Array<{ day: string; periods: number[] }>
+  timeSlots2: Array<{ day: string; periods: number[] }>,
 ): Array<{ day: string; periods: number[] }> {
   const conflicts: Array<{ day: string; periods: number[] }> = [];
 
@@ -85,7 +85,7 @@ function findTimeConflicts(
       if (slot1.day === slot2.day) {
         // 找出重疊的節次
         const overlappingPeriods = slot1.periods.filter((period) =>
-          slot2.periods.includes(period)
+          slot2.periods.includes(period),
         );
 
         if (overlappingPeriods.length > 0) {

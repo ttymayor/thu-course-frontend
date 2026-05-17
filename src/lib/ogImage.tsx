@@ -8,10 +8,10 @@ import { join } from "node:path";
 export async function generateDefaultOGImage(): Promise<ImageResponse> {
   try {
     const LineSeedRegular = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf")
+      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf"),
     );
     const LineSeedBold = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf")
+      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf"),
     );
 
     return new ImageResponse(
@@ -65,7 +65,7 @@ export async function generateDefaultOGImage(): Promise<ImageResponse> {
             style: "normal",
           },
         ],
-      }
+      },
     );
   } catch (error) {
     console.error("Error loading fonts for OG image:", error);
@@ -105,7 +105,7 @@ export async function generateDefaultOGImage(): Promise<ImageResponse> {
       {
         width: 1200,
         height: 630,
-      }
+      },
     );
   }
 }

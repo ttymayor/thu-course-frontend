@@ -22,7 +22,7 @@ async function getIp(): Promise<string> {
 }
 
 export async function rateLimit(
-  type: keyof typeof limiters
+  type: keyof typeof limiters,
 ): Promise<NextResponse | null> {
   const ip = await getIp();
   try {
@@ -31,7 +31,7 @@ export async function rateLimit(
   } catch {
     return NextResponse.json(
       { success: false, message: "Too many requests, please slow down." },
-      { status: 429 }
+      { status: 429 },
     );
   }
 }

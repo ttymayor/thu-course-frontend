@@ -98,7 +98,7 @@ export default function Navbar() {
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
                     className={cn(
-                      isActive(item.href) ? "bg-accent/50" : undefined
+                      isActive(item.href) ? "bg-accent/50" : undefined,
                     )}
                   >
                     <Link href={item.href}>
@@ -144,7 +144,7 @@ export default function Navbar() {
                       "hover:text-primary text-lg font-medium transition-colors",
                       isActive(link.href)
                         ? "text-foreground"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
                     )}
                   >
                     <div className="flex items-center gap-2">

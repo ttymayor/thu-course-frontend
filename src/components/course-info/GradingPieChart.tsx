@@ -46,7 +46,7 @@ export default function GradingPieChart({
           label: item.method,
           color: COLORS[index % COLORS.length],
         },
-      ])
+      ]),
     ),
   } satisfies ChartConfig;
 

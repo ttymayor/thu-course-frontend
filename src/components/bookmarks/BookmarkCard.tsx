@@ -60,7 +60,7 @@ export default function BookmarkCard({ course }: { course: Course }) {
                   {entry.day} {entry.periods.join(", ")}
                   {entry.location && `［${entry.location}］`}
                 </span>
-              )
+              ),
             )}
           </li>
           <li>修課對象：{course.basic_info.target_class || "-"}</li>

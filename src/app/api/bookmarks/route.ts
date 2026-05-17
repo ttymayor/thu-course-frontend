@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   if (!course_code || typeof course_code !== "string") {
     return NextResponse.json(
       { success: false, message: "Missing course_code" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -51,7 +51,7 @@ export async function DELETE(req: Request) {
   if (!course_code || typeof course_code !== "string") {
     return NextResponse.json(
       { success: false, message: "Missing course_code" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

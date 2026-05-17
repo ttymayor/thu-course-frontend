@@ -26,7 +26,7 @@ export const wrap = (min: number, max: number, v: number) => {
 };
 
 const ScrollVelocityContext = React.createContext<MotionValue<number> | null>(
-  null
+  null,
 );
 
 export function ScrollVelocityContainer({
