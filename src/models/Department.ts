@@ -36,5 +36,5 @@ export const Department: Model<DepartmentDocument> =
   mongoose.model<DepartmentDocument>(
     "Department",
     departmentSchema,
-    "departments",
+    "departments"
   );

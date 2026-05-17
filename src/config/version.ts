@@ -20,9 +20,7 @@ export const VERSION_LOGS: VersionLog[] = [
   {
     version: "v1.5.1",
     date: "2026-02-25",
-    changes: [
-      "移除初始化時未使用的 storage key",
-    ],
+    changes: ["移除初始化時未使用的 storage key"],
   },
   {
     version: "v1.5.0",
@@ -37,11 +35,7 @@ export const VERSION_LOGS: VersionLog[] = [
   {
     version: "v1.4.0",
     date: "2026-01-16",
-    changes: [
-      "新增意見回饋字數驗證",
-      "改善課程資訊元件",
-      "更新相依套件",
-    ],
+    changes: ["新增意見回饋字數驗證", "改善課程資訊元件", "更新相依套件"],
   },
   {
     version: "v1.3.0",
@@ -56,30 +50,21 @@ export const VERSION_LOGS: VersionLog[] = [
   {
     version: "v1.2.0",
     date: "2025-11-24",
-    changes: [
-      "新增公告、課程時程、學校連結、FAQ 區塊",
-      "整合 Accordion 元件",
-    ],
+    changes: ["新增公告、課程時程、學校連結、FAQ 區塊", "整合 Accordion 元件"],
   },
   {
     version: "v1.1.0",
     date: "2025-10-22",
-    changes: [
-      "修正 tsconfig 路徑分隔符號",
-    ],
+    changes: ["修正 tsconfig 路徑分隔符號"],
   },
   {
     version: "v1.0.1",
     date: "2025-10-15",
-    changes: [
-      "修正課程顯示錯誤",
-    ],
+    changes: ["修正課程顯示錯誤"],
   },
   {
     version: "v1.0.0",
     date: "2025-10-13",
-    changes: [
-      "首次正式發佈",
-    ],
+    changes: ["首次正式發佈"],
   },
 ];

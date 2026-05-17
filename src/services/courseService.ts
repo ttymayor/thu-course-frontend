@@ -96,7 +96,7 @@ async function buildQueryParams(params: CourseFilter) {
 }
 
 export async function getCourses(
-  filter: CourseFilter = {},
+  filter: CourseFilter = {}
 ): Promise<{ data: Course[]; total: number }> {
   await connectMongoDB();
   const query = await buildQueryParams(filter);
@@ -118,7 +118,7 @@ export async function getCourses(
     teachers:
       course.teachers && Array.isArray(course.teachers)
         ? course.teachers.filter(
-            (teacher) => teacher && teacher.trim().length > 0,
+            (teacher) => teacher && teacher.trim().length > 0
           )
         : [],
   }));
@@ -127,7 +127,7 @@ export async function getCourses(
 }
 
 export async function getCourseByCode(
-  course_code: string,
+  course_code: string
 ): Promise<Course | null> {
   await connectMongoDB();
   const rawCourse = await CourseModel.findOne({ course_code }).lean();
@@ -139,7 +139,7 @@ export async function getCourseByCode(
       teachers:
         rawCourse.teachers && Array.isArray(rawCourse.teachers)
           ? rawCourse.teachers.filter(
-              (teacher) => teacher && teacher.trim().length > 0,
+              (teacher) => teacher && teacher.trim().length > 0
             )
           : [],
     };

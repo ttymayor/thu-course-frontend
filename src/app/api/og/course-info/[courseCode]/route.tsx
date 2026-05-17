@@ -6,7 +6,7 @@ import { generateDefaultOGImage } from "@/lib/ogImage";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ courseCode: string }> },
+  { params }: { params: Promise<{ courseCode: string }> }
 ) {
   try {
     const { courseCode } = await params;
@@ -16,10 +16,10 @@ export async function GET(
 
     // 載入字體
     const LineSeedRegular = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf"),
+      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf")
     );
     const LineSeedBold = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf"),
+      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf")
     );
 
     // 如果找不到課程資訊，回傳預設的 OG 圖片
@@ -30,11 +30,11 @@ export async function GET(
     // 處理課程名稱長度，避免過長
     const courseName = courseInfo.course_name || "";
     const teacher = courseInfo.teachers.slice(0, 3).join("、");
-const fullDisplayString = `${courseName} - ${teacher}`;
-const displayCourse =
-  fullDisplayString.length > 28
-    ? `${fullDisplayString.substring(0, 28)}...`
-    : fullDisplayString;
+    const fullDisplayString = `${courseName} - ${teacher}`;
+    const displayCourse =
+      fullDisplayString.length > 28
+        ? `${fullDisplayString.substring(0, 28)}...`
+        : fullDisplayString;
 
     return new ImageResponse(
       <div
@@ -119,7 +119,7 @@ const displayCourse =
             style: "normal",
           },
         ],
-      },
+      }
     );
   } catch (error) {
     console.error("Error generating dynamic OG image:", error);

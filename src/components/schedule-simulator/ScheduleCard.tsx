@@ -84,11 +84,11 @@ export default function ScheduleCard({
   const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
   const [showAllPeriod, setShowAllPeriod] = useLocalStorage(
     "showAllPeriod",
-    true,
+    true
   );
   const [showTimeProgress, setShowTimeProgress] = useLocalStorage(
     "showTimeProgress",
-    false,
+    false
   );
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -98,7 +98,7 @@ export default function ScheduleCard({
   const coursesForRange =
     hoveredCourse &&
     !selectedCourses.some(
-      (c: Course) => c.course_code === hoveredCourse.course_code,
+      (c: Course) => c.course_code === hoveredCourse.course_code
     )
       ? [...selectedCourses, hoveredCourse]
       : selectedCourses;
@@ -142,7 +142,7 @@ export default function ScheduleCard({
         periodAcc[period] = [];
         return periodAcc;
       },
-      {} as { [period: string]: Course[] },
+      {} as { [period: string]: Course[] }
     );
     return acc;
   }, {} as ScheduleGrid);

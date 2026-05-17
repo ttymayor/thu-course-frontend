@@ -78,15 +78,15 @@ function TimeLeft({ endTime }: { endTime: string }) {
 }
 
 function pickSchedule(
-  schedules: CourseScheduleData[],
+  schedules: CourseScheduleData[]
 ): CourseScheduleData | "ended" {
   const now = Date.now();
   const sorted = [...schedules].sort(
     (a, b) =>
-      new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
+      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
   );
   const active = sorted.find(
-    (s) => computeStatus(s.start_time, s.end_time) === "開放",
+    (s) => computeStatus(s.start_time, s.end_time) === "開放"
   );
   if (active) return active;
   const next = sorted.find((s) => new Date(s.start_time).getTime() > now);
@@ -106,7 +106,7 @@ export default function CourseScheduleTable({
 
   const sorted = [...schedules].sort(
     (a, b) =>
-      new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
+      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
   );
 
   if (!mounted || picked === null) {

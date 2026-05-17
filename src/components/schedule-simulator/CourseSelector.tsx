@@ -44,7 +44,7 @@ function CourseSelectorContent({
   }
 
   const queryString = new URLSearchParams(
-    Object.entries(params).map(([key, value]) => [key, String(value)]),
+    Object.entries(params).map(([key, value]) => [key, String(value)])
   ).toString();
 
   const swrKey = `/api/course-info?${queryString}`;

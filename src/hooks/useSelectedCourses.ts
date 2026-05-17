@@ -7,7 +7,9 @@ import { toast } from "sonner";
 
 async function fetchCoursesByCode(codes: string[]): Promise<Course[]> {
   if (codes.length === 0) return [];
-  const query = codes.map((c) => `course_codes=${encodeURIComponent(c)}`).join("&");
+  const query = codes
+    .map((c) => `course_codes=${encodeURIComponent(c)}`)
+    .join("&");
   const res = await fetch(`/api/course-info?${query}&page_size=100`);
   const result = await res.json();
   return result.success && result.data ? (result.data as Course[]) : [];
@@ -16,7 +18,7 @@ async function fetchCoursesByCode(codes: string[]): Promise<Course[]> {
 function writeLocalStorage(courses: Course[]) {
   localStorage.setItem(
     "selectedCourseCodes",
-    courses.map((c) => c.course_code).join(","),
+    courses.map((c) => c.course_code).join(",")
   );
 }
 
@@ -47,11 +49,15 @@ export default function useSelectedCourses() {
     initializedRef.current = true;
 
     const storedCodes = localStorage.getItem("selectedCourseCodes");
-    const localCodes = storedCodes ? storedCodes.split(",").filter(Boolean) : [];
+    const localCodes = storedCodes
+      ? storedCodes.split(",").filter(Boolean)
+      : [];
 
     if (!isAuthenticated) {
       if (localCodes.length > 0) {
-        fetchCoursesByCode(localCodes).then((courses) => _setSelectedCourses(courses));
+        fetchCoursesByCode(localCodes).then((courses) =>
+          _setSelectedCourses(courses)
+        );
       }
       return;
     }
@@ -60,7 +66,8 @@ export default function useSelectedCourses() {
     fetch("/api/schedule")
       .then((r) => r.json())
       .then(async (result) => {
-        const codes: string[] = result.success && result.data ? result.data : [];
+        const codes: string[] =
+          result.success && result.data ? result.data : [];
         setDbCodes(codes);
 
         const localOnlyCodes = localCodes.filter((c) => !codes.includes(c));
@@ -81,7 +88,9 @@ export default function useSelectedCourses() {
   };
 
   const removeCourse = (courseCode: string) => {
-    const courseToRemove = selectedCourses.find((c) => c.course_code === courseCode);
+    const courseToRemove = selectedCourses.find(
+      (c) => c.course_code === courseCode
+    );
     if (courseToRemove) {
       const next = selectedCourses.filter((c) => c.course_code !== courseCode);
       _setSelectedCourses(next);

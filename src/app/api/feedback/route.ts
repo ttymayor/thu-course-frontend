@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -25,21 +25,21 @@ export async function POST(req: Request) {
     if (!type || !subject || !message) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (!["bug", "feature", "other"].includes(type)) {
       return NextResponse.json(
         { success: false, message: "Invalid feedback type" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (subject.length > 200 || message.length > 300) {
       return NextResponse.json(
         { success: false, message: "Subject or message is too long." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -54,13 +54,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { success: true, data: newFeedback },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Error submitting feedback:", error);
     return NextResponse.json(
       { success: false, message: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -52,7 +52,7 @@ export default function ThemeColorToggle() {
                   color.name === "coffee" && "bg-[#ffdfb5]",
                   // color.name === "blue" && "bg-[#a0d1e6]",
                   color.name === "green" && "bg-[#7c9082]",
-                  color.name === "purple" && "bg-[#a995c9]",
+                  color.name === "purple" && "bg-[#a995c9]"
                 )}
               />
               {color.label}

@@ -13,7 +13,7 @@ export async function GET() {
     console.error("Error fetching departments:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch departments" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

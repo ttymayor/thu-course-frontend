@@ -33,7 +33,7 @@ export function CourseDetailDialog({
       ? `/api/course-info?course_codes=${encodeURIComponent(courseCode)}&page_size=1`
       : null,
     fetcher,
-    { revalidateOnFocus: false },
+    { revalidateOnFocus: false }
   );
 
   return (

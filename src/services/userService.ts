@@ -45,22 +45,28 @@ export async function getBookmarks(email: string): Promise<string[]> {
   return (user as UserDocument | null)?.bookmarks ?? [];
 }
 
-export async function addBookmark(email: string, courseCode: string): Promise<string[]> {
+export async function addBookmark(
+  email: string,
+  courseCode: string
+): Promise<string[]> {
   await connectMongoDB();
   const user = await User.findOneAndUpdate(
     { email },
     { $addToSet: { bookmarks: courseCode } },
-    { returnDocument: "after", projection: { bookmarks: 1 } },
+    { returnDocument: "after", projection: { bookmarks: 1 } }
   ).lean();
   return (user as UserDocument | null)?.bookmarks ?? [];
 }
 
-export async function removeBookmark(email: string, courseCode: string): Promise<string[]> {
+export async function removeBookmark(
+  email: string,
+  courseCode: string
+): Promise<string[]> {
   await connectMongoDB();
   const user = await User.findOneAndUpdate(
     { email },
     { $pull: { bookmarks: courseCode } },
-    { returnDocument: "after", projection: { bookmarks: 1 } },
+    { returnDocument: "after", projection: { bookmarks: 1 } }
   ).lean();
   return (user as UserDocument | null)?.bookmarks ?? [];
 }
@@ -71,12 +77,15 @@ export async function getSchedule(email: string): Promise<string[]> {
   return (user as UserDocument | null)?.schedule ?? [];
 }
 
-export async function saveSchedule(email: string, courseCodes: string[]): Promise<string[]> {
+export async function saveSchedule(
+  email: string,
+  courseCodes: string[]
+): Promise<string[]> {
   await connectMongoDB();
   const user = await User.findOneAndUpdate(
     { email },
     { $set: { schedule: courseCodes } },
-    { returnDocument: "after", projection: { schedule: 1 } },
+    { returnDocument: "after", projection: { schedule: 1 } }
   ).lean();
   return (user as UserDocument | null)?.schedule ?? [];
 }

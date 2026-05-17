@@ -50,7 +50,7 @@ export default function Filter() {
 
   const [searchQuery, setSearchQuery] = useState(currentSearchQuery);
   const [selectedDepartment, setSelectedDepartment] = useState(
-    currentSelectedDepartment,
+    currentSelectedDepartment
   );
 
   const [open, setOpen] = useState(false);
@@ -60,7 +60,7 @@ export default function Filter() {
     "/api/departments",
     async (key: string) => {
       return (await fetch(key).then((res) => res.json())).data as Department[];
-    },
+    }
   );
 
   const guessedDeptCode = guessStudentDeptCode(session?.user?.email);
@@ -81,14 +81,14 @@ export default function Filter() {
       acc[categoryCode].departments.push(dept);
       return acc;
     },
-    {} as Record<string, { categoryName: string; departments: Department[] }>,
+    {} as Record<string, { categoryName: string; departments: Department[] }>
   );
 
   // 獲取當前選中的系所名稱
   const getSelectedDeptName = () => {
     if (!selectedDepartment || selectedDepartment === "all") return "所有系所";
     const dept = departments?.find(
-      (d) => d.department_code === selectedDepartment,
+      (d) => d.department_code === selectedDepartment
     );
     return dept ? dept.department_name : "所有系所";
   };
@@ -170,7 +170,7 @@ export default function Filter() {
                     <Check
                       className={cn(
                         "h-4 w-4",
-                        selectedDepartment === "" ? "opacity-100" : "opacity-0",
+                        selectedDepartment === "" ? "opacity-100" : "opacity-0"
                       )}
                     />
                     所有系所
@@ -192,7 +192,7 @@ export default function Filter() {
                           "h-4 w-4",
                           selectedDepartment === guessedDept.department_code
                             ? "opacity-100"
-                            : "opacity-0",
+                            : "opacity-0"
                         )}
                       />
                       {guessedDept.department_name}
@@ -210,9 +210,7 @@ export default function Filter() {
                         <CommandGroup key={categoryCode} heading={categoryName}>
                           {depts
                             .sort((a, b) =>
-                              a.department_code.localeCompare(
-                                b.department_code,
-                              ),
+                              a.department_code.localeCompare(b.department_code)
                             )
                             .map((dept) => (
                               <CommandItem
@@ -229,14 +227,14 @@ export default function Filter() {
                                     "h-4 w-4",
                                     selectedDepartment === dept.department_code
                                       ? "opacity-100"
-                                      : "opacity-0",
+                                      : "opacity-0"
                                   )}
                                 />
                                 {dept.department_name}
                               </CommandItem>
                             ))}
                         </CommandGroup>
-                      ),
+                      )
                     )}
               </CommandList>
             </Command>

@@ -12,9 +12,27 @@ function buildScenarios() {
       label: "開放中",
       description: "第二次加退選正在進行，還剩約 2 小時",
       schedules: [
-        { _id: "1", course_stage: "第一次選課", start_time: h(-72), end_time: h(-48), result_publish_time: h(-24) },
-        { _id: "2", course_stage: "第二次加退選", start_time: h(-2), end_time: h(2), result_publish_time: h(24) },
-        { _id: "3", course_stage: "第三次加退選", start_time: h(48), end_time: h(72), result_publish_time: h(96) },
+        {
+          _id: "1",
+          course_stage: "第一次選課",
+          start_time: h(-72),
+          end_time: h(-48),
+          result_publish_time: h(-24),
+        },
+        {
+          _id: "2",
+          course_stage: "第二次加退選",
+          start_time: h(-2),
+          end_time: h(2),
+          result_publish_time: h(24),
+        },
+        {
+          _id: "3",
+          course_stage: "第三次加退選",
+          start_time: h(48),
+          end_time: h(72),
+          result_publish_time: h(96),
+        },
       ],
     },
     active_ending_soon: {
@@ -34,17 +52,47 @@ function buildScenarios() {
       label: "即將開始",
       description: "下一個選課階段在 3 小時後開始",
       schedules: [
-        { _id: "1", course_stage: "第一次選課", start_time: h(-72), end_time: h(-48), result_publish_time: h(-24) },
-        { _id: "2", course_stage: "第二次加退選", start_time: h(3), end_time: h(27), result_publish_time: h(48) },
+        {
+          _id: "1",
+          course_stage: "第一次選課",
+          start_time: h(-72),
+          end_time: h(-48),
+          result_publish_time: h(-24),
+        },
+        {
+          _id: "2",
+          course_stage: "第二次加退選",
+          start_time: h(3),
+          end_time: h(27),
+          result_publish_time: h(48),
+        },
       ],
     },
     ended: {
       label: "已完結",
       description: "本學期所有選課階段均已結束",
       schedules: [
-        { _id: "1", course_stage: "第一次選課", start_time: h(-168), end_time: h(-120), result_publish_time: h(-96) },
-        { _id: "2", course_stage: "第二次加退選", start_time: h(-96), end_time: h(-72), result_publish_time: h(-48) },
-        { _id: "3", course_stage: "第三次加退選", start_time: h(-48), end_time: h(-24), result_publish_time: h(-12) },
+        {
+          _id: "1",
+          course_stage: "第一次選課",
+          start_time: h(-168),
+          end_time: h(-120),
+          result_publish_time: h(-96),
+        },
+        {
+          _id: "2",
+          course_stage: "第二次加退選",
+          start_time: h(-96),
+          end_time: h(-72),
+          result_publish_time: h(-48),
+        },
+        {
+          _id: "3",
+          course_stage: "第三次加退選",
+          start_time: h(-48),
+          end_time: h(-24),
+          result_publish_time: h(-12),
+        },
       ],
     },
   } as const;
@@ -91,7 +139,7 @@ export default function DevCourseSchedulePage() {
       <p className="text-muted-foreground text-sm">{current.description}</p>
 
       <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide opacity-50">
+        <p className="text-xs font-medium tracking-wide uppercase opacity-50">
           Badge preview
         </p>
         <div className="flex items-center gap-2">

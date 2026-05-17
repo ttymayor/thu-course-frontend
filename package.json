@@ -7,10 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": "pnpm run lint"
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "dependencies": {
     "@next/third-parties": "16.2.6",
@@ -69,12 +68,14 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "jsdom": "^29.1.1",
+    "oxfmt": "^0.50.0",
     "oxlint": "^1.65.0",
-    "prettier": "^3.8.3",
-    "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "pnpm run lint"
   },
   "override": {
     "recharts": "2.15.4"

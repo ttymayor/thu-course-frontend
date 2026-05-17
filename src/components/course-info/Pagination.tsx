@@ -26,7 +26,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
   }
 
   return (
-    <div className="flex justify-center mt-4">
+    <div className="mt-4 flex justify-center">
       <UIPagination>
         <PaginationContent>
           <PaginationItem>

@@ -131,7 +131,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
                     {entry.day} {entry.periods.join(", ")}
                     {entry.location && `［${entry.location}］`}
                   </div>
-                ),
+                )
               )}
             </InfoBox>
             <InfoBox

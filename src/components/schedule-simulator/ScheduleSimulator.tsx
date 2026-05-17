@@ -13,7 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
 import type { Session } from "next-auth";
 
-export default function ScheduleSimulator({ session = null }: { session?: Session | null }) {
+export default function ScheduleSimulator({
+  session = null,
+}: {
+  session?: Session | null;
+}) {
   const searchParams = useSearchParams();
   const {
     selectedCourses,
@@ -57,7 +61,7 @@ export default function ScheduleSimulator({ session = null }: { session?: Sessio
       }
 
       return result.data as Course[];
-    },
+    }
   );
 
   // 決定要顯示的課程：如果有分享參數就顯示分享的課程，否則顯示本地保存的課程

@@ -20,12 +20,13 @@ export default function useBookmark() {
 
   const codesQuery =
     bookmarkCodes.length > 0
-      ? bookmarkCodes.map((c) => `course_codes=${encodeURIComponent(c)}`).join("&") +
-        `&page_size=${bookmarkCodes.length}`
+      ? bookmarkCodes
+          .map((c) => `course_codes=${encodeURIComponent(c)}`)
+          .join("&") + `&page_size=${bookmarkCodes.length}`
       : null;
   const { data: coursesRes } = useSWR(
     isAuthenticated && codesQuery ? `/api/course-info?${codesQuery}` : null,
-    fetcher,
+    fetcher
   );
   const bookmarks: Course[] = coursesRes?.data ?? [];
 
@@ -61,7 +62,7 @@ export default function useBookmark() {
     }
     mutateCodes(
       { data: bookmarkCodes.filter((c) => c !== course.course_code) },
-      false,
+      false
     );
     try {
       await fetch("/api/bookmarks", {

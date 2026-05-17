@@ -11,9 +11,7 @@ export async function generateMetadata({
   const courseInfo = await getCourseByCode(courseCode);
 
   const baseUrl = "https://thc.ttymayor.com";
-  const ogImageUrl = `${baseUrl}/api/og/course-info/${encodeURIComponent(
-    courseCode
-  )}`;
+  const ogImageUrl = `${baseUrl}/api/og/course-info/${encodeURIComponent(courseCode)}`;
 
   if (!courseInfo) {
     return {

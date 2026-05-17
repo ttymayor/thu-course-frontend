@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getBookmarks, addBookmark, removeBookmark } from "@/services/userService";
+import {
+  getBookmarks,
+  addBookmark,
+  removeBookmark,
+} from "@/services/userService";
 import { rateLimit } from "@/lib/rateLimit";
 
 async function getEmail() {
@@ -26,7 +30,10 @@ export async function POST(req: Request) {
 
   const { course_code } = await req.json();
   if (!course_code || typeof course_code !== "string") {
-    return NextResponse.json({ success: false, message: "Missing course_code" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: "Missing course_code" },
+      { status: 400 }
+    );
   }
 
   const data = await addBookmark(email, course_code);
@@ -42,7 +49,10 @@ export async function DELETE(req: Request) {
 
   const { course_code } = await req.json();
   if (!course_code || typeof course_code !== "string") {
-    return NextResponse.json({ success: false, message: "Missing course_code" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: "Missing course_code" },
+      { status: 400 }
+    );
   }
 
   const data = await removeBookmark(email, course_code);

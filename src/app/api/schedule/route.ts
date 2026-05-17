@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   ) {
     return NextResponse.json(
       { success: false, message: "Invalid course_codes" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 

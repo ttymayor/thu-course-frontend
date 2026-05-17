@@ -41,7 +41,7 @@ const feedbackSchema = new Schema<FeedbackDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Feedback: Model<FeedbackDocument> =
