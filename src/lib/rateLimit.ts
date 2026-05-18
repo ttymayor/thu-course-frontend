@@ -14,9 +14,13 @@ const limiters: Record<string, RateLimiterMemory> = {
 
 async function getIp(): Promise<string> {
   const hdrs = await headers();
+  // x-real-ip is set by the trusted reverse proxy (Nginx / Vercel) to the
+  // actual client IP and cannot be prepended by the client. Prefer it.
+  // x-forwarded-for fallback takes the last entry — the rightmost value is
+  // appended by the nearest trusted proxy, not the client.
   return (
-    hdrs.get("x-forwarded-for")?.split(",")[0].trim() ??
     hdrs.get("x-real-ip") ??
+    hdrs.get("x-forwarded-for")?.split(",").at(-1)?.trim() ??
     "unknown"
   );
 }
