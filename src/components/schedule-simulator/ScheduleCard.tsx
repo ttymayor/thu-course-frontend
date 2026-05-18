@@ -477,15 +477,12 @@ export default function ScheduleCard({
           </div>
         ) : (
           <>
-            <Button
-              variant="link"
-              className="cursor-pointer"
-              onClick={() => {
-                window.location.href = "/auth/signin";
-              }}
+            <Link
+              href="/auth/signin"
+              className="text-primary underline underline-offset-4 hover:no-underline"
             >
-              <Link href="/auth/signin">登入以跨裝置同步課表</Link>
-            </Button>
+              登入以跨裝置同步課表
+            </Link>
           </>
         )}
       </CardFooter>
