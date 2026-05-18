@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 
 export default function ModeToggle() {
   const { setTheme } = useTheme();
@@ -60,19 +59,19 @@ export function ModeToggleList() {
     <div className="flex flex-row items-center gap-2 rounded-full px-2 py-1">
       <button
         onClick={() => setTheme("light")}
-        className={`p-px rounded-full border border-bg-foreground ${activeTheme === "light" ? "bg-accent" : ""}`}
+        className={`border-bg-foreground rounded-full border p-px ${activeTheme === "light" ? "bg-accent" : ""}`}
       >
         <Sun className="size-3" />
       </button>
       <button
         onClick={() => setTheme("dark")}
-        className={`p-px rounded-full border border-bg-foreground ${activeTheme === "dark" ? "bg-accent" : ""}`}
+        className={`border-bg-foreground rounded-full border p-px ${activeTheme === "dark" ? "bg-accent" : ""}`}
       >
         <Moon className="size-3" />
       </button>
       <button
         onClick={() => setTheme("system")}
-        className={`p-px rounded-full border border-bg-foreground ${activeTheme === "system" ? "bg-accent" : ""}`}
+        className={`border-bg-foreground rounded-full border p-px ${activeTheme === "system" ? "bg-accent" : ""}`}
       >
         <Monitor className="size-3" />
       </button>
