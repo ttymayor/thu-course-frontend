@@ -2,6 +2,7 @@
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,31 +53,28 @@ export default function ModeToggle() {
 
 export function ModeToggleList() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const activeTheme = mounted ? theme : undefined;
   return (
     <div className="flex flex-row items-center gap-2 rounded-full px-2 py-1">
       <button
         onClick={() => setTheme("light")}
-        className={cn("p-px rounded-full border border-bg-foreground", {
-          "bg-accent": theme === "light",
-        })}
+        className={`p-px rounded-full border border-bg-foreground ${activeTheme === "light" ? "bg-accent" : ""}`}
       >
-        <Sun className={cn("size-3")} />
+        <Sun className="size-3" />
       </button>
       <button
         onClick={() => setTheme("dark")}
-        className={cn("p-px rounded-full border border-bg-foreground", {
-          "bg-accent": theme === "dark",
-        })}
+        className={`p-px rounded-full border border-bg-foreground ${activeTheme === "dark" ? "bg-accent" : ""}`}
       >
-        <Moon className={cn("size-3")} />
+        <Moon className="size-3" />
       </button>
       <button
         onClick={() => setTheme("system")}
-        className={cn("p-px rounded-full border border-bg-foreground", {
-          "bg-accent": theme === "system",
-        })}
+        className={`p-px rounded-full border border-bg-foreground ${activeTheme === "system" ? "bg-accent" : ""}`}
       >
-        <Monitor className={cn("size-3")} />
+        <Monitor className="size-3" />
       </button>
     </div>
   );
