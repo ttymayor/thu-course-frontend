@@ -42,15 +42,20 @@ export default function useBookmark() {
     }
     mutateCodes({ data: [...bookmarkCodes, course.course_code] }, false);
     try {
-      await fetch("/api/bookmarks", {
+      const res = await fetch("/api/bookmarks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ course_code: course.course_code }),
       });
-      mutateCodes();
-      toast.success("已加入書籤");
+      if (res.ok) {
+        mutateCodes();
+        toast.success("已加入書籤");
+      } else {
+        mutateCodes({ data: bookmarkCodes }, false);
+        toast.error("加入書籤失敗");
+      }
     } catch {
-      mutateCodes();
+      mutateCodes({ data: bookmarkCodes }, false);
       toast.error("加入書籤失敗");
     }
   };
@@ -65,15 +70,20 @@ export default function useBookmark() {
       false,
     );
     try {
-      await fetch("/api/bookmarks", {
+      const res = await fetch("/api/bookmarks", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ course_code: course.course_code }),
       });
-      mutateCodes();
-      toast.success("已移除書籤");
+      if (res.ok) {
+        mutateCodes();
+        toast.success("已移除書籤");
+      } else {
+        mutateCodes({ data: bookmarkCodes }, false);
+        toast.error("移除書籤失敗");
+      }
     } catch {
-      mutateCodes();
+      mutateCodes({ data: bookmarkCodes }, false);
       toast.error("移除書籤失敗");
     }
   };

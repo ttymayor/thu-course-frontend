@@ -8,6 +8,11 @@ export async function getSession() {
   return await getServerSession(authOptions);
 }
 
+export async function getEmail() {
+  const session = await getSession();
+  return session?.user?.email ?? null;
+}
+
 /**
  * 要求用戶必須已登入，否則拋出錯誤
  */

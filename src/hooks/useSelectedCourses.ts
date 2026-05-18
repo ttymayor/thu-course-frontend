@@ -30,7 +30,6 @@ export default function useSelectedCourses() {
   // Tracks what's currently saved in DB so isDirty can be computed dynamically
   const [dbCodes, setDbCodes] = useState<string[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const initializedRef = useRef(false);
 
   // Dirty when current in-memory schedule differs from what DB has
@@ -161,7 +160,6 @@ export default function useSelectedCourses() {
         body: JSON.stringify({ course_codes: codes }),
       });
       if (res.ok) {
-        setLastSyncedAt(new Date());
         setDbCodes(codes); // isDirty becomes false automatically
         writeLocalStorage(selectedCourses); // localStorage now matches DB
         toast.success("課表已同步到雲端");
@@ -184,6 +182,5 @@ export default function useSelectedCourses() {
     restoreFromDb,
     isSyncing,
     isDirty,
-    lastSyncedAt,
   };
 }

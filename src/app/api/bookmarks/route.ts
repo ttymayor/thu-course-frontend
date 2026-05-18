@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   getBookmarks,
   addBookmark,
   removeBookmark,
 } from "@/services/userService";
 import { rateLimit } from "@/lib/rateLimit";
-
-async function getEmail() {
-  const session = await getServerSession(authOptions);
-  return session?.user?.email ?? null;
-}
+import { getEmail } from "@/lib/auth";
 
 export async function GET() {
   const email = await getEmail();
   if (!email) return NextResponse.json({ success: false }, { status: 401 });
 
-  const data = await getBookmarks(email);
-  return NextResponse.json({ success: true, data });
+  try {
+    const data = await getBookmarks(email);
+    return NextResponse.json({ success: true, data });
+  } catch {
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch bookmarks" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: Request) {
@@ -36,8 +37,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const data = await addBookmark(email, course_code);
-  return NextResponse.json({ success: true, data });
+  try {
+    const data = await addBookmark(email, course_code);
+    return NextResponse.json({ success: true, data });
+  } catch {
+    return NextResponse.json(
+      { success: false, message: "Failed to add bookmark" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function DELETE(req: Request) {
@@ -55,6 +63,13 @@ export async function DELETE(req: Request) {
     );
   }
 
-  const data = await removeBookmark(email, course_code);
-  return NextResponse.json({ success: true, data });
+  try {
+    const data = await removeBookmark(email, course_code);
+    return NextResponse.json({ success: true, data });
+  } catch {
+    return NextResponse.json(
+      { success: false, message: "Failed to remove bookmark" },
+      { status: 500 },
+    );
+  }
 }
