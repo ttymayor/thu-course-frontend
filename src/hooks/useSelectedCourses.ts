@@ -78,7 +78,19 @@ export default function useSelectedCourses() {
           _setSelectedCourses(courses);
         }
       })
-      .catch(() => {});
+      .catch(async (err) => {
+        console.error(
+          "[useSelectedCourses] Failed to fetch schedule from DB:",
+          err,
+        );
+        toast.error("無法載入雲端課表", {
+          description: "已顯示本地儲存的課表，請檢查網路連線。",
+        });
+        if (localCodes.length > 0) {
+          const courses = await fetchCoursesByCode(localCodes);
+          _setSelectedCourses(courses);
+        }
+      });
   }, [status, isAuthenticated]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
