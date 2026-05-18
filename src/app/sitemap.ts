@@ -9,18 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: "https://thc.ttymayor.com/course-info",
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: "https://thc.ttymayor.com/schedule-simulator",
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
       url: "https://thc.ttymayor.com/school-map",
       lastModified: new Date(),
       changeFrequency: "weekly",
