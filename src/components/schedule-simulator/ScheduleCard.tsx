@@ -173,7 +173,7 @@ export default function ScheduleCard({
       const baseUrl = window.location.origin;
 
       // 直接使用課程代碼作為參數
-      return `${baseUrl}${window.location.pathname}?codes=${courseCodes.join(",")}`;
+      return `${baseUrl}?codes=${courseCodes.join(",")}`;
     } catch (error) {
       console.error("創建分享連結失敗:", error);
       toast.error("創建分享連結失敗，請稍後再試");
