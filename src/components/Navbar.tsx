@@ -8,21 +8,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import ModeToggle from "./ModeToggle";
-import ThemeColorToggle from "./ThemeColorToggle";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, Menu, User, MessageSquarePlus } from "lucide-react";
-import { useState } from "react";
+import { LogIn, LogOut, User, MessageSquarePlus, Home } from "lucide-react";
 import { Map, Bookmark } from "lucide-react";
 import {
   DropdownMenu,
@@ -72,15 +61,14 @@ export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (href: string) => pathname === href;
 
   return (
     <div className="fixed bottom-0 z-50 w-full sm:sticky sm:top-0 sm:p-4">
-      <div className="border-muted mx-auto flex max-w-7xl items-center rounded border-t border-t-white/10 bg-white/3 px-4 py-2 backdrop-blur">
+      <div className="border-muted mx-auto flex h-16 max-w-7xl items-center justify-center rounded-none border-t border-t-white/10 bg-white/3 px-4 py-2 backdrop-blur sm:h-fit sm:rounded">
         {/* 桌面版導航 */}
-        <div className="mr-4 hidden md:flex">
+        <div className="mr-4 hidden sm:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">
             <span className="flex items-center gap-2 text-lg font-bold">
               <Badge
@@ -115,96 +103,97 @@ export default function Navbar() {
         </div>
 
         {/* 手機版選單 */}
-        <div className="ml-auto flex items-center gap-2 md:hidden">
-          <ThemeColorToggle />
-          <ModeToggle />
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">切換選單</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="z-9999">
-              <SheetHeader>
-                <SheetTitle>
-                  <div className="flex items-center gap-2">
-                    <Menu className="h-5 w-5" />
-                    選單
-                  </div>
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-20 flex flex-col gap-4 px-4">
-                {NAVBAR_CONFIG.navigation.items.map((link, index) => (
-                  <Link
-                    key={index}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      "hover:text-primary text-lg font-medium transition-colors",
-                      isActive(link.href)
-                        ? "text-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      {link.icon}
-                      {link.label}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-              {session ? (
-                <SheetFooter>
-                  <Button variant="ghost" size="default" asChild>
-                    <Link href="/profile" onClick={() => setIsOpen(false)}>
-                      <User className="h-5 w-5" />
-                      個人資料
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="default" asChild>
-                    <Link href="/feedback" onClick={() => setIsOpen(false)}>
-                      <MessageSquarePlus className="h-5 w-5" />
-                      意見回饋
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="default"
-                    onClick={() => {
-                      signOut();
-                      setIsOpen(false);
-                    }}
-                  >
-                    <LogOut className="h-5 w-5" />
-                    登出
-                  </Button>
-                </SheetFooter>
-              ) : (
-                <SheetFooter>
-                  <Button
-                    variant="ghost"
-                    size="default"
-                    onClick={() => {
-                      setIsOpen(false);
-                    }}
-                    asChild
-                  >
-                    <Link href="/auth/signin">
-                      <LogIn className="h-5 w-5" />
-                      登入
-                    </Link>
-                  </Button>
-                </SheetFooter>
-              )}
-            </SheetContent>
-          </Sheet>
+        <div className="flex items-center gap-4 sm:hidden">
+          <Button
+            variant="ghost"
+            className="gap-1 rounded-full"
+            size="icon-lg"
+            asChild
+          >
+            <Link href={"/"} className="flex flex-col items-center">
+              <Home className="h-4 w-4" />
+              <span className="text-[10px]">首頁</span>
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="gap-1 rounded-full"
+            size="icon-lg"
+            asChild
+          >
+            <Link href={"/bookmarks"} className="flex flex-col items-center">
+              <Bookmark className="h-4 w-4" />
+              <span className="text-[10px]">書籤</span>
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="gap-1 rounded-full"
+            size="icon-lg"
+            asChild
+          >
+            <Link href={"/school-map"} className="flex flex-col items-center">
+              <Map className="h-4 w-4" />
+              <span className="text-[10px]">地圖</span>
+            </Link>
+          </Button>
+          {session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer flex-col items-center justify-center gap-1 rounded-full">
+                {session.user?.image ? (
+                  <>
+                    <Image
+                      src={session.user.image}
+                      alt="User Avatar"
+                      width={16}
+                      height={16}
+                      className="rounded-full object-cover"
+                    />
+                    <span className="text-[10px]">帳戶</span>
+                  </>
+                ) : (
+                  <>
+                    <User className="h-4 w-4" />
+                    <span className="text-[10px]">帳戶</span>
+                  </>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="z-9999">
+                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                  <User className="h-5 w-5" />
+                  個人資料
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/feedback")}>
+                  <MessageSquarePlus className="h-5 w-5" />
+                  意見回饋
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="h-5 w-5" />
+                  登出
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              variant="ghost"
+              className="gap-1 rounded-full"
+              size="icon-lg"
+              asChild
+            >
+              <Link
+                href={"/auth/signin"}
+                className="flex flex-col items-center"
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="text-[10px]">登入</span>
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* 桌面版右側區域 */}
-        <div className="ml-auto hidden items-center gap-2 md:flex">
-          <ThemeColorToggle />
-          <ModeToggle />
+        <div className="ml-auto hidden items-center gap-2 sm:flex">
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer items-center justify-center">

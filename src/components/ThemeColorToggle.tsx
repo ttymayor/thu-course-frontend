@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { Palette } from "lucide-react";
+import { Check, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -64,5 +63,48 @@ export default function ThemeColorToggle() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function ThemeColorToggleList() {
+  const { themeColor, setThemeColor } = useThemeColor();
+
+  const colors = [
+    { name: "coffee", label: "咖啡（Coffee）", color: "bg-[#ffdfb5]" },
+    // { name: "blue", label: "糖果藍（Candy Blue）", color: "bg-[#a0d1e6]" },
+    { name: "green", label: "靜默綠（Silent Green）", color: "bg-[#7c9082]" },
+    {
+      name: "purple",
+      label: "紫水晶薄霧（Amethyst Haze）",
+      color: "bg-[#a995c9]",
+    },
+  ] as const;
+
+  return (
+    <div className="flex items-center gap-2 px-2 py-1">
+      <ol className="flex flex-row items-center gap-2">
+        {colors.map((color) => (
+          <li
+            key={color.name}
+            onClick={() => setThemeColor(color.name)}
+            className="cursor-pointer"
+          >
+            <div
+              className={cn(
+                "h-4 w-4 rounded-full border flex items-center justify-center",
+                color.name === "coffee" && "bg-[#ffdfb5]",
+                // color.name === "blue" && "bg-[#a0d1e6]",
+                color.name === "green" && "bg-[#7c9082]",
+                color.name === "purple" && "bg-[#a995c9]",
+              )}
+            >
+              {themeColor === color.name && (
+                <Check className="h-2 w-2 text-black" />
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
