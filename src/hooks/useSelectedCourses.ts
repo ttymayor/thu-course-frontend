@@ -61,7 +61,7 @@ export default function useSelectedCourses() {
       return;
     }
 
-    // Authenticated: display = union(DB, localStorage); dbCodes drives dirty state
+    // Authenticated: DB is source of truth; overwrite localStorage on load
     fetch("/api/schedule")
       .then((r) => r.json())
       .then(async (result) => {
@@ -69,12 +69,12 @@ export default function useSelectedCourses() {
           result.success && result.data ? result.data : [];
         setDbCodes(codes);
 
-        const localOnlyCodes = localCodes.filter((c) => !codes.includes(c));
-        const unionCodes = [...codes, ...localOnlyCodes];
-
-        if (unionCodes.length > 0) {
-          const courses = await fetchCoursesByCode(unionCodes);
+        if (codes.length > 0) {
+          const courses = await fetchCoursesByCode(codes);
           _setSelectedCourses(courses);
+          writeLocalStorage(courses);
+        } else {
+          writeLocalStorage([]);
         }
       })
       .catch(async (err) => {
