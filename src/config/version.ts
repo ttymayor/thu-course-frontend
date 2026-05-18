@@ -1,4 +1,4 @@
-export const APP_VERSION = "v1.5.2";
+export const APP_VERSION = "v2.0.0";
 
 export interface VersionLog {
   version: string;
@@ -7,6 +7,22 @@ export interface VersionLog {
 }
 
 export const VERSION_LOGS: VersionLog[] = [
+  {
+    version: "v2.0.0",
+    date: "2026-05-19",
+    changes: [
+      "全新導覽列與底部導覽列設計，內嵌主題切換",
+      "排課模擬器改為首頁，移除獨立課程資訊頁",
+      "雲端同步課表與書籤（需登入）",
+      "登入限制為 @go.thu.edu.tw 帳號",
+      "依學號自動推薦系所篩選",
+      "修正 ModeToggle hydration 不一致問題",
+      "修正 rateLimit IP 擷取順序，以 x-real-ip 為優先",
+      "修正書籤操作在 HTTP 錯誤時錯誤顯示成功訊息",
+      "API 路由補齊 try/catch 錯誤處理",
+      "初始載入以 DB 資料覆蓋 localStorage，確保離線可用",
+    ],
+  },
   {
     version: "v1.5.2",
     date: "2026-05-15",
