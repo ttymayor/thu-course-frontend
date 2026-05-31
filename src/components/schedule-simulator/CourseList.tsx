@@ -135,6 +135,7 @@ export default function CourseList({
                         ) : (
                           <Link
                             href={`/course-info/${course.course_code}`}
+                            prefetch={false}
                             className="hover:text-primary decoration-primary/50 cursor-pointer text-left text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline"
                           >
                             {course.course_name}

@@ -58,7 +58,7 @@ export function CourseDetailDialog({
           <>
             <div className="flex justify-end px-2 pb-2">
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/course-info/${courseCode}`}>
+                <Link href={`/course-info/${courseCode}`} prefetch={false}>
                   <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                   課程詳細頁面
                 </Link>
