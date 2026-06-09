@@ -188,6 +188,11 @@ export default function CourseList({
                 </Card>
               );
             })}
+            {courses.length === 0 && (
+              <div className="text-muted-foreground py-4 text-center italic select-none">
+                沒有符合條件的課程
+              </div>
+            )}
           </div>
         </ScrollArea>
       </div>

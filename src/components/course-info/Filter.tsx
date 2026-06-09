@@ -255,26 +255,27 @@ export default function Filter() {
           onChange={handleSearchChange}
           className="h-10 w-full px-3 py-2 text-sm"
         />
-        <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            className="cursor-pointer"
-            disabled={!searchQuery}
-            onClick={() => {
-              setSearchQuery("");
-              if (searchQuery) {
-                debounceTransition(() => {
-                  const current = buildCleanSearchParams();
-                  current.delete("search");
-                  const search = current.toString();
-                  const query = search ? `?${search}` : "";
-                  router.replace(`${pathname}${query}`);
-                });
-              }
-            }}
-          >
-            <X className="h-4 w-4" />
-          </InputGroupButton>
-        </InputGroupAddon>
+        {searchQuery && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              className="cursor-pointer"
+              onClick={() => {
+                setSearchQuery("");
+                if (searchQuery) {
+                  debounceTransition(() => {
+                    const current = buildCleanSearchParams();
+                    current.delete("search");
+                    const search = current.toString();
+                    const query = search ? `?${search}` : "";
+                    router.replace(`${pathname}${query}`);
+                  });
+                }
+              }}
+            >
+              <X className="h-4 w-4" />
+            </InputGroupButton>
+          </InputGroupAddon>
+        )}
       </InputGroup>
     </div>
   );
