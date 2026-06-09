@@ -1,33 +1,92 @@
 "use client";
 
-import { useLocalStorage } from "foxact/use-local-storage";
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
 
-export default function useBookmark() {
-  const [bookmarks, setBookmarks] = useLocalStorage<Course[]>("bookmarks", []);
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-  const addBookmark = (course: Course) => {
+export default function useBookmark() {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && !!session?.user?.email;
+
+  const {
+    data: codesRes,
+    mutate: mutateCodes,
+    isLoading: codesLoading,
+  } = useSWR(isAuthenticated ? "/api/bookmarks" : null, fetcher);
+  const bookmarkCodes: string[] = codesRes?.data ?? [];
+
+  const codesQuery =
+    bookmarkCodes.length > 0
+      ? bookmarkCodes
+          .map((c) => `course_codes=${encodeURIComponent(c)}`)
+          .join("&") + `&page_size=${bookmarkCodes.length}`
+      : null;
+  const { data: coursesRes } = useSWR(
+    isAuthenticated && codesQuery ? `/api/course-info?${codesQuery}` : null,
+    fetcher,
+  );
+  const bookmarks: Course[] = coursesRes?.data ?? [];
+
+  const isLoading = status === "loading" || (isAuthenticated && codesLoading);
+
+  const isBookmarked = (course: Course) =>
+    bookmarkCodes.includes(course.course_code);
+
+  const addBookmark = async (course: Course) => {
     if (isBookmarked(course)) {
       toast.error("此課程已加入書籤");
       return;
     }
-    setBookmarks([...bookmarks, course]);
-    toast.success("已加入書籤");
+    mutateCodes({ data: [...bookmarkCodes, course.course_code] }, false);
+    try {
+      const res = await fetch("/api/bookmarks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ course_code: course.course_code }),
+      });
+      if (res.ok) {
+        mutateCodes();
+        toast.success("已加入書籤");
+      } else {
+        mutateCodes({ data: bookmarkCodes }, false);
+        toast.error("加入書籤失敗");
+      }
+    } catch {
+      mutateCodes({ data: bookmarkCodes }, false);
+      toast.error("加入書籤失敗");
+    }
   };
 
-  const removeBookmark = (course: Course) => {
+  const removeBookmark = async (course: Course) => {
     if (!isBookmarked(course)) {
       toast.error("此課程未加入書籤");
       return;
     }
-    setBookmarks(bookmarks.filter((b) => b.course_code !== course.course_code));
-    toast.success("已移除書籤");
+    mutateCodes(
+      { data: bookmarkCodes.filter((c) => c !== course.course_code) },
+      false,
+    );
+    try {
+      const res = await fetch("/api/bookmarks", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ course_code: course.course_code }),
+      });
+      if (res.ok) {
+        mutateCodes();
+        toast.success("已移除書籤");
+      } else {
+        mutateCodes({ data: bookmarkCodes }, false);
+        toast.error("移除書籤失敗");
+      }
+    } catch {
+      mutateCodes({ data: bookmarkCodes }, false);
+      toast.error("移除書籤失敗");
+    }
   };
 
-  const isBookmarked = (course: Course) => {
-    return bookmarks.some((b) => b.course_code === course.course_code);
-  };
-
-  return { bookmarks, addBookmark, removeBookmark, isBookmarked };
+  return { bookmarks, addBookmark, removeBookmark, isBookmarked, isLoading };
 }

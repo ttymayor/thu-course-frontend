@@ -1,154 +1,77 @@
-"use cache";
-
-import CourseScheduleList from "@/components/CourseScheduleList";
-import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
-import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
+import { HelpCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  School,
-  BookOpen,
-  Users,
-  Calendar,
-  Star,
-  LibraryBig,
-  HelpCircle,
-  Clock,
-} from "lucide-react";
-import { Suspense } from "react";
-import Link from "next/link";
+import BaseLayout from "@/components/BaseLayout";
 import { Section } from "@/components/Section";
-import { NewRelease } from "@/components/NewRelease";
-
-// 學校相關連結配置
-const schoolLinks = [
-  {
-    href: "https://course.thu.edu.tw/",
-    icon: BookOpen,
-    title: "課程資訊網",
-    description: "選課、課表資訊（不如使用這個網站）",
-  },
-  {
-    href: "https://www.thu.edu.tw/",
-    icon: School,
-    title: "學校首頁",
-    description: "學校官網，學校資訊、校園地圖、校園導覽",
-  },
-  {
-    href: "https://fsis.thu.edu.tw/",
-    icon: Users,
-    title: "學生資訊系統",
-    description: "學生資訊系統，學生資訊、成績查詢、選課、課表、宿舍查詢",
-  },
-  {
-    href: "https://ilearn.thu.edu.tw/",
-    icon: LibraryBig,
-    title: "東海 iLearn",
-    description: "該上課、交作業了各位",
-  },
-  {
-    href: "https://www.thu.edu.tw/web/calendar/page.php?scid=23&sid=36",
-    icon: Calendar,
-    title: "東海行事曆",
-    description: "學校行事曆，不能不看",
-  },
-  {
-    href: "https://www.thu.edu.tw/web/pages/page.php?scid=66&sid=147",
-    icon: Star,
-    title: "新生入學網",
-    description: "新生入學必看，繳費、學號啟用、應辦事項",
-  },
-] as const;
+import CourseScheduleList from "@/components/CourseScheduleList";
+import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
+import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
+import HomeScheduleView from "@/components/schedule-simulator/HomeScheduleView";
+import { getSession } from "@/lib/auth";
+import WelcomeDialog from "@/components/WelcomeDialog";
 
 export default async function Home() {
+  const session = await getSession();
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-      <main className="flex flex-col items-center justify-center gap-8 sm:gap-8">
-        <div className="flex w-full flex-col items-center gap-6">
-          <NewRelease />
-
-          <Section
-            id="course-schedule"
-            title="選課時程"
-            icon={<Clock className="size-5" />}
-          >
+    <BaseLayout>
+      <WelcomeDialog />
+      <div className="flex w-full flex-col items-center gap-6">
+        <Section
+          id="schedule-simulator"
+          title="排課模擬"
+          action={
             <Suspense fallback={<CourseScheduleListSkeleton />}>
               <CourseScheduleList />
             </Suspense>
-          </Section>
-          {/* 學校相關連結區塊 */}
-          <Section
-            id="school-links"
-            title="東海大學相關連結"
-            icon={<School className="size-5" />}
-          >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {schoolLinks.map((link, index) => {
-                const IconComponent = link.icon;
-                return (
-                  <Button
-                    key={index}
-                    variant="secondary"
-                    className="bg-card hover:bg-secondary/50 group relative h-auto overflow-hidden p-4 text-center"
-                    asChild
-                  >
-                    <Link href={link.href} prefetch={false}>
-                      <div className="relative z-10 flex flex-col items-center gap-2">
-                        <p className="text-foreground font-bold">
-                          {link.title}
-                        </p>
-                        {link.description && (
-                          <span className="text-muted-foreground text-sm leading-tight wrap-break-word whitespace-normal">
-                            {link.description}
-                          </span>
-                        )}
-                      </div>
-                      <IconComponent className="text-secondary absolute -left-8 size-24 opacity-[0.20] transition-all duration-500 group-hover:translate-x-5 group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-40" />
-                    </Link>
-                  </Button>
-                );
-              })}
-            </div>
-          </Section>
-          <Section
-            id="faq"
-            title="常見問題 FAQ"
-            icon={<HelpCircle className="size-5" />}
-          >
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-base font-medium">
-                  我們會蒐集您的個人資料嗎？
-                </AccordionTrigger>
-                <AccordionContent>
-                  不會，我們不會蒐集您的個人資料。本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器也僅在本地端進行計算，不會上傳任何資料到我們的伺服器。登入功能會記錄您的登入
-                  Email，目前僅額外提供意見回饋。
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger className="text-base font-medium">
-                  我使用過選課模擬器，但資料不見了？
-                </AccordionTrigger>
-                <AccordionContent>
-                  礙於該專案目前只有一人在開發，因此沒有備份功能。若不小心將網頁資料刪除，就可能會導致資料遺失。請務必將選課模擬的結果預先儲存分享連結，以備不時之需。
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger className="text-base font-medium">
-                  發現了不可預期的錯誤？
-                </AccordionTrigger>
-                <AccordionContent>
-                  歡迎登入後，點選頭像到意見回饋頁面提供資訊
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Section>
-        </div>
-      </main>
-    </div>
+          }
+        >
+          <Suspense fallback={<ScheduleSimulatorSkeleton />}>
+            <HomeScheduleView session={session} />
+          </Suspense>
+        </Section>
+
+        <Section
+          id="faq"
+          title="常見問題 FAQ"
+          icon={<HelpCircle className="size-5" />}
+        >
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-base font-medium">
+                我們會蒐集您的個人資料嗎？
+              </AccordionTrigger>
+              <AccordionContent>
+                本網站所有課程資訊皆以東海大學課程資訊網爬蟲後獲取的資料。選課模擬器預設僅在本地端（瀏覽器）儲存您的選課記錄，不會上傳任何資料。
+                <br />
+                <br />
+                若您選擇登入並使用「儲存課表」同步功能，您的課程選擇將會被記錄至我們的伺服器，以便跨裝置存取。登入功能僅供東海大學（@go.thu.edu.tw）電子郵件使用，並會記錄您的
+                Email，目前僅用於意見回饋功能。
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-base font-medium">
+                我使用過選課模擬器，但資料不見了？
+              </AccordionTrigger>
+              <AccordionContent>
+                礙於該專案目前只有一人在開發，因此沒有備份功能。若不小心將網頁資料刪除，就可能會導致資料遺失。請務必將選課模擬的結果預先儲存分享連結，以備不時之需。
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-base font-medium">
+                發現了不可預期的錯誤？
+              </AccordionTrigger>
+              <AccordionContent>
+                歡迎登入後，點選頭像到意見回饋頁面提供資訊
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </Section>
+      </div>
+    </BaseLayout>
   );
 }

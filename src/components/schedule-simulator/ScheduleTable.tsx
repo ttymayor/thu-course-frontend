@@ -11,8 +11,8 @@ import {
 import { cn } from "@/lib/utils";
 import { periodTimeMap, ScheduleGrid } from "@/lib/schedule";
 import { courseLocation } from "@/lib/courseTimeParser";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { X } from "lucide-react";
 import { Course } from "@/types/course";
 import { useState, useEffect, useMemo } from "react";
@@ -55,6 +55,7 @@ export default function ScheduleTable({
   showTimeProgress = false,
 }: ScheduleTableProps) {
   const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
+  const [detailCode, setDetailCode] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -137,126 +138,151 @@ export default function ScheduleTable({
   };
 
   return (
-    <Table className="bg-card w-full table-fixed" ref={tableRef}>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-8 px-1 text-center text-xs font-medium sm:w-16 sm:px-2 sm:text-sm">
-            時段
-          </TableHead>
-          {days.map((day) => (
-            <TableHead
-              key={day}
-              className="px-1 text-center text-xs font-medium sm:px-2 sm:text-sm"
-            >
-              {day}
+    <>
+      <Table className="bg-card w-full table-fixed" ref={tableRef}>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8 px-1 text-center text-xs font-medium sm:w-16 sm:px-2 sm:text-sm">
+              時段
             </TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {periods.map((period, periodIndex) => {
-          return (
-            <TableRow key={period} className="hover:bg-transparent">
-              <TableCell className="px-1 py-2 text-center font-medium sm:px-2 sm:py-3">
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold sm:text-sm">
-                    {periodTimeMap[period as keyof typeof periodTimeMap].period}
-                  </span>
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">
-                    {
-                      periodTimeMap[period as keyof typeof periodTimeMap]
-                        .startTime
-                    }
-                  </span>
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">
-                    {
-                      periodTimeMap[period as keyof typeof periodTimeMap]
-                        .endTime
-                    }
-                  </span>
-                </div>
-              </TableCell>
-              {days.map((day) => {
-                const { rowSpan, show } = cellSpans[day][period] || {
-                  rowSpan: 1,
-                  show: true,
-                };
+            {days.map((day) => (
+              <TableHead
+                key={day}
+                className="px-1 text-center text-xs font-medium sm:px-2 sm:text-sm"
+              >
+                {day}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {periods.map((period, periodIndex) => {
+            return (
+              <TableRow key={period} className="hover:bg-transparent">
+                <TableCell className="px-1 py-2 text-center font-medium sm:px-2 sm:py-3">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold sm:text-sm">
+                      {
+                        periodTimeMap[period as keyof typeof periodTimeMap]
+                          .period
+                      }
+                    </span>
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">
+                      {
+                        periodTimeMap[period as keyof typeof periodTimeMap]
+                          .startTime
+                      }
+                    </span>
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">
+                      {
+                        periodTimeMap[period as keyof typeof periodTimeMap]
+                          .endTime
+                      }
+                    </span>
+                  </div>
+                </TableCell>
+                {days.map((day) => {
+                  const { rowSpan, show } = cellSpans[day][period] || {
+                    rowSpan: 1,
+                    show: true,
+                  };
 
-                if (!show) return null;
+                  if (!show) return null;
 
-                const cellProgress = getSpanTimeProgress(periodIndex, rowSpan);
-                const showProgressLine =
-                  cellProgress !== null && showTimeProgress;
+                  const cellProgress = getSpanTimeProgress(
+                    periodIndex,
+                    rowSpan,
+                  );
+                  const showProgressLine =
+                    cellProgress !== null && showTimeProgress;
 
-                return (
-                  <TableCell
-                    key={`${day}-${period}`}
-                    rowSpan={rowSpan}
-                    className="relative h-16 p-1 align-top sm:h-20 sm:p-2"
-                  >
-                    {showProgressLine && (
-                      <div
-                        className="pointer-events-none absolute left-0 z-10 h-0.5 w-full bg-red-500/50"
-                        style={{
-                          top: `${cellProgress * 100}%`,
-                        }}
-                      ></div>
-                    )}
-                    <div className="flex h-full flex-col">
-                      {grid[day]?.[period]?.map((course: Course) => (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: Math.random() * 0.25 }}
-                          viewport={{ once: true }}
-                          key={course.course_code}
-                          className={cn(
-                            isViewingShared
-                              ? "bg-secondary/50 border border-dashed"
-                              : hoveredCourse &&
-                                  hoveredCourse.course_code ===
-                                    course.course_code
+                  return (
+                    <TableCell
+                      key={`${day}-${period}`}
+                      rowSpan={rowSpan}
+                      className="relative h-16 p-1 align-top sm:h-20 sm:p-2"
+                    >
+                      {showProgressLine && (
+                        <div
+                          className="pointer-events-none absolute left-0 z-10 h-0.5 w-full bg-red-500/50"
+                          style={{
+                            top: `${cellProgress * 100}%`,
+                          }}
+                        ></div>
+                      )}
+                      <div className="flex h-full flex-col">
+                        {grid[day]?.[period]?.map((course: Course) => (
+                          <motion.div
+                            initial={{
+                              opacity: 0,
+                              scale: 0,
+                              filter: "blur(5px)",
+                            }}
+                            whileInView={{
+                              opacity: 1,
+                              scale: 1,
+                              filter: "blur(0px)",
+                            }}
+                            transition={{
+                              delay: Math.random() * 0.1,
+                              duration: 0.1,
+                            }}
+                            viewport={{ once: true }}
+                            key={course.course_code}
+                            className={cn(
+                              isViewingShared
                                 ? "bg-secondary/50 border border-dashed"
-                                : "bg-secondary border border-solid",
-                            "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-lg p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
-                          )}
-                        >
-                          <Link
-                            href={`/course-info/${course.course_code}`}
-                            className="flex h-full flex-col justify-center"
+                                : hoveredCourse &&
+                                    hoveredCourse.course_code ===
+                                      course.course_code
+                                  ? "bg-secondary/50 border border-dashed"
+                                  : "bg-secondary border border-solid",
+                              "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-sm p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
+                            )}
                           >
-                            <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
-                              {course.course_code}
-                            </code>
-                            <p className="text-secondary-foreground mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
-                              {course.course_name}
-                            </p>
-                            <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
-                              {courseLocation(
-                                course.basic_info.class_time || "",
-                              )}
-                            </p>
-                          </Link>
-                          {onRemoveCourse && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute top-0 right-0 mt-0.5 mr-0.5 h-3 w-3 cursor-pointer opacity-0 hover:opacity-100 sm:mt-1 sm:mr-1 sm:h-4 sm:w-4"
-                              onClick={() => onRemoveCourse(course.course_code)}
+                            <button
+                              className="flex h-full w-full cursor-pointer flex-col justify-center"
+                              onClick={() => setDetailCode(course.course_code)}
                             >
-                              <X className="h-2 w-2 sm:h-3 sm:w-3" />
-                            </Button>
-                          )}
-                        </motion.div>
-                      ))}
-                    </div>
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                              <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
+                                {course.course_code}
+                              </code>
+                              <p className="text-secondary-foreground mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
+                                {course.course_name}
+                              </p>
+                              <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
+                                {courseLocation(
+                                  course.basic_info.class_time || "",
+                                )}
+                              </p>
+                            </button>
+                            {onRemoveCourse && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-0 right-0 mt-0.5 mr-0.5 h-3 w-3 cursor-pointer opacity-0 hover:opacity-100 sm:mt-1 sm:mr-1 sm:h-4 sm:w-4"
+                                onClick={() =>
+                                  onRemoveCourse(course.course_code)
+                                }
+                              >
+                                <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                              </Button>
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+      <CourseDetailDialog
+        courseCode={detailCode}
+        onClose={() => setDetailCode(null)}
+      />
+    </>
   );
 }

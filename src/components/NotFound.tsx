@@ -35,10 +35,10 @@ export default function NotFound() {
   const [statusCode, setStatusCode] = useState(404);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="flex flex-col gap-4 items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-4">
         <h2
-          className="text-4xl font-bold select-none cursor-pointer"
+          className="cursor-pointer text-4xl font-bold select-none"
           onClick={() => setStatusCode(statusCode + 1)}
         >
           {statusCode} {statusCodeMap[statusCode] || "Unknown Error"}

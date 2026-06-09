@@ -65,13 +65,16 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
 
   return (
     <>
-      <div className="flex flex-col gap-6 border-b pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-6 border-b pb-6 md:flex-row md:items-start md:justify-between">
         <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="px-2 py-1 font-mono text-lg">
+          <div className="flex flex-col items-start gap-3 sm:flex-row">
+            <Badge
+              variant="outline"
+              className="px-1 py-0.5 font-mono text-base sm:text-xl"
+            >
               {courseInfo.course_code}
             </Badge>
-            <h1 className="text-3xl font-extrabold tracking-tight">
+            <h1 className="text-xl font-extrabold tracking-tight sm:text-3xl">
               {courseInfo.course_name || "-"}
             </h1>
           </div>

@@ -1,6 +1,16 @@
 "use client";
 
-import { X, QrCode, Download, Share2, Settings, Check } from "lucide-react";
+import {
+  X,
+  QrCode,
+  Download,
+  Share2,
+  Settings,
+  Check,
+  CloudUpload,
+  Loader2,
+  RotateCcw,
+} from "lucide-react";
 import { Course } from "@/types/course";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +49,8 @@ import { useLocalStorage } from "foxact/use-local-storage";
 import { toPng } from "html-to-image";
 import { ButtonGroup } from "@/components/ui/button-group";
 import ScheduleTable from "./ScheduleTable";
+import type { Session } from "next-auth";
+import Link from "next/link";
 
 interface ScheduleCardProps {
   selectedCourses: Course[];
@@ -47,6 +59,11 @@ interface ScheduleCardProps {
   isViewingShared?: boolean;
   onImportShared?: () => void;
   onRejectShared?: () => void;
+  onSyncSchedule?: () => Promise<void>;
+  onRestoreFromDb?: () => Promise<void>;
+  isSyncing?: boolean;
+  isDirty?: boolean;
+  session: Session | null;
 }
 
 export default function ScheduleCard({
@@ -56,6 +73,11 @@ export default function ScheduleCard({
   isViewingShared = false,
   onImportShared,
   onRejectShared,
+  onSyncSchedule,
+  onRestoreFromDb,
+  isSyncing = false,
+  isDirty = false,
+  session,
 }: ScheduleCardProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
@@ -151,7 +173,7 @@ export default function ScheduleCard({
       const baseUrl = window.location.origin;
 
       // 直接使用課程代碼作為參數
-      return `${baseUrl}/schedule-simulator?codes=${courseCodes.join(",")}`;
+      return `${baseUrl}?codes=${courseCodes.join(",")}`;
     } catch (error) {
       console.error("創建分享連結失敗:", error);
       toast.error("創建分享連結失敗，請稍後再試");
@@ -268,9 +290,9 @@ export default function ScheduleCard({
   };
 
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader>
-        <CardTitle>{isViewingShared ? "預覽分享的課表" : "排課模擬"}</CardTitle>
+        <CardTitle>{isViewingShared ? "預覽分享的課表" : "你的課表"}</CardTitle>
         <CardDescription className="flex flex-row gap-2">
           <Badge className="rounded-full">
             {selectedCourses.length} 門課程
@@ -417,10 +439,52 @@ export default function ScheduleCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="text-muted-foreground flex items-center justify-center text-center text-sm">
-        {totalCredits >= 20
-          ? "你選的課好多喔，要多休息喔"
-          : "祝你穩過這幾學分 ><"}
+      <CardFooter className="text-muted-foreground flex items-center justify-between text-center text-sm">
+        <span>
+          {totalCredits >= 20
+            ? "你選的課好多喔，要多休息喔"
+            : "祝你穩過這幾學分 ><"}
+        </span>
+        {session ? (
+          <div className="flex items-center gap-2">
+            {isDirty && (
+              <Button
+                variant="ghost"
+                className="w-auto cursor-pointer"
+                size="sm"
+                onClick={onRestoreFromDb}
+                title="復原雲端課表"
+              >
+                <RotateCcw className="h-4 w-4" />
+                復原
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              className="w-auto cursor-pointer"
+              size="sm"
+              onClick={onSyncSchedule}
+              disabled={isSyncing || !isDirty}
+              title="同步課表到雲端"
+            >
+              {isSyncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CloudUpload className="h-4 w-4" />
+              )}
+              {isSyncing ? "儲存中..." : "儲存課表"}
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Link
+              href="/auth/signin"
+              className="text-primary underline underline-offset-4 hover:no-underline"
+            >
+              登入以跨裝置同步課表
+            </Link>
+          </>
+        )}
       </CardFooter>
     </Card>
   );

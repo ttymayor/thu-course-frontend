@@ -11,11 +11,24 @@ import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkelet
 import useSWR from "swr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
+import type { Session } from "next-auth";
 
-export default function ScheduleSimulator() {
+export default function ScheduleSimulator({
+  session = null,
+}: {
+  session?: Session | null;
+}) {
   const searchParams = useSearchParams();
-  const { selectedCourses, setSelectedCourses, removeCourse, importCourses } =
-    useSelectedCourses();
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    removeCourse,
+    importCourses,
+    syncSchedule,
+    restoreFromDb,
+    isSyncing,
+    isDirty,
+  } = useSelectedCourses();
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
   // 從 URL 參數獲取課程代碼
@@ -103,7 +116,7 @@ export default function ScheduleSimulator() {
 
       <div className="w-full min-w-0 md:w-2/3">
         {isLoadingShared ? (
-          <ScheduleCard selectedCourses={[]} />
+          <ScheduleCard selectedCourses={[]} session={null} />
         ) : (
           <ScheduleCard
             selectedCourses={displayCourses}
@@ -112,6 +125,11 @@ export default function ScheduleSimulator() {
             isViewingShared={isViewingShared}
             onImportShared={handleImportShared}
             onRejectShared={handleRejectShared}
+            onSyncSchedule={syncSchedule}
+            onRestoreFromDb={restoreFromDb}
+            isSyncing={isSyncing}
+            isDirty={isDirty}
+            session={session}
           />
         )}
       </div>

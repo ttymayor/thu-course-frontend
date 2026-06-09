@@ -11,7 +11,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      const allowedDomains = ["thu.edu.tw", "go.thu.edu.tw"];
+      const allowedDomains = ["go.thu.edu.tw"];
       const emailDomain = user.email?.split("@")[1];
       if (emailDomain && allowedDomains.includes(emailDomain)) {
         // 手動將用戶寫入 MongoDB

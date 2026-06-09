@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { VersionLogDialog } from "@/components/VersionLogDialog";
 import { Tag } from "lucide-react";
+import { ModeToggleList } from "./ModeToggle";
+import { ThemeColorToggleList } from "./ThemeColorToggle";
 
 const FOOTER_CONFIG = {
   github_thu_course_frontend: "https://github.com/ttymayor/thu-course-frontend",
@@ -16,33 +18,41 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl p-6 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
           {/* 品牌資訊 */}
-          <section className="footer-container">
-            <h2 className="footer-heading text-lg">東海課程資訊</h2>
-            <span className="footer-text">一個更好的東海課程資訊網站</span>
-            <span className="footer-text">
-              Developed by{" "}
-              <Link
-                href={FOOTER_CONFIG.github}
-                className="footer-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                prefetch={false}
-              >
-                tantuyu
-              </Link>
-            </span>
-            <span className="footer-text">
-              Contributor:{" "}
-              <Link
-                href="https://github.com/pan93412"
-                className="footer-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                prefetch={false}
-              >
-                Pan
-              </Link>
-            </span>
+          <section className="footer-container w-full sm:w-auto">
+            <div className="flex w-full items-start justify-start sm:flex-col sm:items-start sm:justify-between sm:gap-2">
+              <div className="flex w-full flex-col items-start justify-between gap-2">
+                <h2 className="footer-heading text-lg">東海課程資訊</h2>
+                <span className="footer-text">一個更好的東海課程資訊網站</span>
+                <span className="footer-text">
+                  Developed by{" "}
+                  <Link
+                    href={FOOTER_CONFIG.github}
+                    className="footer-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    prefetch={false}
+                  >
+                    tantuyu
+                  </Link>
+                </span>
+                <span className="footer-text">
+                  Contributor:{" "}
+                  <Link
+                    href="https://github.com/pan93412"
+                    className="footer-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    prefetch={false}
+                  >
+                    Pan
+                  </Link>
+                </span>
+              </div>
+              <div className="flex w-fit flex-col sm:hidden">
+                <ThemeColorToggleList />
+                <ModeToggleList />
+              </div>
+            </div>
           </section>
 
           {/* 相關連結 */}
@@ -142,20 +152,33 @@ export default function Footer() {
             </ol>
           </section>
 
-          <section className="footer-container">
-            <VersionLogDialog>
-              <button
-                className="footer-link flex items-center text-sm hover:underline"
-                type="button"
-              >
-                <Tag className="mr-1 h-3 w-3" />
-                版本 v1.5.1
-              </button>
-            </VersionLogDialog>
-            <div className="footer-text">© 2025-2026 tantuyu</div>
+          <section className="footer-container flex">
+            <div className="hidden sm:flex">
+              <ThemeColorToggleList />
+              <ModeToggleList />
+            </div>
+            <div>
+              <VersionLogDialog>
+                {(version) => (
+                  <button
+                    className="footer-link flex items-center text-sm hover:underline"
+                    type="button"
+                  >
+                    <Tag className="mr-1 h-3 w-3" />
+                    版本 {version ?? "..."}
+                  </button>
+                )}
+              </VersionLogDialog>
+              <div className="footer-text">© 2025-2026 tantuyu</div>
+            </div>
           </section>
         </div>
       </div>
+      <div
+        id="nav-space-placeholder"
+        aria-hidden="true"
+        className="h-[53px] sm:hidden"
+      />
     </div>
   );
 }

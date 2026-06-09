@@ -23,7 +23,7 @@ export async function findOrCreateUser({
 
   const user = await User.findOneAndUpdate({ email }, updateUser, {
     upsert: true,
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   });
 
@@ -37,4 +37,55 @@ export async function findUserByEmail(email: string) {
   if (!email) return null;
   await connectMongoDB();
   return await User.findOne({ email }).lean();
+}
+
+export async function getBookmarks(email: string): Promise<string[]> {
+  await connectMongoDB();
+  const user = await User.findOne({ email }, { bookmarks: 1 }).lean();
+  return (user as UserDocument | null)?.bookmarks ?? [];
+}
+
+export async function addBookmark(
+  email: string,
+  courseCode: string,
+): Promise<string[]> {
+  await connectMongoDB();
+  const user = await User.findOneAndUpdate(
+    { email },
+    { $addToSet: { bookmarks: courseCode } },
+    { returnDocument: "after", projection: { bookmarks: 1 } },
+  ).lean();
+  return (user as UserDocument | null)?.bookmarks ?? [];
+}
+
+export async function removeBookmark(
+  email: string,
+  courseCode: string,
+): Promise<string[]> {
+  await connectMongoDB();
+  const user = await User.findOneAndUpdate(
+    { email },
+    { $pull: { bookmarks: courseCode } },
+    { returnDocument: "after", projection: { bookmarks: 1 } },
+  ).lean();
+  return (user as UserDocument | null)?.bookmarks ?? [];
+}
+
+export async function getSchedule(email: string): Promise<string[]> {
+  await connectMongoDB();
+  const user = await User.findOne({ email }, { schedule: 1 }).lean();
+  return (user as UserDocument | null)?.schedule ?? [];
+}
+
+export async function saveSchedule(
+  email: string,
+  courseCodes: string[],
+): Promise<string[]> {
+  await connectMongoDB();
+  const user = await User.findOneAndUpdate(
+    { email },
+    { $set: { schedule: courseCodes } },
+    { returnDocument: "after", projection: { schedule: 1 } },
+  ).lean();
+  return (user as UserDocument | null)?.schedule ?? [];
 }

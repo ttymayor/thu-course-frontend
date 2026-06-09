@@ -26,7 +26,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
   }
 
   return (
-    <div className="flex justify-center mt-4">
+    <div className="mt-4 flex justify-center">
       <UIPagination>
         <PaginationContent>
           <PaginationItem>
@@ -74,7 +74,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
                   >
                     1
                   </PaginationLink>
-                </PaginationItem>
+                </PaginationItem>,
               );
             }
 
@@ -105,7 +105,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
                   >
                     {i}
                   </PaginationLink>
-                </PaginationItem>
+                </PaginationItem>,
               );
             }
 
@@ -132,7 +132,7 @@ export default function Pagination({ total, pageSize = 10 }: PaginationProps) {
                   >
                     {totalPages}
                   </PaginationLink>
-                </PaginationItem>
+                </PaginationItem>,
               );
             }
 

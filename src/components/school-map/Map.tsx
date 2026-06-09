@@ -52,12 +52,12 @@ export default function Map() {
   }, []);
 
   return (
-    <div className="w-full h-[600px] rounded-lg overflow-hidden">
+    <div className="h-[600px] w-full overflow-hidden rounded-lg">
       <MapContainer
         center={[24.17946276387594, 120.60027705548224]} // 東海大學中間
         zoom={17}
         scrollWheelZoom={true}
-        className="w-full h-full"
+        className="z-10 h-full w-full"
       >
         <LayersControl>
           <LayersControl.Overlay checked name="公車往社會科學院（SS）路線">

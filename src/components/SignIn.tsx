@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 interface SignInProps {
   error?: string;
@@ -19,13 +20,12 @@ export default function SignIn({ error, handleSignIn }: SignInProps) {
     <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>登入</CardTitle>
+          <CardTitle className="flex w-full flex-col items-center justify-center text-center">
+            登入
+            <hr className="my-2 w-full" />
+          </CardTitle>
           <CardDescription>
             請使用東海大學（
-            <code className="font-bold text-blue-500 underline">
-              @thu.edu.tw
-            </code>{" "}
-            或{" "}
             <code className="font-bold text-blue-500 underline">
               @go.thu.edu.tw
             </code>
@@ -75,6 +75,20 @@ export default function SignIn({ error, handleSignIn }: SignInProps) {
             </svg>
             使用 Google 登入
           </Button>
+          <div className="text-muted-foreground block text-center text-xs">
+            <p className="inline-flex items-center justify-center">
+              沒有 @go.thu.edu.tw 的信箱？請至
+              <Link
+                href="https://gsuite.thu.edu.tw/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 inline-flex items-center justify-center gap-1 font-semibold underline hover:no-underline"
+              >
+                Google G Suite 申請
+                <ExternalLink className="inline h-3 w-3" />
+              </Link>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

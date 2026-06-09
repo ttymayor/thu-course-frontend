@@ -4,6 +4,8 @@ export interface UserDocument extends Document {
   email: string;
   name?: string;
   image?: string;
+  bookmarks: string[];
+  schedule: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,6 +22,14 @@ const userSchema = new Schema<UserDocument>(
     },
     image: {
       type: String,
+    },
+    bookmarks: {
+      type: [String],
+      default: [],
+    },
+    schedule: {
+      type: [String],
+      default: [],
     },
   },
   {

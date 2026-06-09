@@ -45,7 +45,7 @@ export default function SelectionLineChart({
     <>
       <ChartContainer
         config={chartConfig}
-        className="aspect-square w-full max-h-[300px]"
+        className="aspect-square max-h-[300px] w-full"
       >
         <LineChart
           accessibilityLayer

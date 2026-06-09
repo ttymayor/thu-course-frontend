@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Search, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Department } from "@/types/department";
 import useSWR from "swr";
@@ -31,10 +32,18 @@ import { Spinner } from "@/components/ui/spinner";
 import { useDebounceTransition } from "@/lib/debounceTransition";
 import { InputGroup } from "@/components/ui/input-group";
 
+function guessStudentDeptCode(email: string | null | undefined): string | null {
+  if (!email) return null;
+  const id = email.split("@")[0].toUpperCase();
+  const match = id.match(/^[A-Z]\d{2}(\d{3})\d{3}$/);
+  return match ? match[1] : null;
+}
+
 export default function Filter() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
   const currentSearchQuery = searchParams.get("search") || "";
   const currentSelectedDepartment = searchParams.get("department") || "";
@@ -53,6 +62,11 @@ export default function Filter() {
       return (await fetch(key).then((res) => res.json())).data as Department[];
     },
   );
+
+  const guessedDeptCode = guessStudentDeptCode(session?.user?.email);
+  const guessedDept = guessedDeptCode
+    ? departments?.find((d) => d.department_code === guessedDeptCode)
+    : null;
 
   // 按學院分類系所 - 使用 category_code 和 category_name
   const departmentsByCollege = departments?.reduce(
@@ -128,8 +142,9 @@ export default function Filter() {
             <Button
               variant="outline"
               role="combobox"
+              aria-controls="course-info-department-combobox"
               aria-expanded={open}
-              className="w-full cursor-pointer justify-between px-3 py-2 text-sm"
+              className="w-full cursor-pointer justify-between rounded-sm px-3 py-2 text-sm"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -161,6 +176,29 @@ export default function Filter() {
                     所有系所
                   </CommandItem>
                 </CommandGroup>
+                {guessedDept && (
+                  <CommandGroup heading="猜你喜歡...">
+                    <CommandItem
+                      key={guessedDept.department_code}
+                      value={`${guessedDept.department_name} ${guessedDept.department_code}`}
+                      onSelect={() => {
+                        handleDepartmentChange(guessedDept.department_code);
+                        setOpen(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Check
+                        className={cn(
+                          "h-4 w-4",
+                          selectedDepartment === guessedDept.department_code
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                      />
+                      {guessedDept.department_name}
+                    </CommandItem>
+                  </CommandGroup>
+                )}
                 {departmentsByCollege &&
                   Object.entries(departmentsByCollege)
                     .sort(([a], [b]) => a.localeCompare(b))
@@ -205,7 +243,7 @@ export default function Filter() {
           </PopoverContent>
         </Popover>
       )}
-      <InputGroup className="w-full">
+      <InputGroup className="w-full rounded-sm">
         <InputGroupAddon>
           {isPending ? <Spinner /> : <Search className="h-4 w-4" />}
         </InputGroupAddon>
@@ -217,26 +255,27 @@ export default function Filter() {
           onChange={handleSearchChange}
           className="h-10 w-full px-3 py-2 text-sm"
         />
-        <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            className="cursor-pointer"
-            disabled={!searchQuery}
-            onClick={() => {
-              setSearchQuery("");
-              if (searchQuery) {
-                debounceTransition(() => {
-                  const current = buildCleanSearchParams();
-                  current.delete("search");
-                  const search = current.toString();
-                  const query = search ? `?${search}` : "";
-                  router.replace(`${pathname}${query}`);
-                });
-              }
-            }}
-          >
-            <X className="h-4 w-4" />
-          </InputGroupButton>
-        </InputGroupAddon>
+        {searchQuery && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              className="cursor-pointer"
+              onClick={() => {
+                setSearchQuery("");
+                if (searchQuery) {
+                  debounceTransition(() => {
+                    const current = buildCleanSearchParams();
+                    current.delete("search");
+                    const search = current.toString();
+                    const query = search ? `?${search}` : "";
+                    router.replace(`${pathname}${query}`);
+                  });
+                }
+              }}
+            >
+              <X className="h-4 w-4" />
+            </InputGroupButton>
+          </InputGroupAddon>
+        )}
       </InputGroup>
     </div>
   );

@@ -20,7 +20,7 @@ export default function CourseListSkeleton({
       <Table className="min-w-full">
         <TableHeader>
           <TableRow className="h-12">
-            <TableHead className="text-center w-16">選擇</TableHead>
+            <TableHead className="w-16 text-center">選擇</TableHead>
             <TableHead className="text-center">課程資訊</TableHead>
           </TableRow>
         </TableHeader>
@@ -28,7 +28,7 @@ export default function CourseListSkeleton({
           {Array.from({ length: pageSize }).map((_, idx) => (
             <TableRow key={`skeleton-${idx}`} className="h-12">
               <TableCell className="text-center">
-                <Skeleton className="h-4 w-4 mx-auto" />
+                <Skeleton className="mx-auto h-4 w-4" />
               </TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">

@@ -31,13 +31,13 @@ export async function GET(request: Request) {
           "Cache-Control": "public, max-age=3600, s-maxage=3600",
           "X-Data-Source": "database",
         },
-      }
+      },
     );
   } catch (error) {
     console.error("/api/course-info error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch course info" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

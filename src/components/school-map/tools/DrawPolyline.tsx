@@ -9,7 +9,7 @@ export default function DrawPolyline() {
       setPositions((prev) => [...prev, [e.latlng.lat, e.latlng.lng]]);
     },
     contextmenu() {
-      setPositions((prev) => [...prev.slice(0, -1)]);
+      setPositions((prev) => prev.slice(0, -1));
     },
   });
 
