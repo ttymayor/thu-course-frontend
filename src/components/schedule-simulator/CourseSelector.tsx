@@ -41,6 +41,7 @@ function CourseSelectorContent({
   if (search) {
     params.course_name = search;
     params.course_code = search;
+    params.teacher = search;
   }
 
   const queryString = new URLSearchParams(

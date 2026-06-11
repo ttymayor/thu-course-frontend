@@ -250,7 +250,7 @@ export default function Filter() {
         <InputGroupInput
           id="search"
           type="text"
-          placeholder="搜尋課程代碼或課程名稱..."
+          placeholder="搜尋課程代碼、課程名稱或授課教師..."
           value={searchQuery}
           onChange={handleSearchChange}
           className="h-10 w-full px-3 py-2 text-sm"

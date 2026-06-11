@@ -5,6 +5,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const course_code = searchParams.get("course_code") || "";
   const course_name = searchParams.get("course_name") || "";
+  const teacher = searchParams.get("teacher") || "";
   const department_code = searchParams.get("department_code") || "";
   const department_name = searchParams.get("department_name") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -17,6 +18,7 @@ export async function GET(request: Request) {
     const { data, total } = await getCourses({
       course_code,
       course_name,
+      teacher,
       department_code,
       department_name,
       course_codes,
