@@ -80,11 +80,6 @@ export default function ScheduleCard({
 }: ScheduleCardProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
-  const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
-  const [showAllPeriod, setShowAllPeriod] = useLocalStorage(
-    "showAllPeriod",
-    true,
-  );
   const [showTimeProgress, setShowTimeProgress] = useLocalStorage(
     "showTimeProgress",
     false,
