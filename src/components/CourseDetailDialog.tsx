@@ -56,15 +56,13 @@ export function CourseDetailDialog({
         )}
         {!isLoading && course && (
           <>
-            <div className="flex justify-end px-2 pb-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/course-info/${courseCode}`} prefetch={false}>
-                  <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                  課程詳細頁面
-                </Link>
-              </Button>
-            </div>
             <DetailView courseInfo={course} />
+            <Button className="w-full rounded-xl" asChild>
+              <Link href={`/course-info/${courseCode}`} prefetch={false}>
+                <ExternalLink className="size-3.5" />
+                課程詳細頁面
+              </Link>
+            </Button>
           </>
         )}
         {!isLoading && !course && courseCode && (

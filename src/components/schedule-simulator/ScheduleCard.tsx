@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardAction,
@@ -90,9 +89,10 @@ export default function ScheduleCard({
     "showTimeProgress",
     false,
   );
+  const [compactView, setCompactView] = useLocalStorage("compactView", true);
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const days = showWeekend ? allDays : allDays.slice(0, 5);
+  const days = compactView ? allDays.slice(0, 5) : allDays;
 
   // 合併 selectedCourses 與 hoveredCourse（不重複）用於計算範圍
   const coursesForRange =
@@ -134,7 +134,7 @@ export default function ScheduleCard({
     return allPeriods.slice(earliestIndex, latestIndex + 1);
   };
 
-  const periods = showAllPeriod ? allPeriods : getMinimumPeriodRange();
+  const periods = compactView ? getMinimumPeriodRange() : allPeriods;
 
   const grid: ScheduleGrid = days.reduce((acc, day) => {
     acc[day] = periods.reduce(
@@ -290,15 +290,17 @@ export default function ScheduleCard({
   };
 
   return (
-    <Card className="rounded-sm">
+    <Card>
       <CardHeader>
-        <CardTitle>{isViewingShared ? "預覽分享的課表" : "你的課表"}</CardTitle>
-        <CardDescription className="flex flex-row gap-2">
-          <Badge className="rounded-full">
-            {selectedCourses.length} 門課程
-          </Badge>
-          <Badge className="rounded-full">{totalCredits} 學分</Badge>
-        </CardDescription>
+        <CardTitle className="flex flex-wrap items-center gap-1 text-lg font-bold">
+          {isViewingShared ? "預覽分享的課表" : "你的課表"}
+          <div className="flex items-center gap-1">
+            <Badge className="rounded-full">
+              {selectedCourses.length} 門課程
+            </Badge>
+            <Badge className="rounded-full">{totalCredits} 學分</Badge>
+          </div>
+        </CardTitle>
         <CardAction>
           {isViewingShared ? (
             // 預覽分享課表模式：顯示確認和取消按鈕
@@ -346,7 +348,7 @@ export default function ScheduleCard({
                     <QrCode className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="border-foreground/10 rounded-xl sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle>課表 QR Code</DialogTitle>
                     <DialogDescription>
@@ -398,20 +400,17 @@ export default function ScheduleCard({
                     <Settings className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-auto">
+                <DropdownMenuContent
+                  align="end"
+                  className="border-foreground/10 w-auto rounded-lg"
+                >
                   <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
-                    checked={showAllPeriod}
-                    onCheckedChange={setShowAllPeriod}
+                    checked={compactView}
+                    onCheckedChange={setCompactView}
                   >
-                    顯示所有時段
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={showWeekend}
-                    onCheckedChange={setShowWeekend}
-                  >
-                    顯示週六週日
+                    精簡模式
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={showTimeProgress}

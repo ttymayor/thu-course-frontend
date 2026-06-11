@@ -63,8 +63,8 @@ function CourseSelectorContent({
 
   const { data, isLoading, error } = useSWR(swrKey, fetcher);
 
-  const courses = data?.data || [];
-  const total = data?.total || 0;
+  const courses: Course[] = data?.data || [];
+  const total: number = data?.total || 0;
 
   const handleSelectionChange = (course: Course, isSelected: boolean) => {
     const newSelectedCourses = isSelected
@@ -79,11 +79,11 @@ function CourseSelectorContent({
   };
 
   return (
-    <div className="flex h-full flex-col px-6">
+    <div className="flex h-full flex-col gap-2">
       <Filter />
       <Button
         variant={showSelectedCourses ? "outline" : "default"}
-        className="cursor-pointer rounded-sm"
+        className="cursor-pointer"
         onClick={() => setShowSelectedCourses(!showSelectedCourses)}
       >
         {showSelectedCourses ? "顯示所有課程" : "顯示已選課程"}
@@ -116,11 +116,11 @@ function CourseSelectorContent({
 
 export default function CourseSelector(props: CourseSelectorProps) {
   return (
-    <Card className="rounded-sm">
+    <Card>
       <CardHeader>
-        <CardTitle>課程選擇</CardTitle>
+        <CardTitle className="text-lg font-bold">課程選擇</CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent>
         <Suspense fallback={<CourseListSkeleton />}>
           <CourseSelectorContent {...props} />
         </Suspense>

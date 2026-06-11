@@ -133,7 +133,7 @@ export default function Filter() {
   };
 
   return (
-    <div className="mb-2 flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {isLoading ? (
         <Skeleton className="h-10 w-full" />
       ) : (
@@ -144,13 +144,16 @@ export default function Filter() {
               role="combobox"
               aria-controls="course-info-department-combobox"
               aria-expanded={open}
-              className="w-full cursor-pointer justify-between rounded-sm px-3 py-2 text-sm"
+              className="w-full cursor-pointer justify-between px-3 py-2 text-sm"
             >
               {getSelectedDeptName()}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0" align="start">
+          <PopoverContent
+            className="border-foreground/10 w-full overflow-hidden rounded-lg p-0"
+            align="start"
+          >
             <Command>
               <CommandInput
                 placeholder="搜尋系所..."
@@ -243,7 +246,7 @@ export default function Filter() {
           </PopoverContent>
         </Popover>
       )}
-      <InputGroup className="w-full rounded-sm">
+      <InputGroup className="w-full">
         <InputGroupAddon>
           {isPending ? <Spinner /> : <Search className="h-4 w-4" />}
         </InputGroupAddon>

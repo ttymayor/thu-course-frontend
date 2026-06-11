@@ -237,7 +237,7 @@ export default function ScheduleTable({
                                       course.course_code
                                   ? "bg-secondary/50 border border-dashed"
                                   : "bg-secondary border border-solid",
-                              "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-sm p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
+                              "transition-all relative flex flex-1 flex-col justify-center rounded-md p-0 text-[10px] ease-in-out hover:scale-102 sm:p-2 sm:text-xs",
                             )}
                           >
                             <button
