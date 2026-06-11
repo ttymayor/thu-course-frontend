@@ -87,8 +87,6 @@ export default function ScheduleCard({
   const [compactView, setCompactView] = useLocalStorage("compactView", true);
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const days = compactView ? allDays.slice(0, 5) : allDays;
-
   // 合併 selectedCourses 與 hoveredCourse（不重複）用於計算範圍
   const coursesForRange =
     hoveredCourse &&
@@ -97,6 +95,25 @@ export default function ScheduleCard({
     )
       ? [...selectedCourses, hoveredCourse]
       : selectedCourses;
+
+  const getVisibleDays = () => {
+    if (!compactView) {
+      return allDays;
+    }
+
+    const activeDays = new Set(allDays.slice(0, 5));
+
+    coursesForRange.forEach((course) => {
+      const parsedTimes = courseTimeParser(course.basic_info.class_time || "");
+      parsedTimes.forEach((time) => {
+        activeDays.add(time.day.replace("星期", ""));
+      });
+    });
+
+    return allDays.filter((day) => activeDays.has(day));
+  };
+
+  const days = getVisibleDays();
 
   const getMinimumPeriodRange = () => {
     // 如果沒有課程，返回所有時段
