@@ -41,8 +41,13 @@ export const allDays = ["一", "二", "三", "四", "五", "六", "日"];
 export const days = allDays.slice(0, 5); // 預設只顯示平日
 export const periods = allPeriods; // 預設顯示所有時段
 
+export interface ScheduleGridEntry {
+  course: Course;
+  location?: string;
+}
+
 export type ScheduleGrid = {
   [day: string]: {
-    [period: string]: Course[];
+    [period: string]: ScheduleGridEntry[];
   };
 };

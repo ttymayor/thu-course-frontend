@@ -142,7 +142,7 @@ export default function ScheduleCard({
         periodAcc[period] = [];
         return periodAcc;
       },
-      {} as { [period: string]: Course[] },
+      {} as ScheduleGrid[string],
     );
     return acc;
   }, {} as ScheduleGrid);
@@ -156,7 +156,10 @@ export default function ScheduleCard({
         time.periods.forEach((p) => {
           const periodKey = String(p);
           if (grid[dayKey] && grid[dayKey][periodKey]) {
-            grid[dayKey][periodKey].push(course);
+            grid[dayKey][periodKey].push({
+              course,
+              location: time.location,
+            });
           }
         });
       }
