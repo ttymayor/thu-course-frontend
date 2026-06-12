@@ -36,7 +36,6 @@
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cmdk": "^1.1.1",
     "foxact": "^0.3.4",
     "geist": "^1.7.2",
     "html-to-image": "^1.11.13",

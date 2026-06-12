@@ -39,7 +39,7 @@ export function CourseDetailDialog({
   return (
     <Dialog open={!!courseCode} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="max-h-[90vh] max-w-[85vw] overflow-y-auto sm:min-w-[75vw]"
+        className="bg-background/95 max-h-[85vh] max-w-[85vw] scrollbar-none overflow-y-auto rounded-3xl p-5 sm:min-w-[80vw]"
         showCloseButton={false}
         aria-describedby={undefined}
       >
@@ -59,7 +59,7 @@ export function CourseDetailDialog({
             <DetailView courseInfo={course} />
             <Button className="w-full rounded-xl" asChild>
               <Link href={`/course-info/${courseCode}`} prefetch={false}>
-                <ExternalLink className="size-3.5" />
+                <ExternalLink />
                 課程詳細頁面
               </Link>
             </Button>

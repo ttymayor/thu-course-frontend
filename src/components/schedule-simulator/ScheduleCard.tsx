@@ -420,7 +420,7 @@ export default function ScheduleCard({
                   className="border-foreground/10 w-auto rounded-lg"
                 >
                   <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-foreground/10" />
                   <DropdownMenuCheckboxItem
                     checked={compactView}
                     onCheckedChange={setCompactView}

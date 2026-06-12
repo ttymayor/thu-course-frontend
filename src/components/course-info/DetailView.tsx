@@ -3,18 +3,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Target,
-  BookOpen,
   Trophy,
   BarChart3,
   Bookmark,
   Globe,
   FileText,
-  User,
   Clock,
   Users,
   GraduationCap,
   Info,
+  ChartSpline,
+  ChartPie,
+  Crosshair,
+  TextCursor,
 } from "lucide-react";
 import { Course } from "@/types/course";
 import GradingPieChart from "@/components/course-info/GradingPieChart";
@@ -45,15 +46,13 @@ function InfoBox({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-3">
-      <div className="mt-1">{icon}</div>
-      <div>
+    <div className="flex items-center gap-3">
+      <div>{icon}</div>
+      <div className="flex flex-col gap-1">
         <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
           {label}
         </p>
-        <div className="mt-1 text-sm font-semibold">
-          {value || children || "-"}
-        </div>
+        <div className="text-sm font-semibold">{value || children || "-"}</div>
       </div>
     </div>
   );
@@ -64,25 +63,33 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
 
   return (
     <>
-      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-3">
-          <div className="flex flex-col items-start gap-3 sm:flex-row">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col items-start gap-2 lg:flex-row">
             <Badge
               variant="outline"
-              className="px-1 py-0.5 font-mono text-base sm:text-xl"
+              className="border-foreground/10 text-foreground/75 self-start font-mono lg:self-center"
             >
               {courseInfo.course_code}
             </Badge>
-            <h1 className="text-xl font-extrabold tracking-tight sm:text-3xl">
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
               {courseInfo.course_name || "-"}
             </h1>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="text-muted-foreground text-sm">
             {courseInfo.teachers.map((teacher, index) => (
-              <Badge key={index} variant="secondary" className="rounded-full">
-                <User className="h-3 w-3" /> {teacher}
-              </Badge>
-            ))}
+              <span key={`${teacher}-${index}`}>
+                {index !== 0 && "、"}
+                <Link
+                  href={`/?search=${teacher}`}
+                  prefetch={false}
+                  className="hover:text-primary underline-offset-4 transition-colors hover:underline"
+                >
+                  {teacher}
+                </Link>
+              </span>
+            ))}{" "}
+            <span className="text-xs">教授</span>
           </div>
         </div>
 
@@ -93,7 +100,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
               target="_blank"
               prefetch={false}
             >
-              <Globe className="size-4" /> 課程資訊
+              <Globe /> 課程資訊
             </Link>
           </Button>
           <Button variant="outline" size="sm" asChild>
@@ -102,7 +109,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
               target="_blank"
               prefetch={false}
             >
-              <FileText className="size-4" /> 授課大綱
+              <FileText /> 授課大綱
             </Link>
           </Button>
           <Button
@@ -115,7 +122,6 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
             }
           >
             <Bookmark
-              className="size-5"
               fill={isBookmarked(courseInfo) ? "currentColor" : "none"}
             />
           </Button>
@@ -125,7 +131,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
       <div className="flex flex-col gap-4">
         {/* 基本資訊 */}
         <Card className="border-foreground/10 shadow-none">
-          <CardContent className="p-6">
+          <CardContent>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <InfoBox
                 icon={<Clock className="text-primary" />}
@@ -166,7 +172,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                    <Trophy className="text-primary size-5" />
+                    <ChartPie className="text-primary" />
                     評分項目
                   </CardTitle>
                   <TabsList>
@@ -235,7 +241,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                    <BarChart3 className="text-primary size-5" />
+                    <ChartSpline className="text-primary" />
                     選課紀錄趨勢
                   </CardTitle>
                   <TabsList>
@@ -315,7 +321,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
           <Card className="border-foreground/10 flex h-fit flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Target className="text-primary size-5" /> 教學目標
+                <Crosshair className="text-primary" /> 教學目標
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
@@ -335,7 +341,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
           <Card className="border-foreground/10 flex h-fit flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <BookOpen className="text-primary size-5" /> 課程描述
+                <TextCursor className="text-primary" /> 課程描述
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">

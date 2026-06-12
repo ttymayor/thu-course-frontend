@@ -119,8 +119,14 @@ export default function CourseScheduleTable({
 
   const badge =
     picked === "ended" ? (
-      <Badge variant="outline" className="cursor-pointer select-none">
-        <div className="size-2 rounded-full bg-gray-400" />
+      <Badge
+        variant="outline"
+        className="border-foreground/10 cursor-pointer select-none"
+      >
+        <div
+          data-icon="inline-start"
+          className="size-2 rounded-full bg-gray-400"
+        />
         該學期選課階段已完結
       </Badge>
     ) : (
