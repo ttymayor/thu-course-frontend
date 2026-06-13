@@ -138,8 +138,10 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
                 label="上課時間"
               >
                 {courseTimeParser(courseInfo.basic_info.class_time || "").map(
-                  (entry) => (
-                    <div key={entry.day}>
+                  (entry, index) => (
+                    <div
+                      key={`${entry.day}-${entry.periods.join("-")}-${entry.location ?? ""}-${index}`}
+                    >
                       {entry.day} {entry.periods.join(", ")}
                       {entry.location && `［${entry.location}］`}
                     </div>

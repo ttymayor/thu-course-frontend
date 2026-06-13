@@ -123,6 +123,7 @@ export default function ScheduleCard({
 
     let earliestIndex = allPeriods.length - 1; // 初始化為最晚
     let latestIndex = 0; // 初始化為最早
+    let hasValidPeriod = false;
 
     coursesForRange.forEach((course) => {
       const parsedTimes = courseTimeParser(course.basic_info.class_time || "");
@@ -131,6 +132,7 @@ export default function ScheduleCard({
           // 將時段字串轉換為在 allPeriods 中的索引
           const periodIndex = allPeriods.indexOf(String(periodStr));
           if (periodIndex !== -1) {
+            hasValidPeriod = true;
             if (periodIndex < earliestIndex) {
               earliestIndex = periodIndex;
             }
@@ -141,6 +143,10 @@ export default function ScheduleCard({
         });
       });
     });
+
+    if (!hasValidPeriod) {
+      return allPeriods;
+    }
 
     // 返回範圍（包含結束索引，所以 +1）
     return allPeriods.slice(earliestIndex, latestIndex + 1);

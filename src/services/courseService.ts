@@ -62,14 +62,18 @@ async function buildQueryParams(params: CourseFilter) {
     } else {
       // 判斷是否為統一搜尋 (搜尋欄輸入字串同時傳入多個參數)
       const isUnifiedSearch =
-        course_code === course_name && course_name === teacher && course_code;
+        course_code &&
+        course_code === course_name &&
+        (!teacher || teacher === course_code);
 
       if (isUnifiedSearch) {
         query.$or = [
           { course_code: { $regex: course_code, $options: "i" } },
           { course_name: { $regex: course_code, $options: "i" } },
-          { teachers: { $regex: teacher, $options: "i" } },
         ];
+        if (teacher) {
+          query.$or.push({ teachers: { $regex: teacher, $options: "i" } });
+        }
         if (department_code && department_code === course_code) {
           query.$or.push({
             department_code: { $regex: department_code, $options: "i" },
