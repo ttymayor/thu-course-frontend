@@ -1,63 +1,105 @@
-# AGENTS.md
+# Repository Guidelines
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project Structure & Module Organization
 
-## Commands
+This is a Next.js 16 App Router project for Tunghai University course
+registration information. Code lives in `src/`.
 
-```bash
-pnpm dev          # Start development server
-pnpm build        # Production build
-pnpm lint         # OXLint
-```
+- `src/app/` contains pages, layouts, and API routes such as `api/course-info`,
+  `api/auth`, `api/departments`, `api/feedback`, and `api/og`.
+- `src/components/` contains shared React components; `src/components/ui/`
+  holds shadcn/ui and Radix-based primitives.
+- `src/services/` contains business logic and database queries.
+- `src/models/` contains Mongoose schemas.
+- `src/lib/` contains shared utilities, including MongoDB connection, auth
+  helpers, course schedule parsing, and conflict checking.
+- `src/hooks/`, `src/config/`, and `src/types/` hold hooks, configuration, and
+  TypeScript types.
 
-## Architecture
+No dedicated test directory is currently present.
 
-THU Course Frontend is a Next.js 16 app (App Router) providing a better UI for Tunghai University course registration info. It is deployed at `https://thc.ttymayor.com`.
+## Build, Test, and Development Commands
 
-**Stack**: React 19, TypeScript, Tailwind CSS v4, MongoDB/Mongoose, NextAuth.js (Google OAuth), SWR, shadcn/ui + Radix UI.
+Use `pnpm` for scripts.
 
-**Notable Next.js config** (`next.config.ts`): React Compiler is enabled (`reactCompiler: true`) and `experimental.useCache` is on. These affect how components and data fetching work.
+- `pnpm dev` starts the local Next.js development server.
+- `pnpm build` creates a production build.
+- `pnpm start` serves the production build.
+- `pnpm lint` runs OXLint.
+- `pnpm lint:fix` applies OXLint fixes.
+- `pnpm fmt` formats files with oxfmt.
+- `pnpm fmt:check` checks formatting without writing changes.
 
-### Data flow
+There is no configured `pnpm test` script at this time.
 
-```
-API Route (src/app/api/) → Service (src/services/) → Model (src/models/) → MongoDB
-```
+## Coding Style & Naming Conventions
 
-- **API routes** handle HTTP and return `NextResponse.json()`
-- **Services** contain all business logic and DB queries; always call `connectMongoDB()` before querying
-- **Models** define Mongoose schemas with the `mongoose.models.X || mongoose.model(...)` pattern (required for Next.js hot reload safety)
+Write TypeScript and React using 2-space indentation, double quotes, and trailing
+commas where supported. Keep imports ordered as React, third-party packages, then
+internal `@/` imports. Prefer `interface` for object shapes.
 
-### Authentication
+Use the `@/` path alias for internal imports. Client components must include the
+`"use client"` directive. Use `cn()` from `@/lib/utils` when composing Tailwind
+classes. Mongoose models must use the hot-reload-safe pattern:
+`mongoose.models.Name || mongoose.model(...)`.
 
-NextAuth.js with Google OAuth. Sign-in is **restricted to `@thu.edu.tw` and `@go.thu.edu.tw` email domains** — this check is in `src/app/api/auth/[...nextauth]/route.ts`. The middleware file is named `proxy.ts` (not `middleware.ts`) and protects `/profile/` and `/feedback/` routes.
+## API Route Guidelines
 
-### Key directories
+API endpoints live under `src/app/api/**/route.ts` or `route.tsx` for generated
+images. Keep route handlers thin: parse request input, validate it, call a
+service, and return `NextResponse.json()`. Put reusable business logic and all
+database queries in `src/services/`; services must call `connectMongoDB()` before
+querying Mongoose models.
 
-- `src/app/` — App Router pages and API routes (`api/course-info`, `api/auth`, `api/og`, `api/feedback`, `api/departments`)
-- `src/components/` — React components; `ui/` contains shadcn/ui base components
-- `src/services/` — DB service functions (`courseService.ts`, `departmentService.ts`, `userService.ts`)
-- `src/models/` — Mongoose schemas (`Course.ts`, `Department.ts`, `User.ts`, `Feedback.ts`)
-- `src/lib/` — Shared utilities: `mongodb.ts` (connection), `auth.ts` (session helpers), `courseSchedule.ts`, `scheduleConflictChecker.ts`, `courseTimeParser.ts`
+Follow the existing data flow:
+`src/app/api/*` -> `src/services/*Service.ts` -> `src/models/*` -> MongoDB.
+For example, `/api/course-info` calls `getCourses()` from
+`src/services/courseService.ts`, and user-specific endpoints call helpers in
+`src/services/userService.ts`.
 
-## Environment Variables
+Use consistent JSON shapes. Successful responses should include
+`{ success: true, data }`; list endpoints may also include metadata such as
+`total`. Failed responses should include `{ success: false, message }` or
+`{ success: false, error }` with the correct HTTP status. Use `400` for invalid
+input, `401` for unauthenticated users, and `500` for unexpected failures.
+Log server-side errors with a route-specific message, but do not expose raw
+exceptions or secrets in responses.
 
-```
-MONGODB_URI
-MONGODB_DB_NAME
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
-NEXTAUTH_URL
-NEXTAUTH_SECRET
-NEXT_PUBLIC_ACADEMIC_YEAR
-NEXT_PUBLIC_ACADEMIC_SEMESTER
-```
+Validate request data before calling services. For query strings, parse with
+`new URL(request.url).searchParams` and normalize defaults, as in
+`page` and `page_size` on `/api/course-info`. For JSON bodies, call `req.json()`
+once, check required fields and types, then return `400` on invalid input.
 
-## Code Conventions
+Authenticated routes should use `getEmail()` from `@/lib/auth`; return `401`
+when it is missing. Mutating routes such as bookmarks and schedules should call
+`rateLimit("write")` before performing writes and return the limiter response
+when present.
 
-- Use `@/` path alias for all internal imports
-- Import order: React → third-party → internal (`@/`)
-- Prefer `interface` over `type` for object shapes
-- Client components require `"use client"` directive
-- Use `cn()` from `@/lib/utils` for Tailwind class merging
-- Server functions that should be cached use the `"use cache"` directive (experimental Next.js feature, enabled via `experimental.useCache` in `next.config.ts`). Currently used in `departmentService.ts` and `src/app/api/departments/route.ts`.
+Only add cache headers or `"use cache"` when the data is safe to share and does
+not depend on the current user. Public course and department data can be cached;
+profile, bookmark, schedule, and feedback writes should not be cached.
+
+## Testing Guidelines
+
+Testing dependencies such as Testing Library and jsdom are installed, but no test
+runner or test script is configured. When adding tests, colocate them near the
+code they cover or place them in a clearly named test directory, and use
+`*.test.ts` or `*.test.tsx` naming. Add a package script so contributors can run
+the suite consistently.
+
+## Commit & Pull Request Guidelines
+
+Recent history uses Conventional Commit style, for example `fix: improve search
+functionality`, `fix(robots): update disallow rule`, and `chore(version): bump
+to v2.0.0`. Keep commits small and scoped.
+
+Pull requests should include a summary, verification steps, linked issues when
+applicable, and screenshots for visible UI changes. Note any environment
+variable or database behavior changes.
+
+## Security & Configuration Tips
+
+Copy required variables from `.env.example` and keep secrets out of git. Required
+configuration includes MongoDB, Google OAuth, NextAuth, and public academic year
+and semester values. Authentication is restricted to `@thu.edu.tw` and
+`@go.thu.edu.tw` email domains in `src/app/api/auth/[...nextauth]/route.ts`.

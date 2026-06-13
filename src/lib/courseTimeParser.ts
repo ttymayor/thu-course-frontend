@@ -52,7 +52,7 @@ export function courseTimeParser(input: string): ScheduleEntry[] {
           currentPeriods.push(parseInt(tempNumString, 10));
           tempNumString = "";
         }
-      } else if (char === ";" || (char === " " && readingPeriods)) {
+      } else if (char === ";") {
         if (tempNumString) {
           currentPeriods.push(parseInt(tempNumString, 10));
           tempNumString = "";
@@ -78,6 +78,9 @@ export function courseTimeParser(input: string): ScheduleEntry[] {
         currentLocation = "";
       } else if (char === "]") {
         readingLocation = false;
+      } else if (currentDay && !readingLocation && !isNaN(parseInt(char, 10))) {
+        readingPeriods = true;
+        tempNumString += char;
       } else if (readingPeriods) {
         if (!isNaN(parseInt(char, 10))) {
           tempNumString += char;

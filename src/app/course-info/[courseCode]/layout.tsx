@@ -96,5 +96,5 @@ export default function CourseInfoLayout({
 }: {
   children: ReactNode;
 }) {
-  return <div>{children}</div>;
+  return <>{children}</>;
 }

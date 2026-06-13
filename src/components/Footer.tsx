@@ -14,7 +14,7 @@ const FOOTER_CONFIG = {
 
 export default function Footer() {
   return (
-    <div className="bg-background/95 supports-backdrop-filter:bg-background/60 w-full border-t backdrop-blur">
+    <div className="bg-background/95 supports-backdrop-filter:bg-background/60 mt-4 w-full border-t backdrop-blur">
       <div className="mx-auto max-w-7xl p-6 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
           {/* 品牌資訊 */}

@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardAction,
@@ -81,18 +80,12 @@ export default function ScheduleCard({
 }: ScheduleCardProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
-  const [showWeekend, setShowWeekend] = useLocalStorage("showWeekend", true);
-  const [showAllPeriod, setShowAllPeriod] = useLocalStorage(
-    "showAllPeriod",
-    true,
-  );
   const [showTimeProgress, setShowTimeProgress] = useLocalStorage(
     "showTimeProgress",
     false,
   );
+  const [compactView, setCompactView] = useLocalStorage("compactView", true);
   const tableRef = useRef<HTMLTableElement>(null);
-
-  const days = showWeekend ? allDays : allDays.slice(0, 5);
 
   // 合併 selectedCourses 與 hoveredCourse（不重複）用於計算範圍
   const coursesForRange =
@@ -103,6 +96,25 @@ export default function ScheduleCard({
       ? [...selectedCourses, hoveredCourse]
       : selectedCourses;
 
+  const getVisibleDays = () => {
+    if (!compactView) {
+      return allDays;
+    }
+
+    const activeDays = new Set(allDays.slice(0, 5));
+
+    coursesForRange.forEach((course) => {
+      const parsedTimes = courseTimeParser(course.basic_info.class_time || "");
+      parsedTimes.forEach((time) => {
+        activeDays.add(time.day.replace("星期", ""));
+      });
+    });
+
+    return allDays.filter((day) => activeDays.has(day));
+  };
+
+  const days = getVisibleDays();
+
   const getMinimumPeriodRange = () => {
     // 如果沒有課程，返回所有時段
     if (coursesForRange.length === 0) {
@@ -111,6 +123,7 @@ export default function ScheduleCard({
 
     let earliestIndex = allPeriods.length - 1; // 初始化為最晚
     let latestIndex = 0; // 初始化為最早
+    let hasValidPeriod = false;
 
     coursesForRange.forEach((course) => {
       const parsedTimes = courseTimeParser(course.basic_info.class_time || "");
@@ -119,6 +132,7 @@ export default function ScheduleCard({
           // 將時段字串轉換為在 allPeriods 中的索引
           const periodIndex = allPeriods.indexOf(String(periodStr));
           if (periodIndex !== -1) {
+            hasValidPeriod = true;
             if (periodIndex < earliestIndex) {
               earliestIndex = periodIndex;
             }
@@ -130,11 +144,15 @@ export default function ScheduleCard({
       });
     });
 
+    if (!hasValidPeriod) {
+      return allPeriods;
+    }
+
     // 返回範圍（包含結束索引，所以 +1）
     return allPeriods.slice(earliestIndex, latestIndex + 1);
   };
 
-  const periods = showAllPeriod ? allPeriods : getMinimumPeriodRange();
+  const periods = compactView ? getMinimumPeriodRange() : allPeriods;
 
   const grid: ScheduleGrid = days.reduce((acc, day) => {
     acc[day] = periods.reduce(
@@ -142,7 +160,7 @@ export default function ScheduleCard({
         periodAcc[period] = [];
         return periodAcc;
       },
-      {} as { [period: string]: Course[] },
+      {} as ScheduleGrid[string],
     );
     return acc;
   }, {} as ScheduleGrid);
@@ -156,7 +174,10 @@ export default function ScheduleCard({
         time.periods.forEach((p) => {
           const periodKey = String(p);
           if (grid[dayKey] && grid[dayKey][periodKey]) {
-            grid[dayKey][periodKey].push(course);
+            grid[dayKey][periodKey].push({
+              course,
+              location: time.location,
+            });
           }
         });
       }
@@ -290,15 +311,17 @@ export default function ScheduleCard({
   };
 
   return (
-    <Card className="rounded-sm">
+    <Card>
       <CardHeader>
-        <CardTitle>{isViewingShared ? "預覽分享的課表" : "你的課表"}</CardTitle>
-        <CardDescription className="flex flex-row gap-2">
-          <Badge className="rounded-full">
-            {selectedCourses.length} 門課程
-          </Badge>
-          <Badge className="rounded-full">{totalCredits} 學分</Badge>
-        </CardDescription>
+        <CardTitle className="flex flex-wrap items-center gap-1 text-lg font-bold">
+          {isViewingShared ? "預覽分享的課表" : "你的課表"}
+          <div className="flex items-center gap-1">
+            <Badge className="rounded-full">
+              {selectedCourses.length} 門課程
+            </Badge>
+            <Badge className="rounded-full">{totalCredits} 學分</Badge>
+          </div>
+        </CardTitle>
         <CardAction>
           {isViewingShared ? (
             // 預覽分享課表模式：顯示確認和取消按鈕
@@ -346,7 +369,7 @@ export default function ScheduleCard({
                     <QrCode className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="border-foreground/10 rounded-xl sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle>課表 QR Code</DialogTitle>
                     <DialogDescription>
@@ -388,6 +411,7 @@ export default function ScheduleCard({
               >
                 <Download className="h-4 w-4" />
               </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -402,16 +426,10 @@ export default function ScheduleCard({
                   <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
-                    checked={showAllPeriod}
-                    onCheckedChange={setShowAllPeriod}
+                    checked={compactView}
+                    onCheckedChange={setCompactView}
                   >
-                    顯示所有時段
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={showWeekend}
-                    onCheckedChange={setShowWeekend}
-                  >
-                    顯示週六週日
+                    精簡模式
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={showTimeProgress}

@@ -77,7 +77,7 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
   return (
     <Frame>
       {/* Left: course selector */}
-      <div className="w-full min-w-0 md:w-1/3 md:pr-4">
+      <div className="w-full min-w-0 md:w-1/3">
         {isViewingShared ? (
           <Card className="rounded-sm">
             <CardHeader>

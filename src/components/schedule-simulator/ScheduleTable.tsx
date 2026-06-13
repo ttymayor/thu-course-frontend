@@ -9,12 +9,11 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { periodTimeMap, ScheduleGrid } from "@/lib/schedule";
-import { courseLocation } from "@/lib/courseTimeParser";
+import { periodTimeMap, ScheduleGrid, ScheduleGridEntry } from "@/lib/schedule";
 import { Button } from "@/components/ui/button";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { X } from "lucide-react";
-import { Course } from "@/types/course";
+import type { Course } from "@/types/course";
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react";
 
@@ -30,15 +29,15 @@ interface ScheduleTableProps {
   showTimeProgress?: boolean;
 }
 
-const isSameCourseList = (a: Course[], b: Course[]) => {
+const isSameCourseList = (a: ScheduleGridEntry[], b: ScheduleGridEntry[]) => {
   if (a.length !== b.length) return false;
   if (a.length === 0) return false;
   const aIds = a
-    .map((c) => c.course_code)
+    .map((entry) => `${entry.course.course_code}:${entry.location ?? ""}`)
     .sort()
     .join(",");
   const bIds = b
-    .map((c) => c.course_code)
+    .map((entry) => `${entry.course.course_code}:${entry.location ?? ""}`)
     .sort()
     .join(",");
   return aIds === bIds;
@@ -211,65 +210,69 @@ export default function ScheduleTable({
                         ></div>
                       )}
                       <div className="flex h-full flex-col">
-                        {grid[day]?.[period]?.map((course: Course) => (
-                          <motion.div
-                            initial={{
-                              opacity: 0,
-                              scale: 0,
-                              filter: "blur(5px)",
-                            }}
-                            whileInView={{
-                              opacity: 1,
-                              scale: 1,
-                              filter: "blur(0px)",
-                            }}
-                            transition={{
-                              delay: Math.random() * 0.1,
-                              duration: 0.1,
-                            }}
-                            viewport={{ once: true }}
-                            key={course.course_code}
-                            className={cn(
-                              isViewingShared
-                                ? "bg-secondary/50 border border-dashed"
-                                : hoveredCourse &&
-                                    hoveredCourse.course_code ===
-                                      course.course_code
+                        {grid[day]?.[period]?.map((entry) => {
+                          const { course, location } = entry;
+
+                          return (
+                            <motion.div
+                              initial={{
+                                opacity: 0,
+                                scale: 0,
+                                filter: "blur(5px)",
+                              }}
+                              whileInView={{
+                                opacity: 1,
+                                scale: 1,
+                                filter: "blur(0px)",
+                              }}
+                              transition={{
+                                delay: Math.random() * 0.1,
+                                duration: 0.1,
+                              }}
+                              viewport={{ once: true }}
+                              key={`${course.course_code}-${location ?? ""}`}
+                              className={cn(
+                                isViewingShared
                                   ? "bg-secondary/50 border border-dashed"
-                                  : "bg-secondary border border-solid",
-                              "shadow-secondary/20 transition-scale relative flex flex-1 flex-col justify-center rounded-sm p-0 text-[10px] shadow-lg duration-300 hover:scale-105 sm:p-2 sm:text-xs",
-                            )}
-                          >
-                            <button
-                              className="flex h-full w-full cursor-pointer flex-col justify-center"
-                              onClick={() => setDetailCode(course.course_code)}
+                                  : hoveredCourse &&
+                                      hoveredCourse.course_code ===
+                                        course.course_code
+                                    ? "bg-secondary/50 border border-dashed"
+                                    : "bg-secondary border border-solid",
+                                "transition-all relative flex flex-1 flex-col justify-center rounded-md p-0 text-[10px] ease-in-out hover:scale-102 sm:p-2 sm:text-xs",
+                              )}
                             >
-                              <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
-                                {course.course_code}
-                              </code>
-                              <p className="text-secondary-foreground mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
-                                {course.course_name}
-                              </p>
-                              <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
-                                {courseLocation(
-                                  course.basic_info.class_time || "",
-                                )}
-                              </p>
-                            </button>
-                            {onRemoveCourse && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute top-0 right-0 mt-0.5 mr-0.5 h-3 w-3 cursor-pointer opacity-0 hover:opacity-100 sm:mt-1 sm:mr-1 sm:h-4 sm:w-4"
+                              <button
+                                className="flex h-full w-full cursor-pointer flex-col justify-center"
                                 onClick={() =>
-                                  onRemoveCourse(course.course_code)
+                                  setDetailCode(course.course_code)
                                 }
                               >
-                                <X className="h-2 w-2 sm:h-3 sm:w-3" />
-                              </Button>
-                            )}
-                          </motion.div>
-                        ))}
+                                <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
+                                  {course.course_code}
+                                </code>
+                                <p className="text-secondary-foreground mt-0.5 text-center text-[9px] leading-tight font-semibold text-pretty sm:text-[12px]">
+                                  {course.course_name}
+                                </p>
+                                <p className="mt-0.5 text-center text-[9px] leading-tight sm:text-[10px]">
+                                  {location}
+                                </p>
+                              </button>
+                              {onRemoveCourse && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute top-0 right-0 mt-0.5 mr-0.5 h-3 w-3 cursor-pointer opacity-0 hover:opacity-100 sm:mt-1 sm:mr-1 sm:h-4 sm:w-4"
+                                  onClick={() =>
+                                    onRemoveCourse(course.course_code)
+                                  }
+                                >
+                                  <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                                </Button>
+                              )}
+                            </motion.div>
+                          );
+                        })}
                       </div>
                     </TableCell>
                   );

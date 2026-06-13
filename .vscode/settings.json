@@ -7,7 +7,8 @@
       "strings": true
     },
     "editor.suggest.insertMode": "replace",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[typescript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",

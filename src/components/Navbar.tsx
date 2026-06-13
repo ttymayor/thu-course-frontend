@@ -66,13 +66,13 @@ export default function Navbar() {
 
   return (
     <div className="fixed bottom-0 z-50 w-full sm:sticky sm:top-0 sm:p-4">
-      <div className="border-muted mx-auto flex h-16 max-w-7xl items-center justify-center rounded-none border-t border-t-white/10 bg-white/3 px-4 py-2 backdrop-blur sm:h-fit sm:rounded">
+      <div className="border-muted bg-foreground/5 mx-auto flex h-16 max-w-7xl items-center justify-center rounded-none border-t border-t-white/10 px-4 py-2 backdrop-blur-lg sm:h-fit sm:rounded">
         {/* 桌面版導航 */}
         <div className="mr-4 hidden sm:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">
             <span className="flex items-center gap-2 text-lg font-bold">
               <Badge
-                variant="secondary"
+                variant="default"
                 className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
               >
                 {getAcademicYearAndSemester()}
@@ -85,15 +85,18 @@ export default function Navbar() {
               {NAVBAR_CONFIG.navigation.items.map((item, index) => (
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
+                    asChild
+                    active={isActive(item.href)}
                     className={cn(
                       isActive(item.href) ? "bg-accent/50" : undefined,
                     )}
                   >
-                    <Link href={item.href}>
-                      <div className="flex items-center gap-2">
-                        {item.icon}
-                        {item.label}
-                      </div>
+                    <Link
+                      href={item.href}
+                      className="flex flex-row items-center gap-2"
+                    >
+                      {item.icon}
+                      {item.label}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

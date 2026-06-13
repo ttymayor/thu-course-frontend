@@ -1,14 +1,8 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import { Skeleton } from "../ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function CourseListSkeleton({
   pageSize = 10,
@@ -16,42 +10,34 @@ export default function CourseListSkeleton({
   pageSize?: number;
 }) {
   return (
-    <div className="overflow-x-auto">
-      <Table className="min-w-full">
-        <TableHeader>
-          <TableRow className="h-12">
-            <TableHead className="w-16 text-center">選擇</TableHead>
-            <TableHead className="text-center">課程資訊</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {Array.from({ length: pageSize }).map((_, idx) => (
-            <TableRow key={`skeleton-${idx}`} className="h-12">
-              <TableCell className="text-center">
-                <Skeleton className="mx-auto h-4 w-4" />
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center space-x-2">
-                  <div>
-                    <Skeleton className="h-5 w-16 rounded" />
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-5 w-12 rounded-full" />
-                      <Skeleton className="h-5 w-16 rounded-full" />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Skeleton className="h-3 w-24" />
-                      <Skeleton className="h-3 w-32" />
-                    </div>
-                  </div>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="flex h-full flex-col gap-2">
+      {/* card skeletons */}
+      <ScrollArea className="h-150">
+        {[...Array(pageSize)].map((_, index) => (
+          <Card className="w-full animate-pulse rounded-md border" key={index}>
+            <CardHeader>
+              <CardTitle>
+                <Skeleton className="h-4 w-1/3 rounded-md" />
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <Skeleton className="mb-4 h-4 w-1/2 rounded-md" />
+              <Skeleton className="mb-4 h-4 w-1/2 rounded-md" />
+              <Skeleton className="mb-4 h-4 w-1/2 rounded-md" />
+            </CardContent>
+          </Card>
+        ))}
+      </ScrollArea>
+      <div className="mt-2 flex justify-center gap-1">
+        <div className="flex size-8 items-center justify-center rounded-md">
+          <Skeleton className="size-4 rounded-md" />
+        </div>
+        <Skeleton className="size-8 rounded-md" />
+        <div className="flex size-8 items-center justify-center rounded-md">
+          <Skeleton className="size-4 rounded-md" />
+        </div>
+      </div>
     </div>
   );
 }

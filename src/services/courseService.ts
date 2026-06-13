@@ -7,6 +7,7 @@ import { Course } from "@/types/course";
 export interface CourseFilter {
   course_code?: string;
   course_name?: string;
+  teacher?: string;
   department_code?: string;
   department_name?: string;
   course_codes?: string[];
@@ -18,6 +19,7 @@ async function buildQueryParams(params: CourseFilter) {
   const {
     course_code,
     course_name,
+    teacher,
     department_code,
     department_name,
     course_codes,
@@ -41,6 +43,11 @@ async function buildQueryParams(params: CourseFilter) {
           { course_code: { $regex: course_code, $options: "i" } },
           { course_name: { $regex: course_code, $options: "i" } },
         ];
+        if (teacher && teacher === course_code) {
+          query.$or.push({ teachers: { $regex: teacher, $options: "i" } });
+        } else if (teacher) {
+          query.teachers = { $regex: teacher, $options: "i" };
+        }
       } else {
         if (course_code) {
           query.course_code = { $regex: course_code, $options: "i" };
@@ -48,20 +55,30 @@ async function buildQueryParams(params: CourseFilter) {
         if (course_name && course_name !== course_code) {
           query.course_name = { $regex: course_name, $options: "i" };
         }
+        if (teacher) {
+          query.teachers = { $regex: teacher, $options: "i" };
+        }
       }
     } else {
-      // 判斷是否為統一搜尋 (搜尋欄輸入字串同時傳入三個參數)
+      // 判斷是否為統一搜尋 (搜尋欄輸入字串同時傳入多個參數)
       const isUnifiedSearch =
+        course_code &&
         course_code === course_name &&
-        course_name === department_code &&
-        course_code;
+        (!teacher || teacher === course_code);
 
       if (isUnifiedSearch) {
         query.$or = [
           { course_code: { $regex: course_code, $options: "i" } },
           { course_name: { $regex: course_code, $options: "i" } },
-          { department_code: { $regex: course_code, $options: "i" } },
         ];
+        if (teacher) {
+          query.$or.push({ teachers: { $regex: teacher, $options: "i" } });
+        }
+        if (department_code && department_code === course_code) {
+          query.$or.push({
+            department_code: { $regex: department_code, $options: "i" },
+          });
+        }
       } else {
         // 分別處理各個欄位
         if (course_code && course_name && course_code === course_name) {
@@ -69,12 +86,20 @@ async function buildQueryParams(params: CourseFilter) {
             { course_code: { $regex: course_code, $options: "i" } },
             { course_name: { $regex: course_code, $options: "i" } },
           ];
+          if (teacher && teacher === course_code) {
+            query.$or.push({ teachers: { $regex: teacher, $options: "i" } });
+          } else if (teacher) {
+            query.teachers = { $regex: teacher, $options: "i" };
+          }
         } else {
           if (course_code) {
             query.course_code = { $regex: course_code, $options: "i" };
           }
           if (course_name && course_name !== course_code) {
             query.course_name = { $regex: course_name, $options: "i" };
+          }
+          if (teacher) {
+            query.teachers = { $regex: teacher, $options: "i" };
           }
         }
         if (

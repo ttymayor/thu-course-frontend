@@ -17,7 +17,7 @@ interface SignInProps {
 
 export default function SignIn({ error, handleSignIn }: SignInProps) {
   return (
-    <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-[80vh] items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex w-full flex-col items-center justify-center text-center">

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Frame from "@/components/school-map/Frame";
 import dynamic from "next/dynamic";
 
 const Map = dynamic(() => import("@/components/school-map/Map"), {
@@ -10,7 +9,7 @@ const Map = dynamic(() => import("@/components/school-map/Map"), {
 
 export default function SchoolMap() {
   return (
-    <Frame>
+    <>
       <Map />
       <div className="text-center">
         <p>
@@ -25,6 +24,6 @@ export default function SchoolMap() {
           </Link>
         </p>
       </div>
-    </Frame>
+    </>
   );
 }
