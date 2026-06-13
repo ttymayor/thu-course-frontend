@@ -5,6 +5,7 @@ import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import SignIn from "@/components/SignIn";
 import { toast } from "sonner";
+import BaseLayout from "@/components/BaseLayout";
 
 function SignInContent() {
   const searchParams = useSearchParams();
@@ -27,7 +28,9 @@ function SignInContent() {
 export default function SignInPage() {
   return (
     <Suspense>
-      <SignInContent />
+      <BaseLayout>
+        <SignInContent />
+      </BaseLayout>
     </Suspense>
   );
 }

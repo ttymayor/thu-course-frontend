@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Profile from "@/components/Profile";
+import BaseLayout from "@/components/BaseLayout";
 
 export default async function ProfilePage() {
   const session = await getSession();
@@ -9,5 +10,9 @@ export default async function ProfilePage() {
     redirect("/auth/signin");
   }
 
-  return <Profile session={session} />;
+  return (
+    <BaseLayout>
+      <Profile session={session} />
+    </BaseLayout>
+  );
 }

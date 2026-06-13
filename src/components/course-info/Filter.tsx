@@ -225,7 +225,7 @@ export default function Filter() {
         >
           <ComboboxInput
             placeholder="搜尋系所..."
-            className="w-full"
+            className="w-full [&>input]:text-sm"
             showClear
           />
           <ComboboxContent>

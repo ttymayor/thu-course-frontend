@@ -39,7 +39,7 @@ export function CourseDetailDialog({
   return (
     <Dialog open={!!courseCode} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="bg-background/95 max-h-[85vh] max-w-[85vw] scrollbar-none overflow-y-auto rounded-3xl p-5 sm:min-w-[80vw]"
+        className="bg-background/50 max-h-[85vh] max-w-[85vw] scrollbar-none overflow-y-auto rounded-3xl p-5 backdrop-blur-lg sm:min-w-[80vw]"
         showCloseButton={false}
         aria-describedby={undefined}
       >

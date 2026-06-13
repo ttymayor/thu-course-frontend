@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import SchoolMap from "@/components/school-map/SchoolMap";
+import BaseLayout from "@/components/BaseLayout";
 
 export const metadata: Metadata = {
   title: "校園地圖",
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function SchoolMapPage() {
-  return <SchoolMap />;
+  return (
+    <BaseLayout>
+      <SchoolMap />
+    </BaseLayout>
+  );
 }

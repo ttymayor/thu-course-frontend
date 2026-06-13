@@ -405,6 +405,7 @@ export default function ScheduleCard({
               >
                 <Download className="h-4 w-4" />
               </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -415,12 +416,9 @@ export default function ScheduleCard({
                     <Settings className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="border-foreground/10 w-auto rounded-lg"
-                >
+                <DropdownMenuContent align="end" className="w-auto">
                   <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-foreground/10" />
+                  <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
                     checked={compactView}
                     onCheckedChange={setCompactView}

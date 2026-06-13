@@ -20,7 +20,7 @@ export function Section({
       whileInView={{ opacity: 1, filter: "blur(0)" }}
       viewport={{ once: true }}
       id={id}
-      className="mb-8 w-full space-y-4"
+      className="flex w-full flex-col items-start gap-4"
     >
       {title && (
         <div className="flex items-center gap-2">

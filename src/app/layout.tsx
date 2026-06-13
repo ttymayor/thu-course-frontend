@@ -80,8 +80,8 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
     >
-      <GoogleAnalytics gaId="G-8CG8PZK1MJ" />
       <body className={`font-sans antialiased`}>
+        <GoogleAnalytics gaId="G-8CG8PZK1MJ" />
         <Toaster richColors />
         <SessionProvider>
           <ThemeColorProvider>

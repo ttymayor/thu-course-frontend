@@ -52,7 +52,7 @@ export default function Map() {
   }, []);
 
   return (
-    <div className="h-[600px] w-full overflow-hidden rounded-lg">
+    <div className="h-150 w-full overflow-hidden rounded-lg">
       <MapContainer
         center={[24.17946276387594, 120.60027705548224]} // 東海大學中間
         zoom={17}
