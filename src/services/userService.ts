@@ -17,15 +17,36 @@ export async function findOrCreateUser({
 }) {
   await connectMongoDB();
 
-  // update fields
-  const updateUser: UpdateQuery<UserDocument> = {};
-  if (name) updateUser.name = name;
-  if (image) updateUser.image = image;
+  const setFields: Partial<Pick<UserDocument, "name" | "image">> = {};
+  if (name) setFields.name = name;
+  if (image) setFields.image = image;
+
+  await User.updateOne({ email }, [
+    {
+      $set: {
+        bookmarks: { $ifNull: ["$bookmarks", []] },
+        schedule: { $ifNull: ["$schedule", []] },
+        bookmark_terms: { $ifNull: ["$bookmark_terms", []] },
+        schedules: { $ifNull: ["$schedules", []] },
+      },
+    },
+  ]);
+
+  const updateUser: UpdateQuery<UserDocument> = {
+    $setOnInsert: {
+      bookmarks: [],
+      schedule: [],
+      bookmark_terms: [],
+      schedules: [],
+    },
+  };
+  if (Object.keys(setFields).length > 0) updateUser.$set = setFields;
 
   const user = await User.findOneAndUpdate({ email }, updateUser, {
     upsert: true,
     returnDocument: "after",
     runValidators: true,
+    setDefaultsOnInsert: true,
   });
 
   return user;
