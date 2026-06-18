@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { getCollectionName } from "@/lib/collectionName";
 
 export interface CourseDocument extends Document {
   academic_year: number;
@@ -34,10 +35,17 @@ export interface CourseDocument extends Document {
 }
 
 const courseSchema = new Schema<CourseDocument>({
+  academic_year: {
+    type: Number,
+    required: true,
+  },
+  academic_semester: {
+    type: Number,
+    required: true,
+  },
   course_code: {
     type: String,
     required: true,
-    unique: true,
   },
   course_name: {
     type: String,
@@ -137,6 +145,15 @@ const courseSchema = new Schema<CourseDocument>({
   },
 });
 
+courseSchema.index(
+  { academic_year: 1, academic_semester: 1, course_code: 1 },
+  { unique: true },
+);
+
 export const Course: Model<CourseDocument> =
   mongoose.models.Course ||
-  mongoose.model<CourseDocument>("Course", courseSchema, "courses");
+  mongoose.model<CourseDocument>(
+    "Course",
+    courseSchema,
+    getCollectionName("courses"),
+  );

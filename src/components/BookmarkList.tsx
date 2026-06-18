@@ -2,6 +2,7 @@
 
 import useBookmark from "@/hooks/useBookmark";
 import BookmarkCard from "@/components/bookmarks/BookmarkCard";
+import { getCourseKey } from "@/lib/courseIdentity";
 
 export default function BookmarkList() {
   const { bookmarks, isLoading } = useBookmark();
@@ -16,7 +17,7 @@ export default function BookmarkList() {
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {bookmarks.length > 0 ? (
         bookmarks.map((bookmark) => (
-          <div key={bookmark.course_code} id={bookmark.course_code}>
+          <div key={getCourseKey(bookmark)} id={getCourseKey(bookmark)}>
             <BookmarkCard course={bookmark} />
           </div>
         ))

@@ -1,19 +1,40 @@
 import { NextResponse } from "next/server";
 import {
-  getBookmarks,
-  addBookmark,
-  removeBookmark,
+  getBookmarksForTerm,
+  addBookmarkForTerm,
+  removeBookmarkForTerm,
 } from "@/services/userService";
 import { rateLimit } from "@/lib/rateLimit";
 import { getEmail } from "@/lib/auth";
+import { getLatestCourseTerm } from "@/services/courseService";
+import { CourseTerm, parseCourseTerm } from "@/lib/courseIdentity";
 
-export async function GET() {
+async function resolveTerm(
+  source: URLSearchParams | Record<string, unknown>,
+): Promise<CourseTerm | null> {
+  const requestedTerm =
+    source instanceof URLSearchParams
+      ? parseCourseTerm(
+          source.get("academic_year"),
+          source.get("academic_semester"),
+        )
+      : parseCourseTerm(source.academic_year, source.academic_semester);
+
+  return requestedTerm ?? getLatestCourseTerm();
+}
+
+export async function GET(request: Request) {
   const email = await getEmail();
   if (!email) return NextResponse.json({ success: false }, { status: 401 });
 
   try {
-    const data = await getBookmarks(email);
-    return NextResponse.json({ success: true, data });
+    const { searchParams } = new URL(request.url);
+    const term = await resolveTerm(searchParams);
+    if (!term)
+      return NextResponse.json({ success: true, data: [], term: null });
+
+    const data = await getBookmarksForTerm(email, term);
+    return NextResponse.json({ success: true, data, term });
   } catch {
     return NextResponse.json(
       { success: false, message: "Failed to fetch bookmarks" },
@@ -29,7 +50,9 @@ export async function POST(req: Request) {
   const email = await getEmail();
   if (!email) return NextResponse.json({ success: false }, { status: 401 });
 
-  const { course_code } = await req.json();
+  const body = await req.json();
+  const term = await resolveTerm(body ?? {});
+  const { course_code } = body;
   if (!course_code || typeof course_code !== "string") {
     return NextResponse.json(
       { success: false, message: "Missing course_code" },
@@ -37,9 +60,16 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!term) {
+    return NextResponse.json(
+      { success: false, message: "Missing academic term" },
+      { status: 400 },
+    );
+  }
+
   try {
-    const data = await addBookmark(email, course_code);
-    return NextResponse.json({ success: true, data });
+    const data = await addBookmarkForTerm(email, term, course_code);
+    return NextResponse.json({ success: true, data, term });
   } catch {
     return NextResponse.json(
       { success: false, message: "Failed to add bookmark" },
@@ -55,7 +85,9 @@ export async function DELETE(req: Request) {
   const email = await getEmail();
   if (!email) return NextResponse.json({ success: false }, { status: 401 });
 
-  const { course_code } = await req.json();
+  const body = await req.json();
+  const term = await resolveTerm(body ?? {});
+  const { course_code } = body;
   if (!course_code || typeof course_code !== "string") {
     return NextResponse.json(
       { success: false, message: "Missing course_code" },
@@ -63,9 +95,16 @@ export async function DELETE(req: Request) {
     );
   }
 
+  if (!term) {
+    return NextResponse.json(
+      { success: false, message: "Missing academic term" },
+      { status: 400 },
+    );
+  }
+
   try {
-    const data = await removeBookmark(email, course_code);
-    return NextResponse.json({ success: true, data });
+    const data = await removeBookmarkForTerm(email, term, course_code);
+    return NextResponse.json({ success: true, data, term });
   } catch {
     return NextResponse.json(
       { success: false, message: "Failed to remove bookmark" },

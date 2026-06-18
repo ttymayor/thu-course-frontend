@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Course } from "@/types/course";
 import ScheduleCard from "@/components/schedule-simulator/ScheduleCard";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
@@ -12,6 +12,12 @@ import useSWR from "swr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
 import type { Session } from "next-auth";
+import {
+  CourseTerm,
+  getConfiguredCourseTerm,
+  getCourseQueryParams,
+  parseTermParams,
+} from "@/lib/courseIdentity";
 
 export default function ScheduleSimulator({
   session = null,
@@ -19,6 +25,23 @@ export default function ScheduleSimulator({
   session?: Session | null;
 }) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { data: termsResult } = useSWR(
+    "/api/course-terms",
+    async (url: string) => fetch(url).then((res) => res.json()),
+  );
+  const terms: CourseTerm[] = useMemo(
+    () => termsResult?.data ?? [],
+    [termsResult?.data],
+  );
+  const selectedTerm = useMemo(
+    () =>
+      parseTermParams(searchParams) ??
+      getConfiguredCourseTerm() ??
+      terms[0] ??
+      null,
+    [searchParams, terms],
+  );
   const {
     selectedCourses,
     setSelectedCourses,
@@ -28,7 +51,7 @@ export default function ScheduleSimulator({
     restoreFromDb,
     isSyncing,
     isDirty,
-  } = useSelectedCourses();
+  } = useSelectedCourses(selectedTerm);
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
   // 從 URL 參數獲取課程代碼
@@ -47,8 +70,8 @@ export default function ScheduleSimulator({
 
   // 使用 SWR 來載入分享的課程
   const { data: sharedCourses, isLoading: isLoadingShared } = useSWR(
-    validCodes.length > 0
-      ? `/api/course-info?${validCodes
+    validCodes.length > 0 && selectedTerm
+      ? `/api/course-info?${getCourseQueryParams(selectedTerm).toString()}&${validCodes
           .map((code) => `course_codes=${encodeURIComponent(code)}`)
           .join("&")}&page_size=100`
       : null,
@@ -80,13 +103,19 @@ export default function ScheduleSimulator({
   const handleImportShared = () => {
     if (sharedCourses) {
       importCourses(sharedCourses);
-      window.history.replaceState({}, "", "/schedule-simulator");
+      const params = selectedTerm
+        ? `?year=${selectedTerm.academic_year}&semester=${selectedTerm.academic_semester}`
+        : "";
+      window.history.replaceState({}, "", `${pathname}${params}`);
     }
   };
 
   const handleRejectShared = () => {
     toast.info("已取消匯入");
-    window.history.replaceState({}, "", "/schedule-simulator");
+    const params = selectedTerm
+      ? `?year=${selectedTerm.academic_year}&semester=${selectedTerm.academic_semester}`
+      : "";
+    window.history.replaceState({}, "", `${pathname}${params}`);
   };
 
   return (
@@ -106,6 +135,8 @@ export default function ScheduleSimulator({
         ) : (
           <Suspense fallback={<CourseListSkeleton />}>
             <CourseSelector
+              terms={terms}
+              selectedTerm={selectedTerm}
               selectedCourses={selectedCourses}
               setSelectedCourses={setSelectedCourses}
               onCourseHover={handleCourseHover}
@@ -130,6 +161,7 @@ export default function ScheduleSimulator({
             isSyncing={isSyncing}
             isDirty={isDirty}
             session={session}
+            selectedTerm={selectedTerm}
           />
         )}
       </div>

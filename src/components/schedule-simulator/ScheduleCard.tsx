@@ -50,9 +50,11 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import ScheduleTable from "./ScheduleTable";
 import type { Session } from "next-auth";
 import Link from "next/link";
+import { CourseTerm } from "@/lib/courseIdentity";
 
 interface ScheduleCardProps {
   selectedCourses: Course[];
+  selectedTerm?: CourseTerm | null;
   hoveredCourse?: Course | null;
   onRemoveCourse?: (courseCode: string) => void;
   isViewingShared?: boolean;
@@ -67,6 +69,7 @@ interface ScheduleCardProps {
 
 export default function ScheduleCard({
   selectedCourses,
+  selectedTerm = null,
   hoveredCourse,
   onRemoveCourse,
   isViewingShared = false,
@@ -194,7 +197,10 @@ export default function ScheduleCard({
       const baseUrl = window.location.origin;
 
       // 直接使用課程代碼作為參數
-      return `${baseUrl}?codes=${courseCodes.join(",")}`;
+      const termQuery = selectedTerm
+        ? `year=${selectedTerm.academic_year}&semester=${selectedTerm.academic_semester}&`
+        : "";
+      return `${baseUrl}?${termQuery}codes=${courseCodes.join(",")}`;
     } catch (error) {
       console.error("創建分享連結失敗:", error);
       toast.error("創建分享連結失敗，請稍後再試");
@@ -444,7 +450,7 @@ export default function ScheduleCard({
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="rounded-lg border">
+        <div className="ring-foreground/10 overflow-hidden rounded-lg ring">
           <ScheduleTable
             tableRef={tableRef}
             days={days}

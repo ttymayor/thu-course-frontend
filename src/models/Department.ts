@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { getCollectionName } from "@/lib/collectionName";
 
 export interface DepartmentDocument extends Document {
   department_code: string;
@@ -36,5 +37,5 @@ export const Department: Model<DepartmentDocument> =
   mongoose.model<DepartmentDocument>(
     "Department",
     departmentSchema,
-    "departments",
+    getCollectionName("departments"),
   );

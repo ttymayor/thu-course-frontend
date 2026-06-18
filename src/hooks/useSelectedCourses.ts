@@ -4,25 +4,37 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
+import { CourseTerm, getTermKey } from "@/lib/courseIdentity";
 
-async function fetchCoursesByCode(codes: string[]): Promise<Course[]> {
-  if (codes.length === 0) return [];
+async function fetchCoursesByCode(
+  codes: string[],
+  term: CourseTerm | null,
+): Promise<Course[]> {
+  if (codes.length === 0 || !term) return [];
   const query = codes
     .map((c) => `course_codes=${encodeURIComponent(c)}`)
     .join("&");
-  const res = await fetch(`/api/course-info?${query}&page_size=100`);
+  const termQuery = `academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`;
+  const res = await fetch(
+    `/api/course-info?${query}&${termQuery}&page_size=100`,
+  );
   const result = await res.json();
   return result.success && result.data ? (result.data as Course[]) : [];
 }
 
-function writeLocalStorage(courses: Course[]) {
+function getStorageKey(term: CourseTerm) {
+  return `selectedCourseCodes:${getTermKey(term)}`;
+}
+
+function writeLocalStorage(courses: Course[], term: CourseTerm | null) {
+  if (!term) return;
   localStorage.setItem(
-    "selectedCourseCodes",
+    getStorageKey(term),
     courses.map((c) => c.course_code).join(","),
   );
 }
 
-export default function useSelectedCourses() {
+export default function useSelectedCourses(term: CourseTerm | null) {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user?.email;
 
@@ -30,7 +42,8 @@ export default function useSelectedCourses() {
   // Tracks what's currently saved in DB so isDirty can be computed dynamically
   const [dbCodes, setDbCodes] = useState<string[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
-  const initializedRef = useRef(false);
+  const initializedTermRef = useRef<string | null>(null);
+  const termStorageKey = term ? getStorageKey(term) : null;
 
   // Dirty when current in-memory schedule differs from what DB has
   const isDirty = useMemo(() => {
@@ -43,26 +56,33 @@ export default function useSelectedCourses() {
   }, [selectedCourses, dbCodes]);
 
   useEffect(() => {
+    if (!term || !termStorageKey) return;
     if (status === "loading") return;
-    if (initializedRef.current) return;
-    initializedRef.current = true;
+    if (initializedTermRef.current === termStorageKey) return;
+    initializedTermRef.current = termStorageKey;
 
-    const storedCodes = localStorage.getItem("selectedCourseCodes");
+    const storedCodes =
+      localStorage.getItem(termStorageKey) ??
+      localStorage.getItem("selectedCourseCodes");
     const localCodes = storedCodes
       ? storedCodes.split(",").filter(Boolean)
       : [];
 
     if (!isAuthenticated) {
       if (localCodes.length > 0) {
-        fetchCoursesByCode(localCodes).then((courses) =>
+        fetchCoursesByCode(localCodes, term).then((courses) =>
           _setSelectedCourses(courses),
         );
+      } else {
+        _setSelectedCourses([]);
       }
       return;
     }
 
     // Authenticated: DB is source of truth; overwrite localStorage on load
-    fetch("/api/schedule")
+    fetch(
+      `/api/schedule?academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`,
+    )
       .then((r) => r.json())
       .then(async (result) => {
         const codes: string[] =
@@ -70,11 +90,12 @@ export default function useSelectedCourses() {
         setDbCodes(codes);
 
         if (codes.length > 0) {
-          const courses = await fetchCoursesByCode(codes);
+          const courses = await fetchCoursesByCode(codes, term);
           _setSelectedCourses(courses);
-          writeLocalStorage(courses);
+          writeLocalStorage(courses, term);
         } else {
-          writeLocalStorage([]);
+          _setSelectedCourses([]);
+          writeLocalStorage([], term);
         }
       })
       .catch(async (err) => {
@@ -86,16 +107,16 @@ export default function useSelectedCourses() {
           description: "已顯示本地儲存的課表，請檢查網路連線。",
         });
         if (localCodes.length > 0) {
-          const courses = await fetchCoursesByCode(localCodes);
+          const courses = await fetchCoursesByCode(localCodes, term);
           _setSelectedCourses(courses);
         }
       });
-  }, [status, isAuthenticated]);
+  }, [status, isAuthenticated, term, termStorageKey]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
   const setSelectedCourses = (courses: Course[]) => {
     _setSelectedCourses(courses);
-    writeLocalStorage(courses);
+    writeLocalStorage(courses, term);
   };
 
   const removeCourse = (courseCode: string) => {
@@ -105,7 +126,7 @@ export default function useSelectedCourses() {
     if (courseToRemove) {
       const next = selectedCourses.filter((c) => c.course_code !== courseCode);
       _setSelectedCourses(next);
-      writeLocalStorage(next);
+      writeLocalStorage(next, term);
 
       toast.info("已移除課程", {
         description: `已將 ${courseToRemove.course_name} 從您的課表中移除。`,
@@ -114,7 +135,7 @@ export default function useSelectedCourses() {
           onClick: () => {
             const restored = [...next, courseToRemove];
             _setSelectedCourses(restored);
-            writeLocalStorage(restored);
+            writeLocalStorage(restored, term);
           },
         },
       });
@@ -123,7 +144,7 @@ export default function useSelectedCourses() {
 
   const importCourses = (courses: Course[]) => {
     _setSelectedCourses(courses);
-    writeLocalStorage(courses);
+    writeLocalStorage(courses, term);
     toast.success("成功匯入課表！", {
       description: `已匯入 ${courses.length} 門課程到您的課表中。`,
     });
@@ -131,13 +152,16 @@ export default function useSelectedCourses() {
 
   const restoreFromDb = async () => {
     try {
-      const res = await fetch("/api/schedule");
+      if (!term) return;
+      const res = await fetch(
+        `/api/schedule?academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`,
+      );
       const result = await res.json();
       const codes: string[] = result.success && result.data ? result.data : [];
-      const courses = await fetchCoursesByCode(codes);
+      const courses = await fetchCoursesByCode(codes, term);
       _setSelectedCourses(courses);
       setDbCodes(codes);
-      writeLocalStorage(courses);
+      writeLocalStorage(courses, term);
     } catch {
       toast.error("復原失敗，請稍後再試");
     }
@@ -151,17 +175,22 @@ export default function useSelectedCourses() {
       return;
     }
 
+    if (!term) {
+      toast.error("尚未選擇學期");
+      return;
+    }
+
     setIsSyncing(true);
     try {
       const codes = selectedCourses.map((c) => c.course_code);
       const res = await fetch("/api/schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ course_codes: codes }),
+        body: JSON.stringify({ course_codes: codes, ...term }),
       });
       if (res.ok) {
         setDbCodes(codes); // isDirty becomes false automatically
-        writeLocalStorage(selectedCourses); // localStorage now matches DB
+        writeLocalStorage(selectedCourses, term); // localStorage now matches DB
         toast.success("課表已同步到雲端");
       } else {
         toast.error("同步失敗，請稍後再試");

@@ -13,7 +13,10 @@ import { Course } from "@/types/course";
 import useBookmark from "@/hooks/useBookmark";
 
 export default function RemoveBookmarkDialog({ course }: { course: Course }) {
-  const { removeBookmark } = useBookmark();
+  const { removeBookmark } = useBookmark({
+    academic_year: course.academic_year,
+    academic_semester: course.academic_semester,
+  });
   return (
     <Dialog>
       <DialogTrigger asChild>

@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { getCourses } from "@/services/courseService";
+import { parseCourseTerm } from "@/lib/courseIdentity";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const requestedTerm = parseCourseTerm(
+    searchParams.get("academic_year"),
+    searchParams.get("academic_semester"),
+  );
   const course_code = searchParams.get("course_code") || "";
   const course_name = searchParams.get("course_name") || "";
   const teacher = searchParams.get("teacher") || "";
@@ -15,7 +20,9 @@ export async function GET(request: Request) {
   const course_codes = searchParams.getAll("course_codes");
 
   try {
-    const { data, total } = await getCourses({
+    const { data, total, term } = await getCourses({
+      academic_year: requestedTerm?.academic_year,
+      academic_semester: requestedTerm?.academic_semester,
       course_code,
       course_name,
       teacher,
@@ -27,7 +34,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json(
-      { success: true, data, total },
+      { success: true, data, total, term },
       {
         headers: {
           "Cache-Control": "public, max-age=3600, s-maxage=3600",

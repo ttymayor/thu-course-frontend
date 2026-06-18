@@ -5,7 +5,12 @@ type ScheduleEntry = {
 };
 
 export function courseTimeParser(input: string): ScheduleEntry[] {
-  const lines = (typeof input === "string" ? input : "")
+  const normalizedInput = (typeof input === "string" ? input : "").trim();
+  if (!normalizedInput || ["無資料", "無", "未定"].includes(normalizedInput)) {
+    return [];
+  }
+
+  const lines = normalizedInput
     .split("\n")
     .filter((line) => line.trim() !== "");
   const results: ScheduleEntry[] = [];
@@ -113,7 +118,12 @@ export function courseTimeParser(input: string): ScheduleEntry[] {
 }
 
 export function courseLocation(input: string): string {
-  const lines = (typeof input === "string" ? input : "")
+  const normalizedInput = (typeof input === "string" ? input : "").trim();
+  if (!normalizedInput || ["無資料", "無", "未定"].includes(normalizedInput)) {
+    return "";
+  }
+
+  const lines = normalizedInput
     .split("\n")
     .filter((line) => line.trim() !== "");
   const results: string[] = [];

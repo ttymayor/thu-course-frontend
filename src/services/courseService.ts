@@ -3,8 +3,11 @@ import connectMongoDB from "@/lib/mongodb";
 // import mongoose from "mongoose";
 import { QueryFilter } from "mongoose";
 import { Course } from "@/types/course";
+import { CourseTerm, dedupeCourseTerms } from "@/lib/courseIdentity";
 
 export interface CourseFilter {
+  academic_year?: number;
+  academic_semester?: number;
   course_code?: string;
   course_name?: string;
   teacher?: string;
@@ -15,7 +18,7 @@ export interface CourseFilter {
   page_size?: number;
 }
 
-async function buildQueryParams(params: CourseFilter) {
+async function buildQueryParams(params: CourseFilter, term: CourseTerm | null) {
   const {
     course_code,
     course_name,
@@ -26,6 +29,11 @@ async function buildQueryParams(params: CourseFilter) {
   } = params;
 
   const query: QueryFilter<CourseDocument> = {} as QueryFilter<CourseDocument>;
+
+  if (term) {
+    query.academic_year = term.academic_year;
+    query.academic_semester = term.academic_semester;
+  }
 
   if (course_codes && course_codes.length > 0) {
     query.course_code = { $in: course_codes };
@@ -120,11 +128,54 @@ async function buildQueryParams(params: CourseFilter) {
   return query;
 }
 
+export async function getCourseTerms(): Promise<CourseTerm[]> {
+  await connectMongoDB();
+  const terms = await CourseModel.aggregate<{
+    _id: CourseTerm;
+  }>([
+    {
+      $group: {
+        _id: {
+          academic_year: "$academic_year",
+          academic_semester: "$academic_semester",
+        },
+      },
+    },
+    { $sort: { "_id.academic_year": -1, "_id.academic_semester": -1 } },
+  ]);
+
+  return dedupeCourseTerms(terms.map((term) => term._id)).sort(
+    (a, b) =>
+      b.academic_year - a.academic_year ||
+      b.academic_semester - a.academic_semester,
+  );
+}
+
+export async function getLatestCourseTerm(): Promise<CourseTerm | null> {
+  const terms = await getCourseTerms();
+  return terms[0] ?? null;
+}
+
+function getRequestedTerm(filter: CourseFilter): CourseTerm | null {
+  if (
+    typeof filter.academic_year === "number" &&
+    typeof filter.academic_semester === "number"
+  ) {
+    return {
+      academic_year: filter.academic_year,
+      academic_semester: filter.academic_semester,
+    };
+  }
+
+  return null;
+}
+
 export async function getCourses(
   filter: CourseFilter = {},
-): Promise<{ data: Course[]; total: number }> {
+): Promise<{ data: Course[]; total: number; term: CourseTerm | null }> {
   await connectMongoDB();
-  const query = await buildQueryParams(filter);
+  const term = getRequestedTerm(filter) ?? (await getLatestCourseTerm());
+  const query = await buildQueryParams(filter, term);
 
   const page = typeof filter.page === "number" ? filter.page : 1;
   const page_size =
@@ -148,14 +199,19 @@ export async function getCourses(
         : [],
   }));
 
-  return { data, total };
+  return { data, total, term };
 }
 
 export async function getCourseByCode(
   course_code: string,
+  term?: CourseTerm | null,
 ): Promise<Course | null> {
   await connectMongoDB();
-  const rawCourse = await CourseModel.findOne({ course_code }).lean();
+  const resolvedTerm = term ?? (await getLatestCourseTerm());
+  const rawCourse = await CourseModel.findOne({
+    ...(resolvedTerm ?? {}),
+    course_code,
+  }).lean();
 
   if (rawCourse) {
     return {

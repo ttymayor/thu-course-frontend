@@ -54,7 +54,7 @@ export default function ScheduleTable({
   showTimeProgress = false,
 }: ScheduleTableProps) {
   const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
-  const [detailCode, setDetailCode] = useState<string | null>(null);
+  const [detailCourse, setDetailCourse] = useState<Course | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -244,9 +244,7 @@ export default function ScheduleTable({
                             >
                               <button
                                 className="flex h-full w-full cursor-pointer flex-col justify-center"
-                                onClick={() =>
-                                  setDetailCode(course.course_code)
-                                }
+                                onClick={() => setDetailCourse(course)}
                               >
                                 <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
                                   {course.course_code}
@@ -283,8 +281,8 @@ export default function ScheduleTable({
         </TableBody>
       </Table>
       <CourseDetailDialog
-        courseCode={detailCode}
-        onClose={() => setDetailCode(null)}
+        course={detailCourse}
+        onClose={() => setDetailCourse(null)}
       />
     </>
   );

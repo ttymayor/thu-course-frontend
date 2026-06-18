@@ -70,7 +70,7 @@ export default function BookmarkCard({ course }: { course: Course }) {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Link
-          href={`/course-info/${course.course_code}`}
+          href={`/course-info/term/${course.academic_year}/${course.academic_semester}/${course.course_code}`}
           prefetch={false}
           className="group"
         >

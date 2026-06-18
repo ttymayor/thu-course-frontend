@@ -1,15 +1,39 @@
 import { NextResponse } from "next/server";
-import { getSchedule, saveSchedule } from "@/services/userService";
+import {
+  getScheduleForTerm,
+  saveScheduleForTerm,
+} from "@/services/userService";
 import { rateLimit } from "@/lib/rateLimit";
 import { getEmail } from "@/lib/auth";
+import { getLatestCourseTerm } from "@/services/courseService";
+import { CourseTerm, parseCourseTerm } from "@/lib/courseIdentity";
 
-export async function GET() {
+async function resolveTerm(
+  source: URLSearchParams | Record<string, unknown>,
+): Promise<CourseTerm | null> {
+  const requestedTerm =
+    source instanceof URLSearchParams
+      ? parseCourseTerm(
+          source.get("academic_year"),
+          source.get("academic_semester"),
+        )
+      : parseCourseTerm(source.academic_year, source.academic_semester);
+
+  return requestedTerm ?? getLatestCourseTerm();
+}
+
+export async function GET(request: Request) {
   const email = await getEmail();
   if (!email) return NextResponse.json({ success: false }, { status: 401 });
 
   try {
-    const data = await getSchedule(email);
-    return NextResponse.json({ success: true, data });
+    const { searchParams } = new URL(request.url);
+    const term = await resolveTerm(searchParams);
+    if (!term)
+      return NextResponse.json({ success: true, data: [], term: null });
+
+    const data = await getScheduleForTerm(email, term);
+    return NextResponse.json({ success: true, data, term });
   } catch {
     return NextResponse.json(
       { success: false, message: "Failed to fetch schedule" },
@@ -27,6 +51,7 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const course_codes: unknown = body?.course_codes;
+  const term = await resolveTerm(body ?? {});
 
   if (
     !Array.isArray(course_codes) ||
@@ -38,9 +63,20 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!term) {
+    return NextResponse.json(
+      { success: false, message: "Missing academic term" },
+      { status: 400 },
+    );
+  }
+
   try {
-    const data = await saveSchedule(email, course_codes as string[]);
-    return NextResponse.json({ success: true, data });
+    const data = await saveScheduleForTerm(
+      email,
+      term,
+      course_codes as string[],
+    );
+    return NextResponse.json({ success: true, data, term });
   } catch {
     return NextResponse.json(
       { success: false, message: "Failed to save schedule" },

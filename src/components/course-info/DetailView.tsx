@@ -59,7 +59,10 @@ function InfoBox({
 }
 
 export default function DetailView({ courseInfo }: { courseInfo: Course }) {
-  const { addBookmark, isBookmarked, removeBookmark } = useBookmark();
+  const { addBookmark, isBookmarked, removeBookmark } = useBookmark({
+    academic_year: courseInfo.academic_year,
+    academic_semester: courseInfo.academic_semester,
+  });
 
   return (
     <>
