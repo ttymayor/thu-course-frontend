@@ -7,7 +7,11 @@ import connectMongoDB from "@/lib/mongodb";
 // import mongoose from "mongoose";
 import { QueryFilter } from "mongoose";
 import { Course } from "@/types/course";
-import { CourseTerm, dedupeCourseTerms } from "@/lib/courseIdentity";
+import {
+  CourseTerm,
+  dedupeCourseTerms,
+  getCourseKey,
+} from "@/lib/courseIdentity";
 
 async function connectCourseCollection() {
   await connectMongoDB();
@@ -25,6 +29,23 @@ export interface CourseFilter {
   course_codes?: string[];
   page?: number;
   page_size?: number;
+}
+
+export interface CourseCodesForTerm extends CourseTerm {
+  course_codes: string[];
+}
+
+function normalizeCourse(course: CourseDocument): Course {
+  return {
+    ...course,
+    _id: course._id.toString(),
+    teachers:
+      course.teachers && Array.isArray(course.teachers)
+        ? course.teachers.filter(
+            (teacher) => teacher && teacher.trim().length > 0,
+          )
+        : [],
+  };
 }
 
 async function buildQueryParams(params: CourseFilter, term: CourseTerm | null) {
@@ -197,16 +218,7 @@ export async function getCourses(
     .limit(page_size)
     .lean();
 
-  const data = rawData.map((course) => ({
-    ...course,
-    _id: course._id.toString(),
-    teachers:
-      course.teachers && Array.isArray(course.teachers)
-        ? course.teachers.filter(
-            (teacher) => teacher && teacher.trim().length > 0,
-          )
-        : [],
-  }));
+  const data = rawData.map(normalizeCourse);
 
   return { data, total, term };
 }
@@ -223,17 +235,47 @@ export async function getCourseByCode(
   }).lean();
 
   if (rawCourse) {
-    return {
-      ...rawCourse,
-      _id: rawCourse._id.toString(),
-      teachers:
-        rawCourse.teachers && Array.isArray(rawCourse.teachers)
-          ? rawCourse.teachers.filter(
-              (teacher) => teacher && teacher.trim().length > 0,
-            )
-          : [],
-    };
+    return normalizeCourse(rawCourse);
   }
 
   return null;
+}
+
+export async function getCoursesForTermCodes(
+  termCodes: CourseCodesForTerm[],
+): Promise<Course[]> {
+  await connectCourseCollection();
+
+  const normalizedTermCodes = termCodes
+    .map((term) => ({
+      academic_year: term.academic_year,
+      academic_semester: term.academic_semester,
+      course_codes: Array.from(new Set(term.course_codes ?? [])),
+    }))
+    .filter((term) => term.course_codes.length > 0);
+
+  if (normalizedTermCodes.length === 0) return [];
+
+  const rawData = await CourseModel.find({
+    $or: normalizedTermCodes.map((term) => ({
+      academic_year: term.academic_year,
+      academic_semester: term.academic_semester,
+      course_code: { $in: term.course_codes },
+    })),
+  }).lean();
+  const coursesByKey = new Map(
+    rawData.map((course) => {
+      const normalizedCourse = normalizeCourse(course);
+      return [getCourseKey(normalizedCourse), normalizedCourse];
+    }),
+  );
+
+  return normalizedTermCodes.flatMap((term) =>
+    term.course_codes.flatMap((courseCode) => {
+      const course = coursesByKey.get(
+        `${term.academic_year}-${term.academic_semester}-${courseCode}`,
+      );
+      return course ? [course] : [];
+    }),
+  );
 }

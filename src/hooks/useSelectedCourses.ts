@@ -49,7 +49,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   const [dbCodes, setDbCodes] = useState<string[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const initializedTermRef = useRef<string | null>(null);
+  const loadingTermRef = useRef<string | null>(null);
   const termStorageKey = term ? getStorageKey(term) : null;
+  const termAcademicYear = term?.academic_year ?? null;
+  const termAcademicSemester = term?.academic_semester ?? null;
 
   // Dirty when current in-memory schedule differs from what DB has
   const isDirty = useMemo(() => {
@@ -62,16 +65,33 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   }, [selectedCourses, dbCodes]);
 
   useEffect(() => {
-    if (!term || !termStorageKey) return;
+    if (
+      !termStorageKey ||
+      termAcademicYear === null ||
+      termAcademicSemester === null
+    )
+      return;
     if (status === "loading") return;
-    if (initializedTermRef.current === termStorageKey) return;
-    initializedTermRef.current = termStorageKey;
+
+    const activeTerm: CourseTerm = {
+      academic_year: termAcademicYear,
+      academic_semester: termAcademicSemester,
+    };
+    const initializationKey = `${termStorageKey}:${
+      isAuthenticated ? "authenticated" : "local"
+    }`;
+    if (initializedTermRef.current === initializationKey) return;
 
     const abortController = new AbortController();
-    const activeTermStorageKey = termStorageKey;
+    loadingTermRef.current = initializationKey;
     const isCurrentTerm = () =>
       !abortController.signal.aborted &&
-      initializedTermRef.current === activeTermStorageKey;
+      loadingTermRef.current === initializationKey;
+    const markInitialized = () => {
+      if (isCurrentTerm()) {
+        initializedTermRef.current = initializationKey;
+      }
+    };
 
     const storedCodes =
       localStorage.getItem(termStorageKey) ??
@@ -82,22 +102,26 @@ export default function useSelectedCourses(term: CourseTerm | null) {
 
     if (!isAuthenticated) {
       if (localCodes.length > 0) {
-        fetchCoursesByCode(localCodes, term, abortController.signal)
+        fetchCoursesByCode(localCodes, activeTerm, abortController.signal)
           .then((courses) => {
-            if (isCurrentTerm()) _setSelectedCourses(courses);
+            if (isCurrentTerm()) {
+              _setSelectedCourses(courses);
+              markInitialized();
+            }
           })
           .catch((err) => {
             if (!isAbortError(err)) throw err;
           });
       } else {
         _setSelectedCourses([]);
+        markInitialized();
       }
       return () => abortController.abort();
     }
 
     // Authenticated: DB is source of truth; overwrite localStorage on load
     fetch(
-      `/api/schedule?academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`,
+      `/api/schedule?academic_year=${activeTerm.academic_year}&academic_semester=${activeTerm.academic_semester}`,
       { signal: abortController.signal },
     )
       .then((r) => r.json())
@@ -111,15 +135,17 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         if (codes.length > 0) {
           const courses = await fetchCoursesByCode(
             codes,
-            term,
+            activeTerm,
             abortController.signal,
           );
           if (!isCurrentTerm()) return;
           _setSelectedCourses(courses);
-          writeLocalStorage(courses, term);
+          writeLocalStorage(courses, activeTerm);
+          markInitialized();
         } else {
           _setSelectedCourses([]);
-          writeLocalStorage([], term);
+          writeLocalStorage([], activeTerm);
+          markInitialized();
         }
       })
       .catch(async (err) => {
@@ -135,15 +161,24 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         if (localCodes.length > 0) {
           const courses = await fetchCoursesByCode(
             localCodes,
-            term,
+            activeTerm,
             abortController.signal,
           );
-          if (isCurrentTerm()) _setSelectedCourses(courses);
+          if (isCurrentTerm()) {
+            _setSelectedCourses(courses);
+            markInitialized();
+          }
         }
       });
 
     return () => abortController.abort();
-  }, [status, isAuthenticated, term, termStorageKey]);
+  }, [
+    status,
+    isAuthenticated,
+    termStorageKey,
+    termAcademicYear,
+    termAcademicSemester,
+  ]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
   const setSelectedCourses = (courses: Course[]) => {

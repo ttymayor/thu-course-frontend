@@ -450,7 +450,7 @@ export default function ScheduleCard({
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="ring-foreground/10 overflow-hidden rounded-lg ring">
+        <div className="ring-foreground/3 overflow-hidden rounded-lg ring">
           <ScheduleTable
             tableRef={tableRef}
             days={days}

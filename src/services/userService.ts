@@ -227,6 +227,43 @@ export async function getBookmarksForTerm(
   );
 }
 
+export async function getBookmarkTerms(
+  email: string,
+): Promise<TermCourseCodes[]> {
+  await connectMongoDB();
+  const user = (await User.findOne(
+    { email },
+    { bookmarks: 1, bookmark_terms: 1 },
+  ).lean()) as UserDocument | null;
+  const bookmarkTerms = (user?.bookmark_terms ?? []) as TermCourseCodes[];
+
+  const entries = bookmarkTerms
+    .map((entry) => ({
+      academic_year: entry.academic_year,
+      academic_semester: entry.academic_semester,
+      course_codes: Array.from(new Set(entry.course_codes ?? [])),
+    }))
+    .filter((entry) => entry.course_codes.length > 0);
+
+  if (
+    legacyTerm &&
+    (user?.bookmarks?.length ?? 0) > 0 &&
+    !bookmarkTerms.some((entry) => isSameTerm(entry, legacyTerm))
+  ) {
+    entries.push({
+      academic_year: legacyTerm.academic_year,
+      academic_semester: legacyTerm.academic_semester,
+      course_codes: Array.from(new Set(user?.bookmarks ?? [])),
+    });
+  }
+
+  return entries.sort(
+    (a, b) =>
+      b.academic_year - a.academic_year ||
+      b.academic_semester - a.academic_semester,
+  );
+}
+
 export async function addBookmarkForTerm(
   email: string,
   term: CourseTerm,

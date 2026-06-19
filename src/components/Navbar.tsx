@@ -66,7 +66,7 @@ export default function Navbar() {
 
   return (
     <div className="fixed bottom-0 z-50 w-full sm:sticky sm:top-0 sm:p-4">
-      <div className="border-muted bg-foreground/5 mx-auto flex h-16 max-w-7xl items-center justify-center rounded-none border-t border-t-white/10 px-4 py-2 backdrop-blur-lg sm:h-fit sm:rounded">
+      <div className="border-muted bg-foreground/5 mx-auto flex h-16 max-w-7xl items-center justify-center rounded-none border-t border-t-white/10 px-4 py-2 backdrop-blur-lg sm:h-fit sm:rounded-md">
         {/* 桌面版導航 */}
         <div className="mr-4 hidden sm:flex">
           <Link className="mr-6 flex items-center space-x-2" href="/">

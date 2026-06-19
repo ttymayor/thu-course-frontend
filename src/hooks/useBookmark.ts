@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import useSWR from "swr";
+import useSWR, { mutate as mutateGlobal } from "swr";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
 import {
@@ -71,6 +71,7 @@ export default function useBookmark(activeTerm?: CourseTerm) {
       });
       if (res.ok) {
         mutateCodes();
+        mutateGlobal("/api/bookmarks/courses");
         toast.success("已加入書籤");
       } else {
         mutateCodes({ data: bookmarkCodes }, false);
@@ -106,6 +107,7 @@ export default function useBookmark(activeTerm?: CourseTerm) {
       });
       if (res.ok) {
         mutateCodes();
+        mutateGlobal("/api/bookmarks/courses");
         toast.success("已移除書籤");
       } else {
         mutateCodes({ data: bookmarkCodes }, false);

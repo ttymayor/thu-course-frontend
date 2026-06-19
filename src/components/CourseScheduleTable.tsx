@@ -102,12 +102,12 @@ function CourseScheduleTimeline({
                 <div className="bg-foreground/10 absolute top-7.5 -bottom-7 w-px" />
               )}
               <div
-                className={`bg-muted-foreground relative z-10 size-2.5 rounded-full ${isFirst ? "bg-white" : "bg-gray-400"}`}
+                className={`bg-muted-foreground relative z-10 size-2.5 rounded-full`}
               />
             </div>
 
             <div
-              className={`ring-foreground/10 min-w-0 rounded-sm p-3 ring-1 ${isFirst ? "bg-white/5 " : "bg-card/90"}`}
+              className={`ring-foreground/10 min-w-0 rounded-sm p-3 ring-1 ${isFirst ? "bg-white/5 " : "bg-card/5"}`}
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <p className="min-w-0 text-sm font-medium wrap-break-word">
