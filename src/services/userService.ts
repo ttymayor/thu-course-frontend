@@ -72,6 +72,7 @@ export async function getBookmarks(email: string): Promise<string[]> {
 }
 
 const legacyTerm = getConfiguredCourseTerm();
+const termUpdateRetryLimit = 5;
 
 function getLegacyCodesForTerm(
   legacyCodes: string[] | undefined,
@@ -132,6 +133,84 @@ async function updateTermCodes(
   return nextCodes;
 }
 
+async function updateBookmarkTermCodes(
+  email: string,
+  term: CourseTerm,
+  update: (courseCodes: string[]) => string[],
+) {
+  await connectMongoDB();
+
+  for (let attempt = 0; attempt < termUpdateRetryLimit; attempt += 1) {
+    const user = (await User.findOne(
+      { email },
+      { bookmarks: 1, bookmark_terms: 1 },
+    ).lean()) as UserDocument | null;
+
+    if (!user) {
+      await User.updateOne(
+        { email },
+        {
+          $setOnInsert: {
+            bookmarks: [],
+            schedule: [],
+            bookmark_terms: [],
+            schedules: [],
+          },
+        },
+        { upsert: true },
+      );
+      continue;
+    }
+
+    const previousEntries = [
+      ...((user.bookmark_terms ?? []) as TermCourseCodes[]),
+    ];
+    const entries = previousEntries.map((entry) => ({
+      academic_year: entry.academic_year,
+      academic_semester: entry.academic_semester,
+      course_codes: [...(entry.course_codes ?? [])],
+    }));
+    const index = entries.findIndex(
+      (entry) =>
+        entry.academic_year === term.academic_year &&
+        entry.academic_semester === term.academic_semester,
+    );
+    const currentCodes =
+      index >= 0
+        ? entries[index].course_codes
+        : (getLegacyCodesForTerm(user.bookmarks, term) ?? []);
+    const nextCodes = Array.from(new Set(update(currentCodes)));
+
+    if (index >= 0) {
+      entries[index] = { ...entries[index], course_codes: nextCodes };
+    } else {
+      entries.push({
+        academic_year: term.academic_year,
+        academic_semester: term.academic_semester,
+        course_codes: nextCodes,
+      });
+    }
+
+    const filter =
+      previousEntries.length > 0
+        ? { email, bookmark_terms: previousEntries }
+        : {
+            email,
+            $or: [
+              { bookmark_terms: previousEntries },
+              { bookmark_terms: { $exists: false } },
+            ],
+          };
+    const result = await User.updateOne(filter, {
+      $set: { bookmark_terms: entries },
+    });
+
+    if (result.matchedCount > 0) return nextCodes;
+  }
+
+  throw new Error("Could not update bookmark_terms after concurrent changes");
+}
+
 export async function getBookmarksForTerm(
   email: string,
   term: CourseTerm,
@@ -153,7 +232,7 @@ export async function addBookmarkForTerm(
   term: CourseTerm,
   courseCode: string,
 ): Promise<string[]> {
-  return updateTermCodes(email, "bookmark_terms", term, (courseCodes) => [
+  return updateBookmarkTermCodes(email, term, (courseCodes) => [
     ...courseCodes,
     courseCode,
   ]);
@@ -164,7 +243,7 @@ export async function removeBookmarkForTerm(
   term: CourseTerm,
   courseCode: string,
 ): Promise<string[]> {
-  return updateTermCodes(email, "bookmark_terms", term, (courseCodes) =>
+  return updateBookmarkTermCodes(email, term, (courseCodes) =>
     courseCodes.filter((code) => code !== courseCode),
   );
 }

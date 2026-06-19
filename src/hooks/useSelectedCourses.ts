@@ -9,6 +9,7 @@ import { CourseTerm, getTermKey } from "@/lib/courseIdentity";
 async function fetchCoursesByCode(
   codes: string[],
   term: CourseTerm | null,
+  signal?: AbortSignal,
 ): Promise<Course[]> {
   if (codes.length === 0 || !term) return [];
   const query = codes
@@ -17,6 +18,7 @@ async function fetchCoursesByCode(
   const termQuery = `academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`;
   const res = await fetch(
     `/api/course-info?${query}&${termQuery}&page_size=100`,
+    { signal },
   );
   const result = await res.json();
   return result.success && result.data ? (result.data as Course[]) : [];
@@ -32,6 +34,10 @@ function writeLocalStorage(courses: Course[], term: CourseTerm | null) {
     getStorageKey(term),
     courses.map((c) => c.course_code).join(","),
   );
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
 }
 
 export default function useSelectedCourses(term: CourseTerm | null) {
@@ -61,6 +67,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     if (initializedTermRef.current === termStorageKey) return;
     initializedTermRef.current = termStorageKey;
 
+    const abortController = new AbortController();
+    const activeTermStorageKey = termStorageKey;
+    const isCurrentTerm = () =>
+      !abortController.signal.aborted &&
+      initializedTermRef.current === activeTermStorageKey;
+
     const storedCodes =
       localStorage.getItem(termStorageKey) ??
       localStorage.getItem("selectedCourseCodes");
@@ -70,27 +82,39 @@ export default function useSelectedCourses(term: CourseTerm | null) {
 
     if (!isAuthenticated) {
       if (localCodes.length > 0) {
-        fetchCoursesByCode(localCodes, term).then((courses) =>
-          _setSelectedCourses(courses),
-        );
+        fetchCoursesByCode(localCodes, term, abortController.signal)
+          .then((courses) => {
+            if (isCurrentTerm()) _setSelectedCourses(courses);
+          })
+          .catch((err) => {
+            if (!isAbortError(err)) throw err;
+          });
       } else {
         _setSelectedCourses([]);
       }
-      return;
+      return () => abortController.abort();
     }
 
     // Authenticated: DB is source of truth; overwrite localStorage on load
     fetch(
       `/api/schedule?academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`,
+      { signal: abortController.signal },
     )
       .then((r) => r.json())
       .then(async (result) => {
+        if (!isCurrentTerm()) return;
+
         const codes: string[] =
           result.success && result.data ? result.data : [];
         setDbCodes(codes);
 
         if (codes.length > 0) {
-          const courses = await fetchCoursesByCode(codes, term);
+          const courses = await fetchCoursesByCode(
+            codes,
+            term,
+            abortController.signal,
+          );
+          if (!isCurrentTerm()) return;
           _setSelectedCourses(courses);
           writeLocalStorage(courses, term);
         } else {
@@ -99,6 +123,8 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         }
       })
       .catch(async (err) => {
+        if (isAbortError(err)) return;
+
         console.error(
           "[useSelectedCourses] Failed to fetch schedule from DB:",
           err,
@@ -107,10 +133,16 @@ export default function useSelectedCourses(term: CourseTerm | null) {
           description: "已顯示本地儲存的課表，請檢查網路連線。",
         });
         if (localCodes.length > 0) {
-          const courses = await fetchCoursesByCode(localCodes, term);
-          _setSelectedCourses(courses);
+          const courses = await fetchCoursesByCode(
+            localCodes,
+            term,
+            abortController.signal,
+          );
+          if (isCurrentTerm()) _setSelectedCourses(courses);
         }
       });
+
+    return () => abortController.abort();
   }, [status, isAuthenticated, term, termStorageKey]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
