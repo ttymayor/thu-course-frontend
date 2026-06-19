@@ -34,6 +34,13 @@ export interface CourseDocument extends Document {
   teaching_goal: string;
 }
 
+const courseTermIndex = {
+  academic_year: 1,
+  academic_semester: 1,
+  course_code: 1,
+} as const;
+const courseTermIndexName = "academic_term_course_code_unique";
+
 const courseSchema = new Schema<CourseDocument>({
   academic_year: {
     type: Number,
@@ -145,10 +152,10 @@ const courseSchema = new Schema<CourseDocument>({
   },
 });
 
-courseSchema.index(
-  { academic_year: 1, academic_semester: 1, course_code: 1 },
-  { unique: true },
-);
+courseSchema.index(courseTermIndex, {
+  unique: true,
+  name: courseTermIndexName,
+});
 
 export const Course: Model<CourseDocument> =
   mongoose.models.Course ||
@@ -157,3 +164,39 @@ export const Course: Model<CourseDocument> =
     courseSchema,
     getCollectionName("courses"),
   );
+
+let courseIndexSyncPromise: Promise<void> | null = null;
+
+function isLegacyCourseCodeIndex(index: {
+  key?: Record<string, unknown>;
+  unique?: boolean;
+}) {
+  const keys = Object.keys(index.key ?? {});
+  return (
+    index.unique === true && keys.length === 1 && index.key?.course_code === 1
+  );
+}
+
+export async function syncCourseIndexes() {
+  courseIndexSyncPromise ??= (async () => {
+    const indexes = await Course.collection.indexes();
+    const legacyIndexes = indexes.filter(
+      (index) =>
+        index.name && index.name !== "_id_" && isLegacyCourseCodeIndex(index),
+    );
+
+    for (const index of legacyIndexes) {
+      await Course.collection.dropIndex(index.name as string);
+    }
+
+    await Course.collection.createIndex(courseTermIndex, {
+      unique: true,
+      name: courseTermIndexName,
+    });
+  })().catch((error) => {
+    courseIndexSyncPromise = null;
+    throw error;
+  });
+
+  return courseIndexSyncPromise;
+}

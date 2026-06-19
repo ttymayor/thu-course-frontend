@@ -1,9 +1,18 @@
-import { Course as CourseModel, CourseDocument } from "@/models/Course";
+import {
+  Course as CourseModel,
+  CourseDocument,
+  syncCourseIndexes,
+} from "@/models/Course";
 import connectMongoDB from "@/lib/mongodb";
 // import mongoose from "mongoose";
 import { QueryFilter } from "mongoose";
 import { Course } from "@/types/course";
 import { CourseTerm, dedupeCourseTerms } from "@/lib/courseIdentity";
+
+async function connectCourseCollection() {
+  await connectMongoDB();
+  await syncCourseIndexes();
+}
 
 export interface CourseFilter {
   academic_year?: number;
@@ -129,7 +138,7 @@ async function buildQueryParams(params: CourseFilter, term: CourseTerm | null) {
 }
 
 export async function getCourseTerms(): Promise<CourseTerm[]> {
-  await connectMongoDB();
+  await connectCourseCollection();
   const terms = await CourseModel.aggregate<{
     _id: CourseTerm;
   }>([
@@ -173,7 +182,7 @@ function getRequestedTerm(filter: CourseFilter): CourseTerm | null {
 export async function getCourses(
   filter: CourseFilter = {},
 ): Promise<{ data: Course[]; total: number; term: CourseTerm | null }> {
-  await connectMongoDB();
+  await connectCourseCollection();
   const term = getRequestedTerm(filter) ?? (await getLatestCourseTerm());
   const query = await buildQueryParams(filter, term);
 
@@ -206,7 +215,7 @@ export async function getCourseByCode(
   course_code: string,
   term?: CourseTerm | null,
 ): Promise<Course | null> {
-  await connectMongoDB();
+  await connectCourseCollection();
   const resolvedTerm = term ?? (await getLatestCourseTerm());
   const rawCourse = await CourseModel.findOne({
     ...(resolvedTerm ?? {}),

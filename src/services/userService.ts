@@ -1,7 +1,11 @@
 import { User, UserDocument, TermCourseCodes } from "@/models/User";
 import connectMongoDB from "@/lib/mongodb";
 import { UpdateQuery } from "mongoose";
-import { CourseTerm } from "@/lib/courseIdentity";
+import {
+  CourseTerm,
+  getConfiguredCourseTerm,
+  isSameTerm,
+} from "@/lib/courseIdentity";
 
 /**
  * 根據 email 查找或創建用戶
@@ -67,6 +71,15 @@ export async function getBookmarks(email: string): Promise<string[]> {
   return (user as UserDocument | null)?.bookmarks ?? [];
 }
 
+const legacyTerm = getConfiguredCourseTerm();
+
+function getLegacyCodesForTerm(
+  legacyCodes: string[] | undefined,
+  term: CourseTerm,
+) {
+  return legacyTerm && isSameTerm(term, legacyTerm) ? legacyCodes : undefined;
+}
+
 function getTermCodes(
   entries: TermCourseCodes[] | undefined,
   legacyCodes: string[] | undefined,
@@ -78,7 +91,9 @@ function getTermCodes(
       entry.academic_semester === term.academic_semester,
   );
 
-  return termEntry?.course_codes ?? legacyCodes ?? [];
+  return (
+    termEntry?.course_codes ?? getLegacyCodesForTerm(legacyCodes, term) ?? []
+  );
 }
 
 async function updateTermCodes(
@@ -88,16 +103,19 @@ async function updateTermCodes(
   update: (courseCodes: string[]) => string[],
 ) {
   await connectMongoDB();
-  const user = await User.findOne({ email }).lean();
-  const entries = [
-    ...(((user as UserDocument | null)?.[field] ?? []) as TermCourseCodes[]),
-  ];
+  const user = (await User.findOne({ email }).lean()) as UserDocument | null;
+  const entries = [...((user?.[field] ?? []) as TermCourseCodes[])];
+  const legacyCodes =
+    field === "bookmark_terms" ? user?.bookmarks : user?.schedule;
   const index = entries.findIndex(
     (entry) =>
       entry.academic_year === term.academic_year &&
       entry.academic_semester === term.academic_semester,
   );
-  const currentCodes = index >= 0 ? entries[index].course_codes : [];
+  const currentCodes =
+    index >= 0
+      ? entries[index].course_codes
+      : (getLegacyCodesForTerm(legacyCodes, term) ?? []);
   const nextCodes = Array.from(new Set(update(currentCodes)));
 
   if (index >= 0) {
