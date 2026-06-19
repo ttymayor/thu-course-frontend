@@ -8,28 +8,34 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { Course } from "@/types/course";
 import useBookmark from "@/hooks/useBookmark";
+import { Badge } from "../ui/badge";
 
 export default function RemoveBookmarkDialog({ course }: { course: Course }) {
-  const { removeBookmark } = useBookmark();
+  const { isBookmarked, removeBookmark } = useBookmark({
+    academic_year: course.academic_year,
+    academic_semester: course.academic_semester,
+  });
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="sm" className="cursor-pointer">
-          移除
-          <Trash className="h-4 w-4" />
+        <Button variant="ghost" size={"icon-sm"}>
+          <Bookmark fill={isBookmarked(course) ? "currentColor" : "none"} />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            移除「
-            <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+          <DialogTitle className="inline-flex items-center gap-2">
+            移除
+            <Badge
+              variant="outline"
+              className="border-foreground/10 self-start px-1.5 font-mono text-[10px]"
+            >
               {course.course_code}
-            </code>{" "}
-            - {course.course_name}」的書籤
+            </Badge>
+            {course.course_name} 的書籤
           </DialogTitle>
           <DialogDescription>你確定要移除這個課程的書籤嗎？</DialogDescription>
         </DialogHeader>

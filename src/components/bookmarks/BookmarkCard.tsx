@@ -4,13 +4,12 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
+  CardAction,
 } from "@/components/ui/card";
-import { Bookmark, ExternalLink } from "lucide-react";
+import { Clock, MapPin, Star, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Course } from "@/types/course";
 import { CourseTypeMap } from "@/components/course-info/types";
 import RemoveBookmarkDialog from "@/components/bookmarks/RemoveBookmarkDialog";
@@ -22,65 +21,81 @@ const courseTypeMap: CourseTypeMap = {
 };
 
 export default function BookmarkCard({ course }: { course: Course }) {
-  return (
-    <Card className="group relative h-full overflow-hidden">
-      <Bookmark className="text-muted absolute -top-20 -right-20 size-60 transition-all group-hover:fill-current" />
+  const parsedClassTimes = courseTimeParser(course.basic_info.class_time);
 
-      <CardHeader className="relative z-10">
+  return (
+    <Card>
+      <CardHeader>
         <CardTitle className="flex flex-col gap-2">
           <h1 className="flex items-center gap-2 text-base font-bold">
-            <code className="bg-muted rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+            <Badge
+              variant="outline"
+              className="border-foreground/10 self-start px-1.5 font-mono text-[10px]"
+            >
               {course.course_code}
-            </code>{" "}
-            {course.course_name ? `${course.course_name} ` : "-"}
-            <Badge variant={"secondary"} className="text-xs">
-              {courseTypeMap[course.course_type] || course.course_type}{" "}
-              {course.credits_1}-{course.credits_2}
             </Badge>
+            <Link
+              href={`/course-info/term/${course.academic_year}/${course.academic_semester}/${course.course_code}`}
+              className="line-clamp-2 underline-offset-4 hover:underline"
+            >
+              {course.course_name}
+            </Link>
           </h1>
         </CardTitle>
         <CardDescription>
           <div className="flex flex-wrap gap-2">
-            {course.teachers.map((teacher, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {teacher}
-              </Badge>
-            ))}
+            <Badge variant="ghost" className="text-xs">
+              {course.academic_year} 學年度第 {course.academic_semester} 學期
+            </Badge>
           </div>
         </CardDescription>
+        <CardAction>
+          <RemoveBookmarkDialog course={course} />
+        </CardAction>
       </CardHeader>
-      <CardContent className="relative z-10">
-        <ul className="list-none [&>li]:my-2">
-          <li className="">
-            上課時間：
-            {courseTimeParser(course.basic_info.class_time || "").map(
-              (entry, index) => (
-                <span key={entry.day}>
-                  {index > 0 && "、"}
-                  {entry.day} {entry.periods.join(", ")}
-                  {entry.location && `［${entry.location}］`}
-                </span>
-              ),
-            )}
-          </li>
-          <li>修課對象：{course.basic_info.target_class || "-"}</li>
-          <li>修課年級：{course.basic_info.target_grade || "-"}</li>
-          <li>選課說明：{course.basic_info.enrollment_notes || "-"}</li>
-        </ul>
+      <CardContent>
+        <div className="text-muted-foreground flex flex-col gap-2 text-sm">
+          <div className="flex items-center gap-2.5">
+            <Star className="text-primary/70 size-4 shrink-0" />
+            <span className="truncate">
+              {courseTypeMap[course.course_type] || course.course_type}{" "}
+              {course.credits_1} - {course.credits_2}
+            </span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <User className="text-primary/70 size-4 shrink-0" />
+            <span className="truncate">
+              {course.teachers?.length ? course.teachers.join("、") : "未定"}
+            </span>
+          </div>
+          {parsedClassTimes.length > 0 && (
+            <div className="flex items-start gap-2.5">
+              <Clock className="text-primary/70 mt-0.5 size-4 shrink-0" />
+              <div className="flex flex-col gap-y-1">
+                {parsedClassTimes.map((entry, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-wrap items-center gap-x-2"
+                  >
+                    <span>
+                      {entry.day} {entry.periods.join(", ")}
+                    </span>
+                    {entry.location && (
+                      <Badge
+                        variant="ghost"
+                        className="border-foreground/10 px-1.5 text-[10px] [&>svg]:size-2.5"
+                      >
+                        <MapPin />
+                        {entry.location}
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Link
-          href={`/course-info/${course.course_code}`}
-          prefetch={false}
-          className="group"
-        >
-          <Button variant="secondary" size="sm" className="cursor-pointer">
-            查看課程
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </Link>
-        <RemoveBookmarkDialog course={course} />
-      </CardFooter>
     </Card>
   );
 }

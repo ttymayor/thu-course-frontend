@@ -54,7 +54,7 @@ export default function ScheduleTable({
   showTimeProgress = false,
 }: ScheduleTableProps) {
   const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
-  const [detailCode, setDetailCode] = useState<string | null>(null);
+  const [detailCourse, setDetailCourse] = useState<Course | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -138,16 +138,16 @@ export default function ScheduleTable({
 
   return (
     <>
-      <Table className="bg-card w-full table-fixed" ref={tableRef}>
-        <TableHeader>
-          <TableRow>
+      <Table className="w-full table-fixed" ref={tableRef}>
+        <TableHeader className="bg-foreground/1">
+          <TableRow className="border-foreground/1">
             <TableHead className="w-8 px-1 text-center text-xs font-medium sm:w-16 sm:px-2 sm:text-sm">
               時段
             </TableHead>
             {days.map((day) => (
               <TableHead
                 key={day}
-                className="px-1 text-center text-xs font-medium sm:px-2 sm:text-sm"
+                className="border-foreground/1 border-l px-1 text-center text-xs font-medium sm:px-2 sm:text-sm"
               >
                 {day}
               </TableHead>
@@ -157,7 +157,10 @@ export default function ScheduleTable({
         <TableBody>
           {periods.map((period, periodIndex) => {
             return (
-              <TableRow key={period} className="hover:bg-transparent">
+              <TableRow
+                key={period}
+                className="border-foreground/1 hover:bg-transparent"
+              >
                 <TableCell className="px-1 py-2 text-center font-medium sm:px-2 sm:py-3">
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold sm:text-sm">
@@ -199,7 +202,7 @@ export default function ScheduleTable({
                     <TableCell
                       key={`${day}-${period}`}
                       rowSpan={rowSpan}
-                      className="relative h-16 p-1 align-top sm:h-20 sm:p-2"
+                      className="border-foreground/1 relative h-16 border-l p-1 align-top sm:h-20 sm:p-2"
                     >
                       {showProgressLine && (
                         <div
@@ -237,16 +240,14 @@ export default function ScheduleTable({
                                   : hoveredCourse &&
                                       hoveredCourse.course_code ===
                                         course.course_code
-                                    ? "bg-secondary/50 border border-dashed"
-                                    : "bg-secondary border border-solid",
+                                    ? "bg-secondary/25 border border-primary/50 border-dashed"
+                                    : "from-secondary/50 to-secondary/75 bg-linear-to-b border border-primary/25 border-solid",
                                 "transition-all relative flex flex-1 flex-col justify-center rounded-md p-0 text-[10px] ease-in-out hover:scale-102 sm:p-2 sm:text-xs",
                               )}
                             >
                               <button
                                 className="flex h-full w-full cursor-pointer flex-col justify-center"
-                                onClick={() =>
-                                  setDetailCode(course.course_code)
-                                }
+                                onClick={() => setDetailCourse(course)}
                               >
                                 <code className="text-secondary-foreground text-center text-[9px] leading-tight sm:text-[12px]">
                                   {course.course_code}
@@ -283,8 +284,8 @@ export default function ScheduleTable({
         </TableBody>
       </Table>
       <CourseDetailDialog
-        courseCode={detailCode}
-        onClose={() => setDetailCode(null)}
+        course={detailCourse}
+        onClose={() => setDetailCourse(null)}
       />
     </>
   );

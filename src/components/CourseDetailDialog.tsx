@@ -15,7 +15,7 @@ import { Course } from "@/types/course";
 import { ExternalLink } from "lucide-react";
 
 interface CourseDetailDialogProps {
-  courseCode: string | null;
+  course: Course | null;
   onClose: () => void;
 }
 
@@ -25,12 +25,13 @@ const fetcher = (url: string) =>
     .then((data) => (data.data?.[0] as Course) ?? null);
 
 export function CourseDetailDialog({
-  courseCode,
+  course: initialCourse,
   onClose,
 }: CourseDetailDialogProps) {
-  const { data: course, isLoading } = useSWR(
-    courseCode
-      ? `/api/course-info?course_codes=${encodeURIComponent(courseCode)}&page_size=1`
+  const courseCode = initialCourse?.course_code ?? null;
+  const { data: fetchedCourse, isLoading } = useSWR(
+    courseCode && initialCourse
+      ? `/api/course-info?academic_year=${initialCourse.academic_year}&academic_semester=${initialCourse.academic_semester}&course_codes=${encodeURIComponent(courseCode)}&page_size=1`
       : null,
     fetcher,
     { revalidateOnFocus: false },
@@ -44,7 +45,7 @@ export function CourseDetailDialog({
         aria-describedby={undefined}
       >
         <DialogHeader className="sr-only">
-          <DialogTitle>{course?.course_name ?? courseCode}</DialogTitle>
+          <DialogTitle>{fetchedCourse?.course_name ?? courseCode}</DialogTitle>
         </DialogHeader>
         {isLoading && (
           <div className="space-y-4 p-2">
@@ -54,18 +55,21 @@ export function CourseDetailDialog({
             <Skeleton className="h-48 w-full" />
           </div>
         )}
-        {!isLoading && course && (
+        {!isLoading && fetchedCourse && (
           <>
-            <DetailView courseInfo={course} />
+            <DetailView courseInfo={fetchedCourse} />
             <Button className="w-full rounded-xl" asChild>
-              <Link href={`/course-info/${courseCode}`} prefetch={false}>
+              <Link
+                href={`/course-info/term/${fetchedCourse.academic_year}/${fetchedCourse.academic_semester}/${fetchedCourse.course_code}`}
+                prefetch={false}
+              >
                 <ExternalLink />
                 課程詳細頁面
               </Link>
             </Button>
           </>
         )}
-        {!isLoading && !course && courseCode && (
+        {!isLoading && !fetchedCourse && courseCode && (
           <p className="text-muted-foreground p-8 text-center text-sm">
             無法載入課程資訊
           </p>

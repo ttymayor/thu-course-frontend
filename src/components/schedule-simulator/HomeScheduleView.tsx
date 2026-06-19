@@ -12,6 +12,12 @@ import useSelectedCourses from "@/hooks/useSelectedCourses";
 import useSWR from "swr";
 import { toast } from "sonner";
 import type { Session } from "next-auth";
+import {
+  CourseTerm,
+  getConfiguredCourseTerm,
+  getCourseQueryParams,
+  parseTermParams,
+} from "@/lib/courseIdentity";
 
 interface HomeScheduleViewProps {
   session: Session | null;
@@ -19,6 +25,22 @@ interface HomeScheduleViewProps {
 
 export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
   const searchParams = useSearchParams();
+  const { data: termsResult } = useSWR(
+    "/api/course-terms",
+    async (url: string) => fetch(url).then((res) => res.json()),
+  );
+  const terms: CourseTerm[] = useMemo(
+    () => termsResult?.data ?? [],
+    [termsResult?.data],
+  );
+  const selectedTerm = useMemo(
+    () =>
+      parseTermParams(searchParams) ??
+      getConfiguredCourseTerm() ??
+      terms[0] ??
+      null,
+    [searchParams, terms],
+  );
   const {
     selectedCourses,
     setSelectedCourses,
@@ -28,7 +50,7 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
     restoreFromDb,
     isSyncing,
     isDirty,
-  } = useSelectedCourses();
+  } = useSelectedCourses(selectedTerm);
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
 
   const codesParam = searchParams.get("codes");
@@ -42,8 +64,8 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
   }, [codesParam]);
 
   const { data: sharedCourses, isLoading: isLoadingShared } = useSWR(
-    validCodes.length > 0
-      ? `/api/course-info?${validCodes.map((c) => `course_codes=${encodeURIComponent(c)}`).join("&")}&page_size=100`
+    validCodes.length > 0 && selectedTerm
+      ? `/api/course-info?${getCourseQueryParams(selectedTerm).toString()}&${validCodes.map((c) => `course_codes=${encodeURIComponent(c)}`).join("&")}&page_size=100`
       : null,
     async (url: string) => {
       const res = await fetch(url);
@@ -65,13 +87,19 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
   const handleImportShared = () => {
     if (sharedCourses) {
       importCourses(sharedCourses);
-      window.history.replaceState({}, "", "/");
+      const params = selectedTerm
+        ? `?year=${selectedTerm.academic_year}&semester=${selectedTerm.academic_semester}`
+        : "";
+      window.history.replaceState({}, "", `/${params}`);
     }
   };
 
   const handleRejectShared = () => {
     toast.info("已取消匯入");
-    window.history.replaceState({}, "", "/");
+    const params = selectedTerm
+      ? `?year=${selectedTerm.academic_year}&semester=${selectedTerm.academic_semester}`
+      : "";
+    window.history.replaceState({}, "", `/${params}`);
   };
 
   return (
@@ -92,6 +120,8 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
         ) : (
           <Suspense fallback={<CourseListSkeleton />}>
             <CourseSelector
+              terms={terms}
+              selectedTerm={selectedTerm}
               selectedCourses={selectedCourses}
               setSelectedCourses={setSelectedCourses}
               onCourseHover={setHoveredCourse}
@@ -117,6 +147,7 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
             isSyncing={isSyncing}
             isDirty={isDirty}
             session={session}
+            selectedTerm={selectedTerm}
           />
         )}
       </div>

@@ -39,6 +39,9 @@ export default function CourseList({
       <ScrollArea className="h-150">
         <div className="grid grid-cols-1 gap-2 p-px">
           {courses.map((course: Course) => {
+            const parsedClassTimes = courseTimeParser(
+              course.basic_info.class_time,
+            );
             // 檢查是否已選擇
             const isSelected = selectedCourseCodes.has(course.course_code);
 
@@ -91,7 +94,7 @@ export default function CourseList({
                         </span>
                       ) : (
                         <Link
-                          href={`/course-info/${course.course_code}`}
+                          href={`/course-info/term/${course.academic_year}/${course.academic_semester}/${course.course_code}`}
                           prefetch={false}
                           className="hover:text-primary decoration-primary/50 line-clamp-2 cursor-pointer text-left text-base leading-tight font-bold underline-offset-4 transition-colors hover:underline"
                         >
@@ -101,10 +104,10 @@ export default function CourseList({
                     </div>
 
                     <div className="flex gap-1">
-                      {!course.basic_info.class_time && (
+                      {parsedClassTimes.length === 0 && (
                         <Badge
                           variant="outline"
-                          className="h-5 px-1 text-[10px]"
+                          className="border-foreground/10 h-5 px-1 text-[10px]"
                         >
                           無時段
                         </Badge>
@@ -150,31 +153,29 @@ export default function CourseList({
                       </span>
                     </div>
 
-                    {course.basic_info.class_time && (
+                    {parsedClassTimes.length > 0 && (
                       <div className="flex items-start gap-2.5">
                         <Clock className="text-primary/70 mt-0.5 size-4 shrink-0" />
                         <div className="flex flex-col gap-y-1">
-                          {courseTimeParser(course.basic_info.class_time).map(
-                            (entry, index) => (
-                              <div
-                                key={index}
-                                className="flex flex-wrap items-center gap-x-2"
-                              >
-                                <span>
-                                  {entry.day} {entry.periods.join(", ")}
-                                </span>
-                                {entry.location && (
-                                  <Badge
-                                    variant="ghost"
-                                    className="border-foreground/10 px-1.5 text-[10px] [&>svg]:size-2.5"
-                                  >
-                                    <MapPin />
-                                    {entry.location}
-                                  </Badge>
-                                )}
-                              </div>
-                            ),
-                          )}
+                          {parsedClassTimes.map((entry, index) => (
+                            <div
+                              key={index}
+                              className="flex flex-wrap items-center gap-x-2"
+                            >
+                              <span>
+                                {entry.day} {entry.periods.join(", ")}
+                              </span>
+                              {entry.location && (
+                                <Badge
+                                  variant="ghost"
+                                  className="border-foreground/10 px-1.5 text-[10px] [&>svg]:size-2.5"
+                                >
+                                  <MapPin />
+                                  {entry.location}
+                                </Badge>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}

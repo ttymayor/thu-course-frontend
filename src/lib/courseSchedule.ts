@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import connectMongoDB from "./mongodb";
+import { getCollectionName } from "./collectionName";
 
 const courseScheduleSchema = new mongoose.Schema({
   course_stage: String,
@@ -11,7 +12,11 @@ const courseScheduleSchema = new mongoose.Schema({
 
 const CourseSchedule =
   mongoose.models.CourseSchedule ||
-  mongoose.model("CourseSchedule", courseScheduleSchema, "course_schedule");
+  mongoose.model(
+    "CourseSchedule",
+    courseScheduleSchema,
+    getCollectionName("course_schedule"),
+  );
 
 export async function getCourseSchedules() {
   await connectMongoDB();
