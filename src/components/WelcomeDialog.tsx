@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 const STORAGE_KEY = "first-welcome";
+const subscribe = () => () => {};
+const getServerSnapshot = () => false;
+
+function getShouldShowWelcome() {
+  return localStorage.getItem(STORAGE_KEY) === null;
+}
 
 /**
  * Remove on v1.7.0
@@ -26,13 +32,15 @@ function removeFirstLoading() {
 }
 
 export default function WelcomeDialog() {
-  const [open, setOpen] = useState(false);
+  const shouldShowWelcome = useSyncExternalStore(
+    subscribe,
+    getShouldShowWelcome,
+    getServerSnapshot,
+  );
+  const [dismissed, setDismissed] = useState(false);
   const [doNotShow, setDoNotShow] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === null) {
-      setOpen(true);
-    }
     removeFirstLoading();
   }, []);
 
@@ -40,11 +48,11 @@ export default function WelcomeDialog() {
     if (doNotShow) {
       localStorage.setItem(STORAGE_KEY, "true");
     }
-    setOpen(false);
+    setDismissed(true);
   }
 
   return (
-    <Dialog open={open}>
+    <Dialog open={shouldShowWelcome && !dismissed}>
       <DialogContent
         showCloseButton={false}
         onInteractOutside={(e) => e.preventDefault()}

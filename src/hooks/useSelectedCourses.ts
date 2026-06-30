@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useReducer } from "react";
 import { useSession } from "next-auth/react";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
@@ -40,19 +40,37 @@ function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
+interface SelectionState {
+  initializationKey: string | null;
+  courses: Course[];
+}
+
+const EMPTY_COURSES: Course[] = [];
+
 export default function useSelectedCourses(term: CourseTerm | null) {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user?.email;
+  const termStorageKey = term ? getStorageKey(term) : null;
+  const termAcademicYear = term?.academic_year ?? null;
+  const termAcademicSemester = term?.academic_semester ?? null;
+  const currentInitializationKey =
+    termStorageKey && status !== "loading"
+      ? `${termStorageKey}:${isAuthenticated ? "authenticated" : "local"}`
+      : null;
 
-  const [selectedCourses, _setSelectedCourses] = useState<Course[]>([]);
+  const [selection, setSelection] = useReducer(
+    (_state: SelectionState, next: SelectionState) => next,
+    { initializationKey: null, courses: [] },
+  );
+  const selectedCourses =
+    selection.initializationKey === currentInitializationKey
+      ? selection.courses
+      : EMPTY_COURSES;
   // Tracks what's currently saved in DB so isDirty can be computed dynamically
   const [dbCodes, setDbCodes] = useState<string[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const initializedTermRef = useRef<string | null>(null);
   const loadingTermRef = useRef<string | null>(null);
-  const termStorageKey = term ? getStorageKey(term) : null;
-  const termAcademicYear = term?.academic_year ?? null;
-  const termAcademicSemester = term?.academic_semester ?? null;
 
   // Dirty when current in-memory schedule differs from what DB has
   const isDirty = useMemo(() => {
@@ -77,9 +95,8 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       academic_year: termAcademicYear,
       academic_semester: termAcademicSemester,
     };
-    const initializationKey = `${termStorageKey}:${
-      isAuthenticated ? "authenticated" : "local"
-    }`;
+    const initializationKey = currentInitializationKey;
+    if (!initializationKey) return;
     if (initializedTermRef.current === initializationKey) return;
 
     const abortController = new AbortController();
@@ -105,7 +122,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         fetchCoursesByCode(localCodes, activeTerm, abortController.signal)
           .then((courses) => {
             if (isCurrentTerm()) {
-              _setSelectedCourses(courses);
+              setSelection({ initializationKey, courses });
               markInitialized();
             }
           })
@@ -113,7 +130,6 @@ export default function useSelectedCourses(term: CourseTerm | null) {
             if (!isAbortError(err)) throw err;
           });
       } else {
-        _setSelectedCourses([]);
         markInitialized();
       }
       return () => abortController.abort();
@@ -139,11 +155,11 @@ export default function useSelectedCourses(term: CourseTerm | null) {
             abortController.signal,
           );
           if (!isCurrentTerm()) return;
-          _setSelectedCourses(courses);
+          setSelection({ initializationKey, courses });
           writeLocalStorage(courses, activeTerm);
           markInitialized();
         } else {
-          _setSelectedCourses([]);
+          setSelection({ initializationKey, courses: [] });
           writeLocalStorage([], activeTerm);
           markInitialized();
         }
@@ -165,7 +181,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
             abortController.signal,
           );
           if (isCurrentTerm()) {
-            _setSelectedCourses(courses);
+            setSelection({ initializationKey, courses });
             markInitialized();
           }
         }
@@ -178,11 +194,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     termStorageKey,
     termAcademicYear,
     termAcademicSemester,
+    currentInitializationKey,
   ]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
   const setSelectedCourses = (courses: Course[]) => {
-    _setSelectedCourses(courses);
+    setSelection({ initializationKey: currentInitializationKey, courses });
     writeLocalStorage(courses, term);
   };
 
@@ -192,7 +209,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     );
     if (courseToRemove) {
       const next = selectedCourses.filter((c) => c.course_code !== courseCode);
-      _setSelectedCourses(next);
+      setSelection({
+        initializationKey: currentInitializationKey,
+        courses: next,
+      });
       writeLocalStorage(next, term);
 
       toast.info("已移除課程", {
@@ -201,7 +221,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
           label: "復原",
           onClick: () => {
             const restored = [...next, courseToRemove];
-            _setSelectedCourses(restored);
+            setSelection({
+              initializationKey: currentInitializationKey,
+              courses: restored,
+            });
             writeLocalStorage(restored, term);
           },
         },
@@ -210,7 +233,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   };
 
   const importCourses = (courses: Course[]) => {
-    _setSelectedCourses(courses);
+    setSelection({ initializationKey: currentInitializationKey, courses });
     writeLocalStorage(courses, term);
     toast.success("成功匯入課表！", {
       description: `已匯入 ${courses.length} 門課程到您的課表中。`,
@@ -226,7 +249,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       const result = await res.json();
       const codes: string[] = result.success && result.data ? result.data : [];
       const courses = await fetchCoursesByCode(codes, term);
-      _setSelectedCourses(courses);
+      setSelection({ initializationKey: currentInitializationKey, courses });
       setDbCodes(codes);
       writeLocalStorage(courses, term);
     } catch {

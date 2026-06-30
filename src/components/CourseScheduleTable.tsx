@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHydrated } from "@/hooks/useHydrated";
 import {
   Popover,
   PopoverContent,
@@ -247,17 +248,15 @@ export default function CourseScheduleTable({
 }: {
   schedules: CourseScheduleData[];
 }) {
-  const [mounted, setMounted] = useState(false);
+  const hydrated = useHydrated();
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    setMounted(true);
-    setNow(Date.now());
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const picked = mounted ? pickSchedule(schedules, now) : null;
+  const picked = hydrated ? pickSchedule(schedules, now) : null;
 
   const sorted = [...schedules].sort(
     (a, b) =>
@@ -273,7 +272,7 @@ export default function CourseScheduleTable({
       );
   const nextUpcomingSchedule = getNextUpcomingSchedule(visibleSchedules, now);
 
-  if (!mounted || picked === null) {
+  if (!hydrated || picked === null) {
     return <Skeleton className="h-5 w-32 rounded-full" />;
   }
 
