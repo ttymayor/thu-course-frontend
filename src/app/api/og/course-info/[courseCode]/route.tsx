@@ -4,6 +4,11 @@ import { join } from "node:path";
 import { getCourseByCode } from "@/services/courseService";
 import { generateDefaultOGImage } from "@/lib/ogImage";
 
+const [lineSeedRegular, lineSeedBold] = await Promise.all([
+  readFile(join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf")),
+  readFile(join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf")),
+]);
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ courseCode: string }> },
@@ -13,14 +18,6 @@ export async function GET(
 
     // 獲取課程資訊
     const courseInfo = await getCourseByCode(courseCode);
-
-    // 載入字體
-    const LineSeedRegular = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf"),
-    );
-    const LineSeedBold = await readFile(
-      join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf"),
-    );
 
     // 如果找不到課程資訊，回傳預設的 OG 圖片
     if (!courseInfo) {
@@ -108,13 +105,13 @@ export async function GET(
         fonts: [
           {
             name: "LineSeedRegular",
-            data: LineSeedRegular,
+            data: lineSeedRegular,
             weight: 400,
             style: "normal",
           },
           {
             name: "LineSeedBold",
-            data: LineSeedBold,
+            data: lineSeedBold,
             weight: 700,
             style: "normal",
           },
