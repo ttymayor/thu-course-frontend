@@ -4,16 +4,15 @@ import { join } from "node:path";
 import { getCourseByCode } from "@/services/courseService";
 import { generateDefaultOGImage } from "@/lib/ogImage";
 
-const [lineSeedRegular, lineSeedBold] = await Promise.all([
-  readFile(join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf")),
-  readFile(join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf")),
-]);
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ courseCode: string }> },
 ) {
   try {
+    const [lineSeedRegular, lineSeedBold] = await Promise.all([
+      readFile(join(process.cwd(), "public/fonts/LINESeedTW_TTF_Rg.ttf")),
+      readFile(join(process.cwd(), "public/fonts/LINESeedTW_TTF_Bd.ttf")),
+    ]);
     const { courseCode } = await params;
 
     // 獲取課程資訊
