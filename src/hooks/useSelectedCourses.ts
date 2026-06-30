@@ -78,7 +78,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       .map((c) => c.course_code)
       .sort()
       .join(",");
-    const dbSorted = [...dbCodes].sort().join(",");
+    const dbSorted = (dbCodes.toSorted?.() ?? dbCodes.slice().sort()).join(",");
     return currentSorted !== dbSorted;
   }, [selectedCourses, dbCodes]);
 
@@ -287,9 +287,8 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       }
     } catch {
       toast.error("同步失敗，請稍後再試");
-    } finally {
-      setIsSyncing(false);
     }
+    setIsSyncing(false);
   };
 
   return {
