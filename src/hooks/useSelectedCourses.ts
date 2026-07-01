@@ -45,7 +45,13 @@ interface SelectionState {
   courses: Course[];
 }
 
+interface CloudScheduleState {
+  initializationKey: string | null;
+  codes: string[];
+}
+
 const EMPTY_COURSES: Course[] = [];
+const EMPTY_CODES: string[] = [];
 
 export default function useSelectedCourses(term: CourseTerm | null) {
   const { data: session, status } = useSession();
@@ -66,21 +72,35 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     selection.initializationKey === currentInitializationKey
       ? selection.courses
       : EMPTY_COURSES;
-  // Tracks what's currently saved in DB so isDirty can be computed dynamically
-  const [dbCodes, setDbCodes] = useState<string[]>([]);
+  // Keep DB codes tied to the term they came from so stale data cannot enable sync.
+  const [cloudSchedule, setCloudSchedule] = useReducer(
+    (_state: CloudScheduleState, next: CloudScheduleState) => next,
+    { initializationKey: null, codes: [] },
+  );
   const [isSyncing, setIsSyncing] = useState(false);
   const initializedTermRef = useRef<string | null>(null);
   const loadingTermRef = useRef<string | null>(null);
 
-  // Dirty when current in-memory schedule differs from what DB has
+  const dbCodes =
+    cloudSchedule.initializationKey === currentInitializationKey
+      ? cloudSchedule.codes
+      : EMPTY_CODES;
+  const isReadyForSync =
+    isAuthenticated &&
+    currentInitializationKey !== null &&
+    selection.initializationKey === currentInitializationKey &&
+    cloudSchedule.initializationKey === currentInitializationKey;
+
+  // Dirty only after both schedules have loaded for the current term.
   const isDirty = useMemo(() => {
+    if (!isReadyForSync) return false;
     const currentSorted = selectedCourses
       .map((c) => c.course_code)
       .sort()
       .join(",");
     const dbSorted = (dbCodes.toSorted?.() ?? dbCodes.slice().sort()).join(",");
     return currentSorted !== dbSorted;
-  }, [selectedCourses, dbCodes]);
+  }, [selectedCourses, dbCodes, isReadyForSync]);
 
   useEffect(() => {
     if (
@@ -146,7 +166,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
 
         const codes: string[] =
           result.success && result.data ? result.data : [];
-        setDbCodes(codes);
+        setCloudSchedule({ initializationKey, codes });
 
         if (codes.length > 0) {
           const courses = await fetchCoursesByCode(
@@ -250,7 +270,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       const codes: string[] = result.success && result.data ? result.data : [];
       const courses = await fetchCoursesByCode(codes, term);
       setSelection({ initializationKey: currentInitializationKey, courses });
-      setDbCodes(codes);
+      setCloudSchedule({
+        initializationKey: currentInitializationKey,
+        codes,
+      });
       writeLocalStorage(courses, term);
     } catch {
       toast.error("復原失敗，請稍後再試");
@@ -270,6 +293,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       return;
     }
 
+    if (!isReadyForSync || !currentInitializationKey) {
+      toast.error("課表仍在載入，請稍後再試");
+      return;
+    }
+
+    const syncInitializationKey = currentInitializationKey;
     setIsSyncing(true);
     try {
       const codes = selectedCourses.map((c) => c.course_code);
@@ -279,7 +308,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         body: JSON.stringify({ course_codes: codes, ...term }),
       });
       if (res.ok) {
-        setDbCodes(codes); // isDirty becomes false automatically
+        setCloudSchedule({
+          initializationKey: syncInitializationKey,
+          codes,
+        });
         writeLocalStorage(selectedCourses, term); // localStorage now matches DB
         toast.success("課表已同步到雲端");
       } else {
