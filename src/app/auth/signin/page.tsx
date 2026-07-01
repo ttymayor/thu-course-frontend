@@ -7,9 +7,29 @@ import SignIn from "@/components/SignIn";
 import { toast } from "sonner";
 import BaseLayout from "@/components/BaseLayout";
 
+const callbackUrlBase = "https://callback.local";
+
+function validateCallbackUrl(callbackUrl: string | null) {
+  if (!callbackUrl?.startsWith("/") || callbackUrl.startsWith("//")) {
+    return "/";
+  }
+
+  try {
+    const parsedUrl = new URL(callbackUrl, callbackUrlBase);
+
+    if (parsedUrl.origin !== callbackUrlBase) {
+      return "/";
+    }
+
+    return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+  } catch {
+    return "/";
+  }
+}
+
 function SignInContent() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = validateCallbackUrl(searchParams.get("callbackUrl"));
   const error = searchParams.get("error") || undefined;
 
   useEffect(() => {

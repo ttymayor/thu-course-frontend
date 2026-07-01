@@ -20,6 +20,27 @@ const initialState: ThemeColorProviderState = {
   setThemeColor: () => null,
 };
 
+const THEME_COLOR_CHANGE_EVENT = "theme-color-change";
+
+function isThemeColor(value: string | null): value is ThemeColor {
+  return (
+    value === "coffee" ||
+    value === "blue" ||
+    value === "green" ||
+    value === "purple"
+  );
+}
+
+function subscribeThemeColor(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(THEME_COLOR_CHANGE_EVENT, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(THEME_COLOR_CHANGE_EVENT, onStoreChange);
+  };
+}
+
 const ThemeColorProviderContext =
   React.createContext<ThemeColorProviderState>(initialState);
 
@@ -29,26 +50,28 @@ export function ThemeColorProvider({
   storageKey = "ui-theme-color",
   ...props
 }: ThemeColorProviderProps) {
-  const [themeColor, setThemeColor] = React.useState<ThemeColor>(defaultTheme);
-  const [isMounted, setIsMounted] = React.useState(false);
+  const themeColor = React.useSyncExternalStore(
+    subscribeThemeColor,
+    () => {
+      const savedTheme = localStorage.getItem(storageKey);
+      return isThemeColor(savedTheme) ? savedTheme : defaultTheme;
+    },
+    () => defaultTheme,
+  );
+
+  const setThemeColor = (theme: ThemeColor) => {
+    localStorage.setItem(storageKey, theme);
+    window.dispatchEvent(new Event(THEME_COLOR_CHANGE_EVENT));
+  };
 
   React.useEffect(() => {
-    const savedTheme = localStorage.getItem(storageKey) as ThemeColor | null;
-    if (savedTheme) {
-      setThemeColor(savedTheme);
-    }
-    setIsMounted(true);
-  }, [storageKey]);
-
-  React.useEffect(() => {
-    if (!isMounted) return;
     const root = window.document.body; // Applying to body
 
     // Remove old attributes if we were using classes, but we use data attribute
     root.setAttribute("data-theme-color", themeColor);
 
     localStorage.setItem(storageKey, themeColor);
-  }, [themeColor, storageKey, isMounted]);
+  }, [themeColor, storageKey]);
 
   const value = {
     themeColor,

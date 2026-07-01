@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useReducer } from "react";
 import { useSession } from "next-auth/react";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
@@ -40,29 +40,67 @@ function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
+interface SelectionState {
+  initializationKey: string | null;
+  courses: Course[];
+}
+
+interface CloudScheduleState {
+  initializationKey: string | null;
+  codes: string[];
+}
+
+const EMPTY_COURSES: Course[] = [];
+const EMPTY_CODES: string[] = [];
+
 export default function useSelectedCourses(term: CourseTerm | null) {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user?.email;
-
-  const [selectedCourses, _setSelectedCourses] = useState<Course[]>([]);
-  // Tracks what's currently saved in DB so isDirty can be computed dynamically
-  const [dbCodes, setDbCodes] = useState<string[]>([]);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const initializedTermRef = useRef<string | null>(null);
-  const loadingTermRef = useRef<string | null>(null);
   const termStorageKey = term ? getStorageKey(term) : null;
   const termAcademicYear = term?.academic_year ?? null;
   const termAcademicSemester = term?.academic_semester ?? null;
+  const currentInitializationKey =
+    termStorageKey && status !== "loading"
+      ? `${termStorageKey}:${isAuthenticated ? "authenticated" : "local"}`
+      : null;
 
-  // Dirty when current in-memory schedule differs from what DB has
+  const [selection, setSelection] = useReducer(
+    (_state: SelectionState, next: SelectionState) => next,
+    { initializationKey: null, courses: [] },
+  );
+  const selectedCourses =
+    selection.initializationKey === currentInitializationKey
+      ? selection.courses
+      : EMPTY_COURSES;
+  // Keep DB codes tied to the term they came from so stale data cannot enable sync.
+  const [cloudSchedule, setCloudSchedule] = useReducer(
+    (_state: CloudScheduleState, next: CloudScheduleState) => next,
+    { initializationKey: null, codes: [] },
+  );
+  const [isSyncing, setIsSyncing] = useState(false);
+  const initializedTermRef = useRef<string | null>(null);
+  const loadingTermRef = useRef<string | null>(null);
+
+  const dbCodes =
+    cloudSchedule.initializationKey === currentInitializationKey
+      ? cloudSchedule.codes
+      : EMPTY_CODES;
+  const isReadyForSync =
+    isAuthenticated &&
+    currentInitializationKey !== null &&
+    selection.initializationKey === currentInitializationKey &&
+    cloudSchedule.initializationKey === currentInitializationKey;
+
+  // Dirty only after both schedules have loaded for the current term.
   const isDirty = useMemo(() => {
+    if (!isReadyForSync) return false;
     const currentSorted = selectedCourses
       .map((c) => c.course_code)
       .sort()
       .join(",");
-    const dbSorted = [...dbCodes].sort().join(",");
+    const dbSorted = (dbCodes.toSorted?.() ?? dbCodes.slice().sort()).join(",");
     return currentSorted !== dbSorted;
-  }, [selectedCourses, dbCodes]);
+  }, [selectedCourses, dbCodes, isReadyForSync]);
 
   useEffect(() => {
     if (
@@ -77,9 +115,8 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       academic_year: termAcademicYear,
       academic_semester: termAcademicSemester,
     };
-    const initializationKey = `${termStorageKey}:${
-      isAuthenticated ? "authenticated" : "local"
-    }`;
+    const initializationKey = currentInitializationKey;
+    if (!initializationKey) return;
     if (initializedTermRef.current === initializationKey) return;
 
     const abortController = new AbortController();
@@ -105,7 +142,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         fetchCoursesByCode(localCodes, activeTerm, abortController.signal)
           .then((courses) => {
             if (isCurrentTerm()) {
-              _setSelectedCourses(courses);
+              setSelection({ initializationKey, courses });
               markInitialized();
             }
           })
@@ -113,7 +150,6 @@ export default function useSelectedCourses(term: CourseTerm | null) {
             if (!isAbortError(err)) throw err;
           });
       } else {
-        _setSelectedCourses([]);
         markInitialized();
       }
       return () => abortController.abort();
@@ -130,7 +166,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
 
         const codes: string[] =
           result.success && result.data ? result.data : [];
-        setDbCodes(codes);
+        setCloudSchedule({ initializationKey, codes });
 
         if (codes.length > 0) {
           const courses = await fetchCoursesByCode(
@@ -139,11 +175,11 @@ export default function useSelectedCourses(term: CourseTerm | null) {
             abortController.signal,
           );
           if (!isCurrentTerm()) return;
-          _setSelectedCourses(courses);
+          setSelection({ initializationKey, courses });
           writeLocalStorage(courses, activeTerm);
           markInitialized();
         } else {
-          _setSelectedCourses([]);
+          setSelection({ initializationKey, courses: [] });
           writeLocalStorage([], activeTerm);
           markInitialized();
         }
@@ -165,7 +201,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
             abortController.signal,
           );
           if (isCurrentTerm()) {
-            _setSelectedCourses(courses);
+            setSelection({ initializationKey, courses });
             markInitialized();
           }
         }
@@ -178,11 +214,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     termStorageKey,
     termAcademicYear,
     termAcademicSemester,
+    currentInitializationKey,
   ]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
   const setSelectedCourses = (courses: Course[]) => {
-    _setSelectedCourses(courses);
+    setSelection({ initializationKey: currentInitializationKey, courses });
     writeLocalStorage(courses, term);
   };
 
@@ -192,7 +229,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     );
     if (courseToRemove) {
       const next = selectedCourses.filter((c) => c.course_code !== courseCode);
-      _setSelectedCourses(next);
+      setSelection({
+        initializationKey: currentInitializationKey,
+        courses: next,
+      });
       writeLocalStorage(next, term);
 
       toast.info("已移除課程", {
@@ -201,7 +241,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
           label: "復原",
           onClick: () => {
             const restored = [...next, courseToRemove];
-            _setSelectedCourses(restored);
+            setSelection({
+              initializationKey: currentInitializationKey,
+              courses: restored,
+            });
             writeLocalStorage(restored, term);
           },
         },
@@ -210,7 +253,7 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   };
 
   const importCourses = (courses: Course[]) => {
-    _setSelectedCourses(courses);
+    setSelection({ initializationKey: currentInitializationKey, courses });
     writeLocalStorage(courses, term);
     toast.success("成功匯入課表！", {
       description: `已匯入 ${courses.length} 門課程到您的課表中。`,
@@ -226,8 +269,11 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       const result = await res.json();
       const codes: string[] = result.success && result.data ? result.data : [];
       const courses = await fetchCoursesByCode(codes, term);
-      _setSelectedCourses(courses);
-      setDbCodes(codes);
+      setSelection({ initializationKey: currentInitializationKey, courses });
+      setCloudSchedule({
+        initializationKey: currentInitializationKey,
+        codes,
+      });
       writeLocalStorage(courses, term);
     } catch {
       toast.error("復原失敗，請稍後再試");
@@ -247,6 +293,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       return;
     }
 
+    if (!isReadyForSync || !currentInitializationKey) {
+      toast.error("課表仍在載入，請稍後再試");
+      return;
+    }
+
+    const syncInitializationKey = currentInitializationKey;
     setIsSyncing(true);
     try {
       const codes = selectedCourses.map((c) => c.course_code);
@@ -256,7 +308,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         body: JSON.stringify({ course_codes: codes, ...term }),
       });
       if (res.ok) {
-        setDbCodes(codes); // isDirty becomes false automatically
+        setCloudSchedule({
+          initializationKey: syncInitializationKey,
+          codes,
+        });
         writeLocalStorage(selectedCourses, term); // localStorage now matches DB
         toast.success("課表已同步到雲端");
       } else {
@@ -264,9 +319,8 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       }
     } catch {
       toast.error("同步失敗，請稍後再試");
-    } finally {
-      setIsSyncing(false);
     }
+    setIsSyncing(false);
   };
 
   return {
