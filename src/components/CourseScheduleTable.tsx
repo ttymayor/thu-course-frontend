@@ -335,7 +335,7 @@ export default function CourseScheduleTable({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>{badge}</PopoverTrigger>
+      <PopoverTrigger render={badge} />
       <PopoverContent
         align="start"
         className="ring-foreground/10 bg-card/80 w-auto max-w-[90vw] rounded-lg border-none ring-1 backdrop-blur-xl"

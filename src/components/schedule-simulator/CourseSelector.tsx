@@ -100,7 +100,9 @@ function CourseSelectorContent({
     onCourseHover(course);
   };
 
-  const handleTermChange = (value: string) => {
+  const handleTermChange = (value: string | null) => {
+    if (!value) return;
+
     const [academicYear, academicSemester] = value.split("-").map(Number);
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.delete("page");

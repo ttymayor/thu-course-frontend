@@ -64,8 +64,10 @@ export default function FeedbackForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleTypeChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, type: value }));
+  const handleTypeChange = (value: string | null) => {
+    if (value) {
+      setFormData((prev) => ({ ...prev, type: value }));
+    }
   };
 
   const handleAnonymousChange = (checked: boolean) => {
