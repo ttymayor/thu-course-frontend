@@ -53,7 +53,7 @@ export default function CourseList({
             return (
               <Card
                 className={cn(
-                  "relative flex border-foreground/10 transition-all rounded-md ease-out py-4 gap-3",
+                  "relative flex border-foreground/10 transition-all rounded-lg ease-out py-4 gap-3",
                   !isSelected &&
                     !hasConflict &&
                     !course.is_closed &&

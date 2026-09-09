@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import useSWR, { mutate as mutateGlobal } from "swr";
 import { Course } from "@/types/course";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import {
   CourseTerm,
   getCourseQueryParams,
@@ -52,7 +52,10 @@ export default function useBookmark(activeTerm?: CourseTerm) {
 
   const addBookmark = async (course: Course) => {
     if (isBookmarked(course)) {
-      toast.error("此課程已加入書籤");
+      toast.add({
+        type: "error",
+        description: "此課程已加入書籤",
+      });
       return;
     }
     mutateCodes({ data: [...bookmarkCodes, course.course_code] }, false);
@@ -72,20 +75,32 @@ export default function useBookmark(activeTerm?: CourseTerm) {
       if (res.ok) {
         mutateCodes();
         mutateGlobal("/api/bookmarks/courses");
-        toast.success("已加入書籤");
+        toast.add({
+          type: "success",
+          description: "已加入書籤",
+        });
       } else {
         mutateCodes({ data: bookmarkCodes }, false);
-        toast.error("加入書籤失敗");
+        toast.add({
+          type: "error",
+          description: "加入書籤失敗",
+        });
       }
     } catch {
       mutateCodes({ data: bookmarkCodes }, false);
-      toast.error("加入書籤失敗");
+      toast.add({
+        type: "error",
+        description: "加入書籤失敗",
+      });
     }
   };
 
   const removeBookmark = async (course: Course) => {
     if (!isBookmarked(course)) {
-      toast.error("此課程未加入書籤");
+      toast.add({
+        type: "error",
+        description: "此課程未加入書籤",
+      });
       return;
     }
     mutateCodes(
@@ -108,14 +123,23 @@ export default function useBookmark(activeTerm?: CourseTerm) {
       if (res.ok) {
         mutateCodes();
         mutateGlobal("/api/bookmarks/courses");
-        toast.success("已移除書籤");
+        toast.add({
+          type: "success",
+          description: "已移除書籤",
+        });
       } else {
         mutateCodes({ data: bookmarkCodes }, false);
-        toast.error("移除書籤失敗");
+        toast.add({
+          type: "error",
+          description: "移除書籤失敗",
+        });
       }
     } catch {
       mutateCodes({ data: bookmarkCodes }, false);
-      toast.error("移除書籤失敗");
+      toast.add({
+        type: "error",
+        description: "移除書籤失敗",
+      });
     }
   };
 

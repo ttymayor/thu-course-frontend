@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,7 +82,8 @@ export default function FeedbackForm() {
     try {
       await submitFeedback(formData);
 
-      toast.success("回饋已送出", {
+      toast.add({
+        type: "success",
         description: "感謝您的寶貴意見！我們會盡快處理。",
       });
 
@@ -97,7 +98,8 @@ export default function FeedbackForm() {
       // router.push("/");
     } catch (error) {
       console.error(error);
-      toast.error("發送失敗", {
+      toast.add({
+        type: "error",
         description: error instanceof Error ? error.message : "請稍後再試",
       });
     }

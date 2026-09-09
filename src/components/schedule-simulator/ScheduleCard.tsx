@@ -39,7 +39,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { allPeriods, allDays, ScheduleGrid } from "@/lib/schedule";
 import QRCode from "qrcode";
@@ -204,14 +204,20 @@ export default function ScheduleCard({
       return `${baseUrl}?${termQuery}codes=${courseCodes.join(",")}`;
     } catch (error) {
       console.error("創建分享連結失敗:", error);
-      toast.error("創建分享連結失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "創建分享連結失敗，請稍後再試",
+      });
       return null;
     }
   };
 
   const generateQrCode = async () => {
     if (selectedCourses.length === 0) {
-      toast.error("請先選擇課程");
+      toast.add({
+        type: "error",
+        description: "請先選擇課程",
+      });
       return;
     }
 
@@ -234,13 +240,19 @@ export default function ScheduleCard({
       setIsQrDialogOpen(true);
     } catch (error) {
       console.error("生成 QR Code 失敗:", error);
-      toast.error("生成 QR Code 失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "生成 QR Code 失敗，請稍後再試",
+      });
     }
   };
 
   const shareSchedule = async () => {
     if (selectedCourses.length === 0) {
-      toast.error("請先選擇課程");
+      toast.add({
+        type: "error",
+        description: "請先選擇課程",
+      });
       return;
     }
 
@@ -249,10 +261,16 @@ export default function ScheduleCard({
       if (!shareUrl) return;
 
       await navigator.clipboard.writeText(shareUrl);
-      toast.success("課表連結已複製到剪貼簿");
+      toast.add({
+        type: "success",
+        description: "課表連結已複製到剪貼簿",
+      });
     } catch (error) {
       console.error("分享課表失敗:", error);
-      toast.error("分享課表失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "分享課表失敗，請稍後再試",
+      });
     }
   };
 
@@ -277,20 +295,25 @@ export default function ScheduleCard({
   }, 0);
 
   const downloadSchedule = async () => {
-    if (!tableRef.current) return;
+    const tableElement = tableRef.current;
+    if (!tableElement) return;
 
     if (selectedCourses.length === 0) {
-      toast.error("請先選擇課程再下載");
+      toast.add({
+        type: "error",
+        description: "請先選擇課程再下載",
+      });
       return;
     }
 
-    const loadingToast = toast.loading("正在生成課表圖片...");
-
-    try {
+    const downloadPromise = (async () => {
       // 等待一小段時間讓 DOM 完全渲染
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      const { promise: renderDelay, resolve: resolveRenderDelay } =
+        Promise.withResolvers<void>();
+      setTimeout(resolveRenderDelay, 100);
+      await renderDelay;
 
-      const dataUrl = await toPng(tableRef.current, {
+      const dataUrl = await toPng(tableElement, {
         cacheBust: true,
         pixelRatio: 2,
         skipFonts: false,
@@ -308,12 +331,17 @@ export default function ScheduleCard({
       link.download = fileName;
       link.click();
 
-      toast.dismiss(loadingToast);
-      toast.success(`課表已成功下載：${fileName}`);
+      return fileName;
+    })();
+
+    try {
+      await toast.promise(downloadPromise, {
+        loading: "正在生成課表圖片...",
+        success: (fileName) => `課表已成功下載：${fileName}`,
+        error: "下載課表失敗，請稍後再試",
+      });
     } catch (error) {
       console.error("下載課表失敗:", error);
-      toast.dismiss(loadingToast);
-      toast.error("下載課表失敗，請稍後再試");
     }
   };
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useReducer } from "react";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import { Course } from "@/types/course";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { CourseTerm, getTermKey } from "@/lib/courseIdentity";
 
 async function fetchCoursesByCode(
@@ -162,7 +162,9 @@ export default function useSelectedCourses(term: CourseTerm | null) {
         "[useSelectedCourses] Failed to fetch schedule from DB:",
         loadedSelection.error,
       );
-      toast.error("無法載入雲端課表", {
+      toast.add({
+        type: "error",
+        title: "無法載入雲端課表",
         description: "已顯示本地儲存的課表，請檢查網路連線。",
       });
     }
@@ -202,11 +204,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       });
       writeLocalStorage(next, term);
 
-      toast.info("已移除課程", {
+      toast.add({
+        type: "info",
         description: `已將 ${courseToRemove.course_name} 從您的課表中移除。`,
-        action: {
-          label: "復原",
-          onClick: () => {
+        actionProps: {
+          children: "復原",
+          onClick() {
             const restored = [...next, courseToRemove];
             setSelection({
               initializationKey: currentInitializationKey,
@@ -222,7 +225,9 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   const importCourses = (courses: Course[]) => {
     setSelection({ initializationKey: currentInitializationKey, courses });
     writeLocalStorage(courses, term);
-    toast.success("成功匯入課表！", {
+    toast.add({
+      type: "success",
+      title: "成功匯入課表！",
       description: `已匯入 ${courses.length} 門課程到您的課表中。`,
     });
   };
@@ -243,7 +248,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       });
       writeLocalStorage(courses, term);
     } catch {
-      toast.error("復原失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "復原失敗，請稍後再試",
+      });
     }
   };
 
@@ -251,17 +259,26 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     if (isSyncing) return;
 
     if (!isAuthenticated) {
-      toast.success("課表已儲存到本地");
+      toast.add({
+        type: "success",
+        description: "課表已儲存到本地",
+      });
       return;
     }
 
     if (!term) {
-      toast.error("尚未選擇學期");
+      toast.add({
+        type: "error",
+        description: "尚未選擇學期",
+      });
       return;
     }
 
     if (!isReadyForSync || !currentInitializationKey) {
-      toast.error("課表仍在載入，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "課表仍在載入，請稍後再試",
+      });
       return;
     }
 
@@ -280,12 +297,21 @@ export default function useSelectedCourses(term: CourseTerm | null) {
           codes,
         });
         writeLocalStorage(selectedCourses, term); // localStorage now matches DB
-        toast.success("課表已同步到雲端");
+        toast.add({
+          type: "success",
+          description: "課表已同步到雲端",
+        });
       } else {
-        toast.error("同步失敗，請稍後再試");
+        toast.add({
+          type: "error",
+          description: "同步失敗，請稍後再試",
+        });
       }
     } catch {
-      toast.error("同步失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "同步失敗，請稍後再試",
+      });
     }
     setIsSyncing(false);
   };
