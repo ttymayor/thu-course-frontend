@@ -105,9 +105,24 @@ export default function FeedbackForm() {
   };
 
   const feedbackTypeOptions = [
-    { label: "Feature", value: "feature" },
-    { label: "Bug", value: "bug" },
-    { label: "Other", value: "other" },
+    {
+      label: "Feature",
+      value: "feature",
+      badgeClassName:
+        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    },
+    {
+      label: "Bug",
+      value: "bug",
+      badgeClassName:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+    },
+    {
+      label: "Other",
+      value: "other",
+      badgeClassName:
+        "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
+    },
   ];
 
   return (
@@ -145,7 +160,11 @@ export default function FeedbackForm() {
 
                     return option ? (
                       <>
-                        <Badge className="rounded-full">{option.label}</Badge>
+                        <Badge
+                          className={`rounded-full ${option.badgeClassName}`}
+                        >
+                          {option.label}
+                        </Badge>
                         {option.label}
                       </>
                     ) : (
@@ -158,7 +177,11 @@ export default function FeedbackForm() {
                 <SelectGroup>
                   {feedbackTypeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
-                      <Badge className="rounded-full">{option.label}</Badge>
+                      <Badge
+                        className={`rounded-full ${option.badgeClassName}`}
+                      >
+                        {option.label}
+                      </Badge>
                       {option.label}
                     </SelectItem>
                   ))}
