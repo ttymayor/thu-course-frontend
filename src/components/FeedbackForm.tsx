@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -64,8 +65,10 @@ export default function FeedbackForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleTypeChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, type: value }));
+  const handleTypeChange = (value: string | null) => {
+    if (value) {
+      setFormData((prev) => ({ ...prev, type: value }));
+    }
   };
 
   const handleAnonymousChange = (checked: boolean) => {
@@ -101,6 +104,30 @@ export default function FeedbackForm() {
     setLoading(false);
   };
 
+  const feedbackTypeOptions = [
+    {
+      label: "功能點子",
+      value: "feature",
+      badgeLabel: "Feature",
+      badgeClassName:
+        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    },
+    {
+      label: "問題回報",
+      value: "bug",
+      badgeLabel: "Bug",
+      badgeClassName:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+    },
+    {
+      label: "其他",
+      value: "other",
+      badgeLabel: "Other",
+      badgeClassName:
+        "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
+    },
+  ];
+
   return (
     <Card className="mx-auto w-full max-w-2xl">
       <CardHeader>
@@ -118,34 +145,55 @@ export default function FeedbackForm() {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4 pb-4">
-          <div className="space-y-2">
+        <CardContent className="flex flex-col gap-4 pb-4">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="type">回饋類型</Label>
             <Select
               value={formData.type}
               onValueChange={handleTypeChange}
+              items={feedbackTypeOptions}
               required
             >
-              <SelectTrigger id="type">
-                <SelectValue placeholder="選擇類型" />
+              <SelectTrigger id="type" className="w-1/2">
+                <SelectValue placeholder="選擇類型">
+                  {(value) => {
+                    const option = feedbackTypeOptions.find(
+                      (item) => item.value === value,
+                    );
+
+                    return option ? (
+                      <>
+                        <Badge
+                          className={`rounded-full ${option.badgeClassName}`}
+                        >
+                          {option.badgeLabel}
+                        </Badge>
+                        {option.label}
+                      </>
+                    ) : (
+                      "選擇類型"
+                    );
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="feature">
-                  <Badge className="rounded-full bg-green-100">Feature</Badge>
-                  功能建議
-                </SelectItem>
-                <SelectItem value="bug">
-                  <Badge className="rounded-full bg-red-100">Bug</Badge>
-                  回報問題
-                </SelectItem>
-                <SelectItem value="other">
-                  <Badge className="rounded-full bg-gray-100">Other</Badge>其他
-                </SelectItem>
+                <SelectGroup>
+                  {feedbackTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <Badge
+                        className={`rounded-full ${option.badgeClassName}`}
+                      >
+                        {option.badgeLabel}
+                      </Badge>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="subject">標題</Label>
             <Input
               id="subject"
@@ -158,7 +206,7 @@ export default function FeedbackForm() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="message">詳細內容</Label>
             <Textarea
               id="message"
@@ -176,7 +224,7 @@ export default function FeedbackForm() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Checkbox
               id="is_anonymous"
               checked={formData.is_anonymous}

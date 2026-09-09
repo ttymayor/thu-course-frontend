@@ -2,22 +2,20 @@
 
 ## [2.3.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.2.0...v2.3.0) (2026-09-09)
 
-
 ### Features
 
-* add callback URL validation for sign-in process ([af0c0c5](https://github.com/ttymayor/thu-course-frontend/commit/af0c0c503635383f13c75ac9e55207c79c34f1b3))
-* add LINESeed font files for improved typography ([887e6db](https://github.com/ttymayor/thu-course-frontend/commit/887e6db79d656f9db9163041b9b25f119dea4175))
-* add React Doctor documentation and update workspace dependencies ([a68cc14](https://github.com/ttymayor/thu-course-frontend/commit/a68cc1437b2c75ea38b8c767042245b83b280f56))
-* implement useHydrated hook and refactor components for hydration handling ([3c5e634](https://github.com/ttymayor/thu-course-frontend/commit/3c5e6348c4c49f6496ed4bd667dd2bd5a164d43a))
-* integrate MotionProvider and refactor layout; remove unused components ([ae5e5f2](https://github.com/ttymayor/thu-course-frontend/commit/ae5e5f209750d2dc5f368131a2fc9f3a41d077c5))
-* refactor cloud schedule handling and improve sync readiness checks in useSelectedCourses ([d12bee5](https://github.com/ttymayor/thu-course-frontend/commit/d12bee50dacd9166611df5dded3e56dd54a80577))
-* refactor feedback submission and improve time formatting in CourseScheduleTable ([14ab09a](https://github.com/ttymayor/thu-course-frontend/commit/14ab09ad8fd56a24dfb11fd2fb86a414f6bc5188))
-* **ui:** migrate to cn package and Base UI button with shadcn base-nova ([679c1f9](https://github.com/ttymayor/thu-course-frontend/commit/679c1f92caa8db0e13fc826ed0de95a61cd470d3))
-
+- add callback URL validation for sign-in process ([af0c0c5](https://github.com/ttymayor/thu-course-frontend/commit/af0c0c503635383f13c75ac9e55207c79c34f1b3))
+- add LINESeed font files for improved typography ([887e6db](https://github.com/ttymayor/thu-course-frontend/commit/887e6db79d656f9db9163041b9b25f119dea4175))
+- add React Doctor documentation and update workspace dependencies ([a68cc14](https://github.com/ttymayor/thu-course-frontend/commit/a68cc1437b2c75ea38b8c767042245b83b280f56))
+- implement useHydrated hook and refactor components for hydration handling ([3c5e634](https://github.com/ttymayor/thu-course-frontend/commit/3c5e6348c4c49f6496ed4bd667dd2bd5a164d43a))
+- integrate MotionProvider and refactor layout; remove unused components ([ae5e5f2](https://github.com/ttymayor/thu-course-frontend/commit/ae5e5f209750d2dc5f368131a2fc9f3a41d077c5))
+- refactor cloud schedule handling and improve sync readiness checks in useSelectedCourses ([d12bee5](https://github.com/ttymayor/thu-course-frontend/commit/d12bee50dacd9166611df5dded3e56dd54a80577))
+- refactor feedback submission and improve time formatting in CourseScheduleTable ([14ab09a](https://github.com/ttymayor/thu-course-frontend/commit/14ab09ad8fd56a24dfb11fd2fb86a414f6bc5188))
+- **ui:** migrate to cn package and Base UI button with shadcn base-nova ([679c1f9](https://github.com/ttymayor/thu-course-frontend/commit/679c1f92caa8db0e13fc826ed0de95a61cd470d3))
 
 ### Bug Fixes
 
-* **ui:** cache fonts and label navigation controls ([8026e24](https://github.com/ttymayor/thu-course-frontend/commit/8026e2469dd23620922d00973530f77512d612fc))
+- **ui:** cache fonts and label navigation controls ([8026e24](https://github.com/ttymayor/thu-course-frontend/commit/8026e2469dd23620922d00973530f77512d612fc))
 
 ## [2.2.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.1.0...v2.2.0) (2026-06-19)
 

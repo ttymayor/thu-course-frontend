@@ -52,12 +52,8 @@ export default function WelcomeDialog() {
   }
 
   return (
-    <Dialog open={shouldShowWelcome && !dismissed}>
-      <DialogContent
-        showCloseButton={false}
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
-      >
+    <Dialog open={shouldShowWelcome && !dismissed} disablePointerDismissal>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>歡迎使用東海課程資訊</DialogTitle>
           <DialogDescription>使用前請閱讀以下說明</DialogDescription>

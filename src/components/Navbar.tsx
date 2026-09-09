@@ -85,20 +85,20 @@ export default function Navbar() {
               {NAVBAR_CONFIG.navigation.items.map((item, index) => (
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
-                    asChild
+                    render={
+                      <Link
+                        href={item.href}
+                        className="flex flex-row items-center gap-2"
+                      >
+                        {item.icon}
+                        {item.label}
+                      </Link>
+                    }
                     active={isActive(item.href)}
                     className={cn(
                       isActive(item.href) ? "bg-accent/50" : undefined,
                     )}
-                  >
-                    <Link
-                      href={item.href}
-                      className="flex flex-row items-center gap-2"
-                    >
-                      {item.icon}
-                      {item.label}
-                    </Link>
-                  </NavigationMenuLink>
+                  />
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>

@@ -27,16 +27,18 @@ export default function ThemeColorToggle() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-9 w-9 cursor-pointer px-0"
-        >
-          <Palette className="h-4 w-4" />
-          <span className="sr-only">切換主題顏色</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-9 w-9 cursor-pointer px-0"
+          >
+            <Palette className="h-4 w-4" />
+            <span className="sr-only">切換主題顏色</span>
+          </Button>
+        }
+      />
       <DropdownMenuContent align="end">
         {colors.map((color) => (
           <DropdownMenuItem

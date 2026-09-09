@@ -20,11 +20,13 @@ export default function RemoveBookmarkDialog({ course }: { course: Course }) {
   });
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size={"icon-sm"}>
-          <Bookmark fill={isBookmarked(course) ? "currentColor" : "none"} />
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button variant="ghost" size="icon-sm">
+            <Bookmark fill={isBookmarked(course) ? "currentColor" : "none"} />
+          </Button>
+        }
+      />
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="inline-flex items-center gap-2">

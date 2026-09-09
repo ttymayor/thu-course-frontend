@@ -38,7 +38,7 @@ function VersionLogItem({ log }: { log: VersionLog }) {
 }
 
 interface VersionLogDialogProps {
-  children: React.ReactNode | ((version: string) => React.ReactNode);
+  children: React.ReactElement | ((version: string) => React.ReactElement);
 }
 
 export function VersionLogDialog({ children }: VersionLogDialogProps) {
@@ -47,7 +47,7 @@ export function VersionLogDialog({ children }: VersionLogDialogProps) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-150">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
