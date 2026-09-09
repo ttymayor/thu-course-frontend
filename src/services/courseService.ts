@@ -212,11 +212,10 @@ export async function getCourses(
     typeof filter.page_size === "number" ? filter.page_size : 10;
   const skip = (page - 1) * page_size;
 
-  const total = await CourseModel.countDocuments(query);
-  const rawData = await CourseModel.find(query)
-    .skip(skip)
-    .limit(page_size)
-    .lean();
+  const [total, rawData] = await Promise.all([
+    CourseModel.countDocuments(query),
+    CourseModel.find(query).skip(skip).limit(page_size).lean(),
+  ]);
 
   const data = rawData.map(normalizeCourse);
 
