@@ -31,6 +31,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { Button } from "@/components/ui/button";
+import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
 import useBookmark from "@/hooks/useBookmark";
 import Link from "next/link";
 
@@ -143,7 +144,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
 
       <div className="flex flex-col gap-4">
         {/* 基本資訊 */}
-        <Card className="border-foreground/10 shadow-none">
+        <Card>
           <CardContent>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <InfoBox
@@ -182,7 +183,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* 評分項目 */}
-          <Card className="border-foreground/10 h-fit w-full">
+          <Card>
             <Tabs defaultValue="chart">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -251,7 +252,7 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
           </Card>
 
           {/* 選課紀錄 */}
-          <Card className="border-foreground/10 h-fit w-full">
+          <Card>
             <Tabs defaultValue="chart">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -333,13 +334,13 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* 教學目標 */}
-          <Card className="border-foreground/10 flex h-fit flex-col">
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Crosshair className="text-primary" /> 教學目標
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent>
               {courseInfo.teaching_goal ? (
                 <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
                   {courseInfo.teaching_goal}
@@ -353,21 +354,23 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
           </Card>
 
           {/* 課程描述 */}
-          <Card className="border-foreground/10 flex h-fit flex-col">
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <TextCursor className="text-primary" /> 課程描述
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1">
-              {courseInfo.course_description ? (
+            <CardContent>
+              {courseInfo?.course_description?.trim() ? (
                 <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
                   {courseInfo.course_description}
                 </p>
               ) : (
-                <div className="text-muted-foreground flex h-full items-center justify-center py-10 text-sm italic">
-                  暫無課程描述資訊
-                </div>
+                <Empty>
+                  <EmptyContent>
+                    <EmptyDescription>暫無課程描述資訊</EmptyDescription>
+                  </EmptyContent>
+                </Empty>
               )}
             </CardContent>
           </Card>
