@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef, useReducer } from "react";
 import { useSession } from "next-auth/react";
+import useSWR from "swr";
 import { Course } from "@/types/course";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { CourseTerm, getTermKey } from "@/lib/courseIdentity";
 
 async function fetchCoursesByCode(
@@ -36,8 +37,56 @@ function writeLocalStorage(courses: Course[], term: CourseTerm | null) {
   );
 }
 
-function isAbortError(error: unknown) {
-  return error instanceof DOMException && error.name === "AbortError";
+interface LoadedSelection {
+  codes: string[];
+  courses: Course[];
+  error?: unknown;
+  shouldWriteLocalStorage: boolean;
+}
+
+function getStoredCourseCodes(term: CourseTerm) {
+  const storedCodes =
+    localStorage.getItem(getStorageKey(term)) ??
+    localStorage.getItem("selectedCourseCodes");
+
+  return storedCodes ? storedCodes.split(",").filter(Boolean) : [];
+}
+
+async function loadSelection(
+  term: CourseTerm,
+  isAuthenticated: boolean,
+): Promise<LoadedSelection> {
+  const localCodes = getStoredCourseCodes(term);
+
+  if (!isAuthenticated) {
+    return {
+      codes: [],
+      courses: await fetchCoursesByCode(localCodes, term),
+      shouldWriteLocalStorage: false,
+    };
+  }
+
+  let codes: string[] = [];
+  try {
+    const response = await fetch(
+      `/api/schedule?academic_year=${term.academic_year}&academic_semester=${term.academic_semester}`,
+    );
+    const result = await response.json();
+    codes = result.success && result.data ? result.data : [];
+
+    return {
+      codes,
+      courses: await fetchCoursesByCode(codes, term),
+      shouldWriteLocalStorage: true,
+    };
+  } catch (error) {
+    return {
+      codes,
+      courses: await fetchCoursesByCode(localCodes, term),
+      error,
+      shouldWriteLocalStorage: false,
+    };
+  }
 }
 
 interface SelectionState {
@@ -57,8 +106,6 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user?.email;
   const termStorageKey = term ? getStorageKey(term) : null;
-  const termAcademicYear = term?.academic_year ?? null;
-  const termAcademicSemester = term?.academic_semester ?? null;
   const currentInitializationKey =
     termStorageKey && status !== "loading"
       ? `${termStorageKey}:${isAuthenticated ? "authenticated" : "local"}`
@@ -79,7 +126,6 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   );
   const [isSyncing, setIsSyncing] = useState(false);
   const initializedTermRef = useRef<string | null>(null);
-  const loadingTermRef = useRef<string | null>(null);
 
   const dbCodes =
     cloudSchedule.initializationKey === currentInitializationKey
@@ -99,120 +145,46 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       .sort()
       .join(",") !== (dbCodes.toSorted?.() ?? dbCodes.slice().sort()).join(",");
 
+  const selectionLoadKey =
+    currentInitializationKey && term
+      ? ["selected-courses", currentInitializationKey]
+      : null;
+  const { data: loadedSelection } = useSWR(selectionLoadKey, () =>
+    loadSelection(term!, isAuthenticated),
+  );
+
   useEffect(() => {
-    if (
-      !termStorageKey ||
-      termAcademicYear === null ||
-      termAcademicSemester === null
-    )
-      return;
-    if (status === "loading") return;
+    if (!currentInitializationKey || !loadedSelection) return;
+    if (initializedTermRef.current === currentInitializationKey) return;
 
-    const activeTerm: CourseTerm = {
-      academic_year: termAcademicYear,
-      academic_semester: termAcademicSemester,
-    };
-    const initializationKey = currentInitializationKey;
-    if (!initializationKey) return;
-    if (initializedTermRef.current === initializationKey) return;
-
-    const abortController = new AbortController();
-    loadingTermRef.current = initializationKey;
-    const isCurrentTerm = () =>
-      !abortController.signal.aborted &&
-      loadingTermRef.current === initializationKey;
-    const markInitialized = () => {
-      if (isCurrentTerm()) {
-        initializedTermRef.current = initializationKey;
-      }
-    };
-
-    const storedCodes =
-      localStorage.getItem(termStorageKey) ??
-      localStorage.getItem("selectedCourseCodes");
-    const localCodes = storedCodes
-      ? storedCodes.split(",").filter(Boolean)
-      : [];
-
-    if (!isAuthenticated) {
-      if (localCodes.length > 0) {
-        fetchCoursesByCode(localCodes, activeTerm, abortController.signal)
-          .then((courses) => {
-            if (isCurrentTerm()) {
-              setSelection({ initializationKey, courses });
-              markInitialized();
-            }
-          })
-          .catch((err) => {
-            if (!isAbortError(err)) throw err;
-          });
-      } else {
-        markInitialized();
-      }
-      return () => abortController.abort();
+    if (loadedSelection.error) {
+      console.error(
+        "[useSelectedCourses] Failed to fetch schedule from DB:",
+        loadedSelection.error,
+      );
+      toast.add({
+        type: "error",
+        title: "無法載入雲端課表",
+        description: "已顯示本地儲存的課表，請檢查網路連線。",
+      });
     }
 
-    // Authenticated: DB is source of truth; overwrite localStorage on load
-    fetch(
-      `/api/schedule?academic_year=${activeTerm.academic_year}&academic_semester=${activeTerm.academic_semester}`,
-      { signal: abortController.signal },
-    )
-      .then((r) => r.json())
-      .then(async (result) => {
-        if (!isCurrentTerm()) return;
-
-        const codes: string[] =
-          result.success && result.data ? result.data : [];
-        setCloudSchedule({ initializationKey, codes });
-
-        if (codes.length > 0) {
-          const courses = await fetchCoursesByCode(
-            codes,
-            activeTerm,
-            abortController.signal,
-          );
-          if (!isCurrentTerm()) return;
-          setSelection({ initializationKey, courses });
-          writeLocalStorage(courses, activeTerm);
-          markInitialized();
-        } else {
-          setSelection({ initializationKey, courses: [] });
-          writeLocalStorage([], activeTerm);
-          markInitialized();
-        }
-      })
-      .catch(async (err) => {
-        if (isAbortError(err)) return;
-
-        console.error(
-          "[useSelectedCourses] Failed to fetch schedule from DB:",
-          err,
-        );
-        toast.error("無法載入雲端課表", {
-          description: "已顯示本地儲存的課表，請檢查網路連線。",
-        });
-        if (localCodes.length > 0) {
-          const courses = await fetchCoursesByCode(
-            localCodes,
-            activeTerm,
-            abortController.signal,
-          );
-          if (isCurrentTerm()) {
-            setSelection({ initializationKey, courses });
-            markInitialized();
-          }
-        }
+    if (isAuthenticated) {
+      setCloudSchedule({
+        initializationKey: currentInitializationKey,
+        codes: loadedSelection.codes,
       });
+      if (loadedSelection.shouldWriteLocalStorage) {
+        writeLocalStorage(loadedSelection.courses, term);
+      }
+    }
 
-    return () => abortController.abort();
-  }, [
-    status,
-    isAuthenticated,
-    termStorageKey,
-    termAcademicYear,
-    termAcademicSemester,
-    currentInitializationKey,
-  ]);
+    setSelection({
+      initializationKey: currentInitializationKey,
+      courses: loadedSelection.courses,
+    });
+    initializedTermRef.current = currentInitializationKey;
+  }, [currentInitializationKey, isAuthenticated, loadedSelection, term]);
 
   // User-triggered setter — writes to localStorage (DB load never touches localStorage)
   const setSelectedCourses = (courses: Course[]) => {
@@ -232,11 +204,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       });
       writeLocalStorage(next, term);
 
-      toast.info("已移除課程", {
+      toast.add({
+        type: "info",
         description: `已將 ${courseToRemove.course_name} 從您的課表中移除。`,
-        action: {
-          label: "復原",
-          onClick: () => {
+        actionProps: {
+          children: "復原",
+          onClick() {
             const restored = [...next, courseToRemove];
             setSelection({
               initializationKey: currentInitializationKey,
@@ -252,7 +225,9 @@ export default function useSelectedCourses(term: CourseTerm | null) {
   const importCourses = (courses: Course[]) => {
     setSelection({ initializationKey: currentInitializationKey, courses });
     writeLocalStorage(courses, term);
-    toast.success("成功匯入課表！", {
+    toast.add({
+      type: "success",
+      title: "成功匯入課表！",
       description: `已匯入 ${courses.length} 門課程到您的課表中。`,
     });
   };
@@ -273,7 +248,10 @@ export default function useSelectedCourses(term: CourseTerm | null) {
       });
       writeLocalStorage(courses, term);
     } catch {
-      toast.error("復原失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "復原失敗，請稍後再試",
+      });
     }
   };
 
@@ -281,17 +259,26 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     if (isSyncing) return;
 
     if (!isAuthenticated) {
-      toast.success("課表已儲存到本地");
+      toast.add({
+        type: "success",
+        description: "課表已儲存到本地",
+      });
       return;
     }
 
     if (!term) {
-      toast.error("尚未選擇學期");
+      toast.add({
+        type: "error",
+        description: "尚未選擇學期",
+      });
       return;
     }
 
     if (!isReadyForSync || !currentInitializationKey) {
-      toast.error("課表仍在載入，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "課表仍在載入，請稍後再試",
+      });
       return;
     }
 
@@ -310,12 +297,21 @@ export default function useSelectedCourses(term: CourseTerm | null) {
           codes,
         });
         writeLocalStorage(selectedCourses, term); // localStorage now matches DB
-        toast.success("課表已同步到雲端");
+        toast.add({
+          type: "success",
+          description: "課表已同步到雲端",
+        });
       } else {
-        toast.error("同步失敗，請稍後再試");
+        toast.add({
+          type: "error",
+          description: "同步失敗，請稍後再試",
+        });
       }
     } catch {
-      toast.error("同步失敗，請稍後再試");
+      toast.add({
+        type: "error",
+        description: "同步失敗，請稍後再試",
+      });
     }
     setIsSyncing(false);
   };

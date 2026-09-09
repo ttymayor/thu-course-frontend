@@ -95,7 +95,7 @@ function CourseScheduleTimeline({
 
         return (
           <li
-            key={item._id || idx}
+            key={item.course_stage || idx}
             className="grid grid-cols-[1rem_minmax(0,1fr)] gap-3 pb-4 last:pb-0"
           >
             <div className="relative flex justify-center pt-4">
@@ -313,7 +313,7 @@ export default function CourseScheduleTable({
           <div className="size-2 rounded-full bg-yellow-400" />
         )}
         {picked.course_stage}
-        <span className="text-muted-foreground">·</span>
+        <span className="text-muted-foreground hidden sm:block">·</span>
         {isActive ? (
           <>
             <span>
@@ -322,7 +322,7 @@ export default function CourseScheduleTable({
             </span>
           </>
         ) : (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground hidden sm:block">
             {pickedStatus === "待公告" ? (
               "待公告"
             ) : (
@@ -335,7 +335,16 @@ export default function CourseScheduleTable({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>{badge}</PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <button
+            type="button"
+            className="inline-flex cursor-pointer appearance-none bg-transparent p-0 text-left"
+          >
+            {badge}
+          </button>
+        }
+      />
       <PopoverContent
         align="start"
         className="ring-foreground/10 bg-card/80 w-auto max-w-[90vw] rounded-lg border-none ring-1 backdrop-blur-xl"

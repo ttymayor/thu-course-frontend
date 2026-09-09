@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import SignIn from "@/components/SignIn";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import BaseLayout from "@/components/BaseLayout";
 
 const callbackUrlBase = "https://callback.local";
@@ -34,7 +34,7 @@ function SignInContent() {
 
   useEffect(() => {
     if (error) {
-      toast.error("登入失敗，請稍後再試");
+      toast.add({ type: "error", description: "登入失敗，請稍後再試" });
     }
   }, [error]);
 

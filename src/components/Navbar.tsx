@@ -85,20 +85,28 @@ export default function Navbar() {
               {NAVBAR_CONFIG.navigation.items.map((item, index) => (
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
-                    asChild
+                    render={
+                      <Link
+                        href={item.href}
+                        onClick={
+                          item.href === "/school-map"
+                            ? (event) => {
+                                event.preventDefault();
+                                window.location.assign(item.href);
+                              }
+                            : undefined
+                        }
+                        className="flex flex-row items-center gap-2"
+                      >
+                        {item.icon}
+                        {item.label}
+                      </Link>
+                    }
                     active={isActive(item.href)}
                     className={cn(
                       isActive(item.href) ? "bg-accent/50" : undefined,
                     )}
-                  >
-                    <Link
-                      href={item.href}
-                      className="flex flex-row items-center gap-2"
-                    >
-                      {item.icon}
-                      {item.label}
-                    </Link>
-                  </NavigationMenuLink>
+                  />
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
@@ -140,7 +148,14 @@ export default function Navbar() {
             aria-label="地圖"
             nativeButton={false}
             render={
-              <Link href={"/school-map"} className="flex flex-col items-center">
+              <Link
+                href="/school-map"
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.assign("/school-map");
+                }}
+                className="flex flex-col items-center"
+              >
                 <Map className="h-4 w-4" />
                 <span className="text-[10px]">地圖</span>
               </Link>

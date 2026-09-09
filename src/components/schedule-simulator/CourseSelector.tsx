@@ -100,7 +100,9 @@ function CourseSelectorContent({
     onCourseHover(course);
   };
 
-  const handleTermChange = (value: string) => {
+  const handleTermChange = (value: string | null) => {
+    if (!value) return;
+
     const [academicYear, academicSemester] = value.split("-").map(Number);
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.delete("page");
@@ -123,7 +125,7 @@ function CourseSelectorContent({
         onValueChange={handleTermChange}
         disabled={termOptions.length === 0}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full tabular-nums">
           <SelectValue placeholder="選擇學期" />
         </SelectTrigger>
         <SelectContent className="p-1">
@@ -131,6 +133,7 @@ function CourseSelectorContent({
             <SelectItem
               key={`${term.academic_year}-${term.academic_semester}`}
               value={`${term.academic_year}-${term.academic_semester}`}
+              className={"tabular-nums"}
             >
               {term.academic_year} 學年度第 {term.academic_semester} 學期
             </SelectItem>

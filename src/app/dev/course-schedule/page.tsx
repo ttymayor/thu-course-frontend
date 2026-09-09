@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CourseScheduleTable from "@/components/CourseScheduleTable";
 import { useHydrated } from "@/hooks/useHydrated";
 
@@ -104,10 +104,14 @@ type ScenarioKey = keyof Scenarios;
 
 export default function DevCourseSchedulePage() {
   const hydrated = useHydrated();
-  const [scenarios] = useState<Scenarios>(buildScenarios);
+  const [scenarios, setScenarios] = useState<Scenarios | null>(null);
   const [scenario, setScenario] = useState<ScenarioKey>("active");
 
-  if (!hydrated) return null;
+  useEffect(() => {
+    setScenarios(buildScenarios());
+  }, []);
+
+  if (!hydrated || !scenarios) return null;
 
   const current = scenarios[scenario];
 

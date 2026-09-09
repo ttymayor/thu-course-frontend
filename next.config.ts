@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   experimental: {
-    useCache: true,
+    // useCache: true,
   },
+  cacheComponents: true,
   images: {
     remotePatterns: [
       {

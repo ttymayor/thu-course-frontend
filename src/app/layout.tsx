@@ -9,9 +9,13 @@ import { MotionProvider } from "@/components/MotionProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeColorProvider } from "@/components/ThemeColorProvider";
 import SessionProvider from "@/components/SessionProvider";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/toast";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -82,17 +86,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        GeistSans.variable,
-        GeistMono.variable,
-        "font-sans",
-        geist.variable,
-      )}
+      className={cn(GeistSans.variable, GeistMono.variable, geist.variable)}
       suppressHydrationWarning
     >
-      <body className={`font-sans antialiased`}>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <GoogleAnalytics gaId="G-8CG8PZK1MJ" />
-        <Toaster richColors />
+        <Toaster />
         <MotionProvider>
           <SessionProvider>
             <ThemeColorProvider>

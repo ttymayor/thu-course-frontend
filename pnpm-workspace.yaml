@@ -1,19 +1,17 @@
 allowBuilds:
   esbuild: true
+  msgpackr-extract: true
   sharp: true
   unrs-resolver: true
-
 minimumReleaseAge: 10080
 trustPolicy: no-downgrade
 trustPolicyExclude:
-  - "jose@4.15.9"
-  - "reselect@5.1.1"
-  - "semver@6.3.1"
-
-ignoredBuiltDependencies:
-  - esbuild
-
-onlyBuiltDependencies:
-  - "@tailwindcss/oxide"
-  - sharp
-  - unrs-resolver
+  - jose@4.15.9
+  - reselect@5.1.1
+  - semver@6.3.1
+  - semver@5.7.2
+overrides:
+  "@types/react": 19.2.18
+  "@types/react-dom": 19.2.7
+minimumReleaseAgeExclude:
+  - "@types/react-dom@19.2.7"

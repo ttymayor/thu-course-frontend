@@ -7,6 +7,8 @@ import {
   Combobox,
   ComboboxContent,
   ComboboxGroup,
+  ComboboxCollection,
+  ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
   ComboboxLabel,
@@ -205,7 +207,8 @@ export default function Filter() {
         <Skeleton className="h-10 w-full" />
       ) : (
         <Combobox
-          items={departmentOptions}
+          items={departmentGroups}
+          filteredItems={filteredDepartmentGroups}
           value={selectedDepartmentOption}
           inputValue={departmentQuery}
           onValueChange={(dept) => {
@@ -225,25 +228,22 @@ export default function Filter() {
             showClear
           />
           <ComboboxContent>
+            <ComboboxEmpty>No items found.</ComboboxEmpty>
             <ComboboxList>
-              {filteredDepartmentGroups.length > 0 ? (
-                filteredDepartmentGroups.map((group, index) => (
-                  <ComboboxGroup key={group.label}>
-                    <ComboboxLabel>{group.label}</ComboboxLabel>
-                    {group.items.map((dept) => (
+              {(group, index) => (
+                <ComboboxGroup key={group.label} items={group.items}>
+                  <ComboboxLabel>{group.label}</ComboboxLabel>
+                  <ComboboxCollection>
+                    {(dept) => (
                       <ComboboxItem key={dept.value} value={dept}>
                         <span className="truncate">{dept.label}</span>
                       </ComboboxItem>
-                    ))}
-                    {index < filteredDepartmentGroups.length - 1 && (
-                      <ComboboxSeparator className="bg-foreground/10" />
                     )}
-                  </ComboboxGroup>
-                ))
-              ) : (
-                <div className="text-muted-foreground py-2 text-center text-sm">
-                  找不到系所。
-                </div>
+                  </ComboboxCollection>
+                  {index < filteredDepartmentGroups.length - 1 && (
+                    <ComboboxSeparator className="bg-foreground/10" />
+                  )}
+                </ComboboxGroup>
               )}
             </ComboboxList>
           </ComboboxContent>

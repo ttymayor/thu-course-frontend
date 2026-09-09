@@ -10,7 +10,7 @@ import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkelet
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useSelectedCourses from "@/hooks/useSelectedCourses";
 import useSWR from "swr";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import type { Session } from "next-auth";
 import {
   CourseTerm,
@@ -95,7 +95,10 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
   };
 
   const handleRejectShared = () => {
-    toast.info("已取消匯入");
+    toast.add({
+      type: "info",
+      description: "已取消匯入",
+    });
     const params = selectedTerm
       ? `?year=${selectedTerm.academic_year}&semester=${selectedTerm.academic_semester}`
       : "";
