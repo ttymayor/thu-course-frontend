@@ -58,15 +58,19 @@ export function CourseDetailDialog({
         {!isLoading && fetchedCourse && (
           <>
             <DetailView courseInfo={fetchedCourse} />
-            <Button className="w-full rounded-xl" asChild>
-              <Link
-                href={`/course-info/term/${fetchedCourse.academic_year}/${fetchedCourse.academic_semester}/${fetchedCourse.course_code}`}
-                prefetch={false}
-              >
-                <ExternalLink />
-                課程詳細頁面
-              </Link>
-            </Button>
+            <Button
+              className="w-full rounded-xl"
+              nativeButton={false}
+              render={
+                <Link
+                  href={`/course-info/term/${fetchedCourse.academic_year}/${fetchedCourse.academic_semester}/${fetchedCourse.course_code}`}
+                  prefetch={false}
+                >
+                  <ExternalLink />
+                  課程詳細頁面
+                </Link>
+              }
+            />
           </>
         )}
         {!isLoading && !fetchedCourse && courseCode && (

@@ -97,24 +97,34 @@ export default function DetailView({ courseInfo }: { courseInfo: Course }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link
-              href={`https://course.thu.edu.tw/view/${courseInfo.academic_year}/${courseInfo.academic_semester}/${courseInfo.course_code}`}
-              target="_blank"
-              prefetch={false}
-            >
-              <Globe /> 課程資訊
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link
-              href={`http://desc.ithu.tw/${courseInfo.academic_year}/${courseInfo.academic_semester}/${courseInfo.course_code}`}
-              target="_blank"
-              prefetch={false}
-            >
-              <FileText /> 授課大綱
-            </Link>
-          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            render={
+              <Link
+                href={`https://course.thu.edu.tw/view/${courseInfo.academic_year}/${courseInfo.academic_semester}/${courseInfo.course_code}`}
+                target="_blank"
+                prefetch={false}
+              >
+                <Globe /> 課程資訊
+              </Link>
+            }
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            render={
+              <Link
+                href={`http://desc.ithu.tw/${courseInfo.academic_year}/${courseInfo.academic_semester}/${courseInfo.course_code}`}
+                target="_blank"
+                prefetch={false}
+              >
+                <FileText /> 授課大綱
+              </Link>
+            }
+          />
           <Button
             variant="outline"
             size={"icon-sm"}

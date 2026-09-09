@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHydrated } from "@/hooks/useHydrated";
 import {
   Popover,
   PopoverContent,
@@ -191,15 +192,22 @@ function formatTimeUntilStart(ms: number): string {
   return `將於 ${seconds} 秒後開始`;
 }
 
+function compareByStartTime(a: CourseScheduleData, b: CourseScheduleData) {
+  return (
+    (getTime(a.start_time) ?? Infinity) - (getTime(b.start_time) ?? Infinity)
+  );
+}
+
 function TimeLeft({ endTime }: { endTime: string }) {
   const end = new Date(endTime).getTime();
   const [msLeft, setMsLeft] = useState(() => end - Date.now());
+  const updateEverySecond = msLeft < 3600_000;
 
   useEffect(() => {
-    const interval = msLeft < 3600_000 ? 1000 : 60_000;
+    const interval = updateEverySecond ? 1000 : 60_000;
     const timer = setInterval(() => setMsLeft(end - Date.now()), interval);
     return () => clearInterval(timer);
-  }, [end, msLeft < 3600_000]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [end, updateEverySecond]);
 
   return (
     <span className="text-muted-foreground inline text-[10px]">
@@ -211,12 +219,13 @@ function TimeLeft({ endTime }: { endTime: string }) {
 function TimeUntilStart({ startTime }: { startTime: string }) {
   const start = new Date(startTime).getTime();
   const [msLeft, setMsLeft] = useState(() => start - Date.now());
+  const updateEverySecond = msLeft < 3600_000;
 
   useEffect(() => {
-    const interval = msLeft < 3600_000 ? 1000 : 60_000;
+    const interval = updateEverySecond ? 1000 : 60_000;
     const timer = setInterval(() => setMsLeft(start - Date.now()), interval);
     return () => clearInterval(timer);
-  }, [start, msLeft < 3600_000]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [start, updateEverySecond]);
 
   return <span>{formatTimeUntilStart(msLeft)}</span>;
 }
@@ -225,10 +234,9 @@ function pickSchedule(
   schedules: CourseScheduleData[],
   now: number = Date.now(),
 ): CourseScheduleData | "ended" {
-  const sorted = [...schedules].sort(
-    (a, b) =>
-      (getTime(a.start_time) ?? Infinity) - (getTime(b.start_time) ?? Infinity),
-  );
+  const sorted =
+    schedules.toSorted?.(compareByStartTime) ??
+    schedules.slice().sort(compareByStartTime);
   const active = sorted.find(
     (s) => computeStatus(s.start_time, s.end_time, now) === "開放中",
   );
@@ -247,22 +255,19 @@ export default function CourseScheduleTable({
 }: {
   schedules: CourseScheduleData[];
 }) {
-  const [mounted, setMounted] = useState(false);
+  const hydrated = useHydrated();
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    setMounted(true);
-    setNow(Date.now());
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const picked = mounted ? pickSchedule(schedules, now) : null;
+  const picked = hydrated ? pickSchedule(schedules, now) : null;
 
-  const sorted = [...schedules].sort(
-    (a, b) =>
-      (getTime(a.start_time) ?? Infinity) - (getTime(b.start_time) ?? Infinity),
-  );
+  const sorted =
+    schedules.toSorted?.(compareByStartTime) ??
+    schedules.slice().sort(compareByStartTime);
   const visibleSchedules = sorted.every(
     (item) => computeStatus(item.start_time, item.end_time, now) === "已結束",
   )
@@ -273,7 +278,7 @@ export default function CourseScheduleTable({
       );
   const nextUpcomingSchedule = getNextUpcomingSchedule(visibleSchedules, now);
 
-  if (!mounted || picked === null) {
+  if (!hydrated || picked === null) {
     return <Skeleton className="h-5 w-32 rounded-full" />;
   }
 

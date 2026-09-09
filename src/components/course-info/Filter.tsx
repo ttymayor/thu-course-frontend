@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import {
@@ -63,7 +63,9 @@ export default function Filter() {
   const [selectedDepartment, setSelectedDepartment] = useState(
     currentSelectedDepartment,
   );
-  const [departmentQuery, setDepartmentQuery] = useState("");
+  const [departmentQueryOverride, setDepartmentQueryOverride] = useState<
+    string | null
+  >(null);
 
   const [isPending, debounceTransition] = useDebounceTransition();
 
@@ -131,6 +133,12 @@ export default function Filter() {
   ];
 
   const departmentOptions = departmentGroups.flatMap((group) => group.items);
+  const selectedDepartmentOption = selectedDepartment
+    ? (departmentOptions.find((dept) => dept.value === selectedDepartment) ??
+      null)
+    : null;
+  const selectedDepartmentLabel = selectedDepartmentOption?.label ?? "";
+  const departmentQuery = departmentQueryOverride ?? selectedDepartmentLabel;
   const normalizedDepartmentQuery = normalizeSearchText(departmentQuery);
   const filteredDepartmentGroups = normalizedDepartmentQuery
     ? departmentGroups
@@ -144,18 +152,6 @@ export default function Filter() {
         }))
         .filter((group) => group.items.length > 0)
     : departmentGroups;
-
-  const selectedDepartmentOption = selectedDepartment
-    ? (departmentOptions.find((dept) => dept.value === selectedDepartment) ??
-      null)
-    : null;
-  const selectedDepartmentLabel = selectedDepartmentOption?.label ?? "";
-
-  useEffect(() => {
-    if (selectedDepartmentLabel) {
-      setDepartmentQuery(selectedDepartmentLabel);
-    }
-  }, [selectedDepartmentLabel]);
 
   const buildCleanSearchParams = () => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -197,7 +193,7 @@ export default function Filter() {
   };
 
   const handleDepartmentInputChange = (value: string) => {
-    setDepartmentQuery(value);
+    setDepartmentQueryOverride(value);
     if (selectedDepartmentOption && value !== selectedDepartmentOption.label) {
       handleDepartmentChange("");
     }
@@ -213,7 +209,7 @@ export default function Filter() {
           value={selectedDepartmentOption}
           inputValue={departmentQuery}
           onValueChange={(dept) => {
-            setDepartmentQuery(dept?.label ?? "");
+            setDepartmentQueryOverride(dept?.label ?? "");
             handleDepartmentChange(dept?.value ?? "");
           }}
           onInputValueChange={handleDepartmentInputChange}

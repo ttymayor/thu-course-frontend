@@ -111,35 +111,41 @@ export default function Navbar() {
             variant="ghost"
             className="gap-1 rounded-full"
             size="icon-lg"
-            asChild
-          >
-            <Link href={"/"} className="flex flex-col items-center">
-              <Home className="h-4 w-4" />
-              <span className="text-[10px]">首頁</span>
-            </Link>
-          </Button>
+            aria-label="首頁"
+            nativeButton={false}
+            render={
+              <Link href={"/"} className="flex flex-col items-center">
+                <Home className="h-4 w-4" />
+                <span className="text-[10px]">首頁</span>
+              </Link>
+            }
+          />
           <Button
             variant="ghost"
             className="gap-1 rounded-full"
             size="icon-lg"
-            asChild
-          >
-            <Link href={"/bookmarks"} className="flex flex-col items-center">
-              <Bookmark className="h-4 w-4" />
-              <span className="text-[10px]">書籤</span>
-            </Link>
-          </Button>
+            aria-label="書籤"
+            nativeButton={false}
+            render={
+              <Link href={"/bookmarks"} className="flex flex-col items-center">
+                <Bookmark className="h-4 w-4" />
+                <span className="text-[10px]">書籤</span>
+              </Link>
+            }
+          />
           <Button
             variant="ghost"
             className="gap-1 rounded-full"
             size="icon-lg"
-            asChild
-          >
-            <Link href={"/school-map"} className="flex flex-col items-center">
-              <Map className="h-4 w-4" />
-              <span className="text-[10px]">地圖</span>
-            </Link>
-          </Button>
+            aria-label="地圖"
+            nativeButton={false}
+            render={
+              <Link href={"/school-map"} className="flex flex-col items-center">
+                <Map className="h-4 w-4" />
+                <span className="text-[10px]">地圖</span>
+              </Link>
+            }
+          />
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer flex-col items-center justify-center gap-1 rounded-full">
@@ -182,16 +188,18 @@ export default function Navbar() {
               variant="ghost"
               className="gap-1 rounded-full"
               size="icon-lg"
-              asChild
-            >
-              <Link
-                href={"/auth/signin"}
-                className="flex flex-col items-center"
-              >
-                <LogIn className="h-4 w-4" />
-                <span className="text-[10px]">登入</span>
-              </Link>
-            </Button>
+              aria-label="登入"
+              nativeButton={false}
+              render={
+                <Link
+                  href={"/auth/signin"}
+                  className="flex flex-col items-center"
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span className="text-[10px]">登入</span>
+                </Link>
+              }
+            />
           )}
         </div>
 
@@ -229,11 +237,17 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/auth/signin">
-                <LogIn className="h-5 w-5" />
-              </Link>
-            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              nativeButton={false}
+              aria-label="登入"
+              render={
+                <Link href="/auth/signin">
+                  <LogIn className="h-5 w-5" />
+                </Link>
+              }
+            />
           )}
         </div>
       </div>

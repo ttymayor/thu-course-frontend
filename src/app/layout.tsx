@@ -5,10 +5,15 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { MotionProvider } from "@/components/MotionProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeColorProvider } from "@/components/ThemeColorProvider";
 import SessionProvider from "@/components/SessionProvider";
 import { Toaster } from "sonner";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://thc.ttymayor.com"),
@@ -77,28 +82,35 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={cn(
+        GeistSans.variable,
+        GeistMono.variable,
+        "font-sans",
+        geist.variable,
+      )}
       suppressHydrationWarning
     >
       <body className={`font-sans antialiased`}>
         <GoogleAnalytics gaId="G-8CG8PZK1MJ" />
         <Toaster richColors />
-        <SessionProvider>
-          <ThemeColorProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <div className="flex-1">{children}</div>
-                <Footer />
-              </div>
-            </ThemeProvider>
-          </ThemeColorProvider>
-        </SessionProvider>
+        <MotionProvider>
+          <SessionProvider>
+            <ThemeColorProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <div className="flex min-h-screen flex-col">
+                  <Navbar />
+                  <div className="flex-1">{children}</div>
+                  <Footer />
+                </div>
+              </ThemeProvider>
+            </ThemeColorProvider>
+          </SessionProvider>
+        </MotionProvider>
       </body>
     </html>
   );

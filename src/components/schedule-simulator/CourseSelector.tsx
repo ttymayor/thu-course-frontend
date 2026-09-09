@@ -153,7 +153,7 @@ function CourseSelectorContent({
             載入課程資料時發生錯誤，請稍後再試。
           </div>
         ) : (
-          <div className="h-full overflow-auto">
+          <div className="h-full scrollbar-thin overflow-auto">
             <CourseList
               courses={showSelectedCourses ? selectedCourses : courses}
               selectedCourseCodes={

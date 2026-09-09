@@ -26,6 +26,28 @@ import { ArrowUpFromLine, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 
+interface FeedbackFormData {
+  type: string;
+  subject: string;
+  message: string;
+  is_anonymous: boolean;
+}
+
+async function submitFeedback(formData: FeedbackFormData) {
+  const res = await fetch("/api/feedback", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Something went wrong");
+  }
+}
+
 export default function FeedbackForm() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,19 +77,7 @@ export default function FeedbackForm() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
+      await submitFeedback(formData);
 
       toast.success("回饋已送出", {
         description: "感謝您的寶貴意見！我們會盡快處理。",
@@ -87,9 +97,8 @@ export default function FeedbackForm() {
       toast.error("發送失敗", {
         description: error instanceof Error ? error.message : "請稍後再試",
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (

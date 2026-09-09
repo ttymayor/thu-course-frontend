@@ -2,18 +2,16 @@
 
 ## [2.2.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.1.0...v2.2.0) (2026-06-19)
 
-
 ### Features
 
-* **bookmarks:** implement retry logic for updating bookmark terms ([d329f79](https://github.com/ttymayor/thu-course-frontend/commit/d329f799fa73833bd13a9d606d82564c6915cdb1))
-* support multi-term course data ([833214b](https://github.com/ttymayor/thu-course-frontend/commit/833214be01625fb19abc429c179c4ad70c031fa4))
-
+- **bookmarks:** implement retry logic for updating bookmark terms ([d329f79](https://github.com/ttymayor/thu-course-frontend/commit/d329f799fa73833bd13a9d606d82564c6915cdb1))
+- support multi-term course data ([833214b](https://github.com/ttymayor/thu-course-frontend/commit/833214be01625fb19abc429c179c4ad70c031fa4))
 
 ### Bug Fixes
 
-* address multi-term review feedback ([5d76a9f](https://github.com/ttymayor/thu-course-frontend/commit/5d76a9f503adab135b93c238fd309871fae45a3d))
-* **auth:** backfill user default fields ([d5e9ad9](https://github.com/ttymayor/thu-course-frontend/commit/d5e9ad909578bea8161bce4a4ffcc3543c43f668))
-* preserve saved course data by term ([40148b8](https://github.com/ttymayor/thu-course-frontend/commit/40148b84390e8328e82bb3e4c225ff8499cdc90a))
+- address multi-term review feedback ([5d76a9f](https://github.com/ttymayor/thu-course-frontend/commit/5d76a9f503adab135b93c238fd309871fae45a3d))
+- **auth:** backfill user default fields ([d5e9ad9](https://github.com/ttymayor/thu-course-frontend/commit/d5e9ad909578bea8161bce4a4ffcc3543c43f668))
+- preserve saved course data by term ([40148b8](https://github.com/ttymayor/thu-course-frontend/commit/40148b84390e8328e82bb3e4c225ff8499cdc90a))
 
 ## [2.1.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.0.0...v2.1.0) (2026-06-13)
 

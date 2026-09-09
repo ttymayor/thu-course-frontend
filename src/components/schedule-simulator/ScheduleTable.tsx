@@ -246,6 +246,7 @@ export default function ScheduleTable({
                               )}
                             >
                               <button
+                                type="button"
                                 className="flex h-full w-full cursor-pointer flex-col justify-center"
                                 onClick={() => setDetailCourse(course)}
                               >

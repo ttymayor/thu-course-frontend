@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CourseScheduleTable from "@/components/CourseScheduleTable";
+import { useHydrated } from "@/hooks/useHydrated";
 
 const h = (offset: number) =>
   new Date(Date.now() + offset * 60 * 60 * 1000).toISOString();
@@ -102,12 +103,11 @@ type Scenarios = ReturnType<typeof buildScenarios>;
 type ScenarioKey = keyof Scenarios;
 
 export default function DevCourseSchedulePage() {
-  const [scenarios, setScenarios] = useState<Scenarios | null>(null);
+  const hydrated = useHydrated();
+  const [scenarios] = useState<Scenarios>(buildScenarios);
   const [scenario, setScenario] = useState<ScenarioKey>("active");
 
-  useEffect(() => setScenarios(buildScenarios()), []);
-
-  if (!scenarios) return null;
+  if (!hydrated) return null;
 
   const current = scenarios[scenario];
 
@@ -123,6 +123,7 @@ export default function DevCourseSchedulePage() {
       <div className="flex flex-wrap gap-2">
         {(Object.keys(scenarios) as ScenarioKey[]).map((key) => (
           <button
+            type="button"
             key={key}
             onClick={() => setScenario(key)}
             className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${

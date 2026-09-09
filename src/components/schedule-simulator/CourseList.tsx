@@ -8,7 +8,6 @@ import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
 import { courseTimeParser } from "@/lib/courseTimeParser";
 import { Course } from "@/types/course";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, Clock, MapPin, Star, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -36,7 +35,7 @@ export default function CourseList({
 
   return (
     <TooltipProvider>
-      <ScrollArea className="h-150">
+      <div className="h-150">
         <div className="grid grid-cols-1 gap-2 p-px">
           {courses.map((course: Course) => {
             const parsedClassTimes = courseTimeParser(
@@ -190,7 +189,7 @@ export default function CourseList({
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </TooltipProvider>
   );
 }

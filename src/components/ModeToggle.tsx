@@ -2,8 +2,8 @@
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useHydrated } from "@/hooks/useHydrated";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,24 +52,26 @@ export default function ModeToggle() {
 
 export function ModeToggleList() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const activeTheme = mounted ? theme : undefined;
+  const hydrated = useHydrated();
+  const activeTheme = hydrated ? theme : undefined;
   return (
     <div className="flex flex-row items-center gap-2 rounded-full px-2 py-1">
       <button
+        type="button"
         onClick={() => setTheme("light")}
         className={`border-bg-foreground rounded-full border p-px ${activeTheme === "light" ? "bg-accent" : ""}`}
       >
         <Sun className="size-3" />
       </button>
       <button
+        type="button"
         onClick={() => setTheme("dark")}
         className={`border-bg-foreground rounded-full border p-px ${activeTheme === "dark" ? "bg-accent" : ""}`}
       >
         <Moon className="size-3" />
       </button>
       <button
+        type="button"
         onClick={() => setTheme("system")}
         className={`border-bg-foreground rounded-full border p-px ${activeTheme === "system" ? "bg-accent" : ""}`}
       >
