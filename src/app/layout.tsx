@@ -10,6 +10,10 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeColorProvider } from "@/components/ThemeColorProvider";
 import SessionProvider from "@/components/SessionProvider";
 import { Toaster } from "sonner";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://thc.ttymayor.com"),
@@ -78,7 +82,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={cn(
+        GeistSans.variable,
+        GeistMono.variable,
+        "font-sans",
+        geist.variable,
+      )}
       suppressHydrationWarning
     >
       <body className={`font-sans antialiased`}>

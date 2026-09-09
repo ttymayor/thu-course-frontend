@@ -56,12 +56,17 @@ function ErrorContent() {
         <CardDescription>{errorInfo.description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button asChild className="w-full">
-          <Link href="/auth/signin">返回登入頁面</Link>
-        </Button>
-        <Button asChild variant="outline" className="w-full">
-          <Link href="/">返回首頁</Link>
-        </Button>
+        <Button
+          nativeButton={false}
+          render={<Link href="/auth/signin">返回登入頁面</Link>}
+          className="w-full"
+        ></Button>
+        <Button
+          nativeButton={false}
+          render={<Link href="/">返回首頁</Link>}
+          variant="outline"
+          className="w-full"
+        ></Button>
       </CardContent>
     </Card>
   );
