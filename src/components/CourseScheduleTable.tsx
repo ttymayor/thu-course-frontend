@@ -95,7 +95,7 @@ function CourseScheduleTimeline({
 
         return (
           <li
-            key={item._id || idx}
+            key={item.course_stage || idx}
             className="grid grid-cols-[1rem_minmax(0,1fr)] gap-3 pb-4 last:pb-0"
           >
             <div className="relative flex justify-center pt-4">
