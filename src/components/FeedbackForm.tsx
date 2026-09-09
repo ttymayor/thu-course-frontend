@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -103,6 +104,12 @@ export default function FeedbackForm() {
     setLoading(false);
   };
 
+  const feedbackTypeOptions = [
+    { label: "Feature", value: "feature" },
+    { label: "Bug", value: "bug" },
+    { label: "Other", value: "other" },
+  ];
+
   return (
     <Card className="mx-auto w-full max-w-2xl">
       <CardHeader>
@@ -126,23 +133,36 @@ export default function FeedbackForm() {
             <Select
               value={formData.type}
               onValueChange={handleTypeChange}
+              items={feedbackTypeOptions}
               required
             >
-              <SelectTrigger id="type">
-                <SelectValue placeholder="選擇類型" />
+              <SelectTrigger id="type" className="w-1/2">
+                <SelectValue placeholder="選擇類型">
+                  {(value) => {
+                    const option = feedbackTypeOptions.find(
+                      (item) => item.value === value,
+                    );
+
+                    return option ? (
+                      <>
+                        <Badge className="rounded-full">{option.label}</Badge>
+                        {option.label}
+                      </>
+                    ) : (
+                      "選擇類型"
+                    );
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="feature">
-                  <Badge className="rounded-full bg-green-100">Feature</Badge>
-                  功能建議
-                </SelectItem>
-                <SelectItem value="bug">
-                  <Badge className="rounded-full bg-red-100">Bug</Badge>
-                  回報問題
-                </SelectItem>
-                <SelectItem value="other">
-                  <Badge className="rounded-full bg-gray-100">Other</Badge>其他
-                </SelectItem>
+                <SelectGroup>
+                  {feedbackTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <Badge className="rounded-full">{option.label}</Badge>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
