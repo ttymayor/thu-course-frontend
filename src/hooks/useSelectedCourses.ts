@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useReducer } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
 import { useSession } from "next-auth/react";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
@@ -92,15 +92,12 @@ export default function useSelectedCourses(term: CourseTerm | null) {
     cloudSchedule.initializationKey === currentInitializationKey;
 
   // Dirty only after both schedules have loaded for the current term.
-  const isDirty = useMemo(() => {
-    if (!isReadyForSync) return false;
-    const currentSorted = selectedCourses
-      .map((c) => c.course_code)
+  const isDirty =
+    isReadyForSync &&
+    selectedCourses
+      .map((course) => course.course_code)
       .sort()
-      .join(",");
-    const dbSorted = (dbCodes.toSorted?.() ?? dbCodes.slice().sort()).join(",");
-    return currentSorted !== dbSorted;
-  }, [selectedCourses, dbCodes, isReadyForSync]);
+      .join(",") !== (dbCodes.toSorted?.() ?? dbCodes.slice().sort()).join(",");
 
   useEffect(() => {
     if (

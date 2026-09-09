@@ -111,6 +111,7 @@ export default function Navbar() {
             variant="ghost"
             className="gap-1 rounded-full"
             size="icon-lg"
+            aria-label="首頁"
             nativeButton={false}
             render={
               <Link href={"/"} className="flex flex-col items-center">
@@ -123,6 +124,7 @@ export default function Navbar() {
             variant="ghost"
             className="gap-1 rounded-full"
             size="icon-lg"
+            aria-label="書籤"
             nativeButton={false}
             render={
               <Link href={"/bookmarks"} className="flex flex-col items-center">
@@ -135,6 +137,7 @@ export default function Navbar() {
             variant="ghost"
             className="gap-1 rounded-full"
             size="icon-lg"
+            aria-label="地圖"
             nativeButton={false}
             render={
               <Link href={"/school-map"} className="flex flex-col items-center">
@@ -185,6 +188,7 @@ export default function Navbar() {
               variant="ghost"
               className="gap-1 rounded-full"
               size="icon-lg"
+              aria-label="登入"
               nativeButton={false}
               render={
                 <Link
@@ -237,6 +241,7 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               nativeButton={false}
+              aria-label="登入"
               render={
                 <Link href="/auth/signin">
                   <LogIn className="h-5 w-5" />
