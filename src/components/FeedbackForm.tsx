@@ -106,20 +106,23 @@ export default function FeedbackForm() {
 
   const feedbackTypeOptions = [
     {
-      label: "Feature",
+      label: "功能點子",
       value: "feature",
+      badgeLabel: "Feature",
       badgeClassName:
         "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
     },
     {
-      label: "Bug",
+      label: "問題回報",
       value: "bug",
+      badgeLabel: "Bug",
       badgeClassName:
         "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
     },
     {
-      label: "Other",
+      label: "其他",
       value: "other",
+      badgeLabel: "Other",
       badgeClassName:
         "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
     },
@@ -142,8 +145,8 @@ export default function FeedbackForm() {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4 pb-4">
-          <div className="space-y-2">
+        <CardContent className="flex flex-col gap-4 pb-4">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="type">回饋類型</Label>
             <Select
               value={formData.type}
@@ -163,7 +166,7 @@ export default function FeedbackForm() {
                         <Badge
                           className={`rounded-full ${option.badgeClassName}`}
                         >
-                          {option.label}
+                          {option.badgeLabel}
                         </Badge>
                         {option.label}
                       </>
@@ -180,7 +183,7 @@ export default function FeedbackForm() {
                       <Badge
                         className={`rounded-full ${option.badgeClassName}`}
                       >
-                        {option.label}
+                        {option.badgeLabel}
                       </Badge>
                       {option.label}
                     </SelectItem>
@@ -190,7 +193,7 @@ export default function FeedbackForm() {
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="subject">標題</Label>
             <Input
               id="subject"
@@ -203,7 +206,7 @@ export default function FeedbackForm() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="message">詳細內容</Label>
             <Textarea
               id="message"
@@ -221,7 +224,7 @@ export default function FeedbackForm() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Checkbox
               id="is_anonymous"
               checked={formData.is_anonymous}
