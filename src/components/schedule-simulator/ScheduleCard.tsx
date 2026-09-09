@@ -33,6 +33,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -433,20 +434,22 @@ export default function ScheduleCard({
                   }
                 />
                 <DropdownMenuContent align="end" className="w-auto">
-                  <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem
-                    checked={compactView}
-                    onCheckedChange={setCompactView}
-                  >
-                    精簡模式
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={showTimeProgress}
-                    onCheckedChange={setShowTimeProgress}
-                  >
-                    顯示時間進度
-                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>顯示偏好</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem
+                      checked={compactView}
+                      onCheckedChange={setCompactView}
+                    >
+                      精簡模式
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={showTimeProgress}
+                      onCheckedChange={setShowTimeProgress}
+                    >
+                      顯示時間進度
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             </ButtonGroup>
