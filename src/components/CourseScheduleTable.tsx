@@ -313,7 +313,7 @@ export default function CourseScheduleTable({
           <div className="size-2 rounded-full bg-yellow-400" />
         )}
         {picked.course_stage}
-        <span className="text-muted-foreground">·</span>
+        <span className="text-muted-foreground hidden sm:block">·</span>
         {isActive ? (
           <>
             <span>
@@ -322,7 +322,7 @@ export default function CourseScheduleTable({
             </span>
           </>
         ) : (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground hidden sm:block">
             {pickedStatus === "待公告" ? (
               "待公告"
             ) : (
