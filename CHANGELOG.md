@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.4.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.3.0...v2.4.0) (2026-09-09)
+
+
+### Features
+
+* **cache:** add route opt-outs for cache components migration ([69f23fe](https://github.com/ttymayor/thu-course-frontend/commit/69f23fec4d12f7bcacc9e1e906d45fc4650326a1))
+* **feedback:** localize type option labels and modernize layout ([be27308](https://github.com/ttymayor/thu-course-frontend/commit/be2730812f41d998384b960d9c843cee1f1abe51))
+* **ui:** add Empty component and display empty states in course detail view ([a703d1a](https://github.com/ttymayor/thu-course-frontend/commit/a703d1a3d77db9339b984d0c7903226f08a1ad1f))
+* **ui:** migrate toast notifications from sonner to Base UI toast ([0c1c3f9](https://github.com/ttymayor/thu-course-frontend/commit/0c1c3f927f63c6b25e88cec059485a268e8d3511))
+
+
+### Bug Fixes
+
+* **course-info:** render grouped departments with ComboboxCollection ([f6ceb00](https://github.com/ttymayor/thu-course-frontend/commit/f6ceb004a6f866a2d7d99d235ae503a00d6790ab))
+* **feedback:** render selected type badge ([855a150](https://github.com/ttymayor/thu-course-frontend/commit/855a1506a969d91a2dcbb05725b2ca187354fba0))
+* **feedback:** replace connection call with instant opt-out ([bb36e22](https://github.com/ttymayor/thu-course-frontend/commit/bb36e2252c4330d42b8c15486ededc131b150aa0))
+* **schedule:** use course_stage as timeline item key ([942cc65](https://github.com/ttymayor/thu-course-frontend/commit/942cc65071e053f26bf95548bfff0eebb945cacc))
+* **school-map:** force full page navigation and add map key ([f94eaa0](https://github.com/ttymayor/thu-course-frontend/commit/f94eaa0691e7428532774c0a1ec51fe2be969b07))
+* **ui:** group schedule menu preferences ([5939ab0](https://github.com/ttymayor/thu-course-frontend/commit/5939ab0337aae2976bd32a8065c5aec7e7a2480e))
+* **ui:** preserve button semantics for schedule popover ([d994644](https://github.com/ttymayor/thu-course-frontend/commit/d99464477886f90774e1bb953c0d4a9be8822f04))
+
+
+### Performance Improvements
+
+* **course:** fetch count and courses concurrently ([30224d5](https://github.com/ttymayor/thu-course-frontend/commit/30224d5d0a39b34055a1c051f803b2134ca55360))
+
 ## [2.3.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.2.0...v2.3.0) (2026-09-09)
 
 ### Features
