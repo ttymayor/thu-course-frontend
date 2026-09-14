@@ -1,16 +1,26 @@
 "use client";
 
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CourseTypeMap } from "@/components/course-info/types";
-import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
-import { courseTimeParser } from "@/lib/courseTimeParser";
-import { Course } from "@/types/course";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useState } from "react";
 import { AlertCircle, Clock, MapPin, Star, User } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { CourseTypeMap } from "@/components/course-info/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { courseTimeParser } from "@/lib/courseTimeParser";
+import { checkScheduleConflict } from "@/lib/scheduleConflictChecker";
+import { cn } from "@/lib/utils";
+import { Course } from "@/types/course";
 
 interface CourseListProps {
   courses: Course[];
@@ -31,6 +41,35 @@ export default function CourseList({
     1: "必修",
     2: "必選",
     3: "選修",
+  };
+
+  const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
+  const pendingConflict = pendingCourse
+    ? checkScheduleConflict(selectedCourses, pendingCourse)
+    : null;
+
+  const handleSelectionChange = (course: Course, isSelected: boolean) => {
+    if (!isSelected) {
+      onSelectionChange(course, false);
+      return;
+    }
+
+    if (checkScheduleConflict(selectedCourses, course).hasConflict) {
+      setPendingCourse(course);
+      return;
+    }
+
+    onSelectionChange(course, true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) setPendingCourse(null);
+  };
+
+  const confirmConflictingCourse = () => {
+    if (!pendingCourse) return;
+    onSelectionChange(pendingCourse, true);
+    setPendingCourse(null);
   };
 
   return (
@@ -74,10 +113,10 @@ export default function CourseList({
                     <Checkbox
                       checked={isSelected}
                       onCheckedChange={(checked) =>
-                        onSelectionChange(course, !!checked)
+                        handleSelectionChange(course, !!checked)
                       }
-                      disabled={course.is_closed || hasConflict}
-                      className={`border-foreground/10 size-5 ${hasConflict || course.is_closed ? "cursor-not-allowed" : "data-[state=checked]:bg-primary cursor-pointer"}`}
+                      disabled={course.is_closed}
+                      className={`border-foreground/10 size-5 ${course.is_closed ? "cursor-not-allowed" : "data-[state=checked]:bg-primary cursor-pointer"}`}
                     />
 
                     <div className="flex flex-1 items-center gap-1">
@@ -190,6 +229,45 @@ export default function CourseList({
           )}
         </div>
       </div>
+      <Dialog
+        open={pendingCourse !== null}
+        onOpenChange={handleDialogOpenChange}
+      >
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="text-destructive size-5" />
+              課程時間衝突
+            </DialogTitle>
+            <DialogDescription>
+              「{pendingCourse?.course_name}
+              」與課表中的課程時間重疊，仍要加入課表嗎？
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="text-muted-foreground space-y-1 text-sm">
+            {pendingConflict?.conflictingCourses.map(
+              ({ existingCourse, conflictingSlots }) => (
+                <li key={existingCourse.course_code}>
+                  {existingCourse.course_name}：{" "}
+                  {conflictingSlots
+                    .map(
+                      (slot) => `${slot.day} 第 ${slot.periods.join("、")} 節`,
+                    )
+                    .join("；")}
+                </li>
+              ),
+            )}
+          </ul>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPendingCourse(null)}>
+              取消
+            </Button>
+            <Button variant="destructive" onClick={confirmConflictingCourse}>
+              仍要加入
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }

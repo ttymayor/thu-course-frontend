@@ -176,11 +176,11 @@ function CourseSelectorContent({
 
 export default function CourseSelector(props: CourseSelectorProps) {
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader>
         <CardTitle className="text-lg font-bold">課程選擇</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-w-0">
         <Suspense fallback={<CourseListSkeleton />}>
           <CourseSelectorContent {...props} />
         </Suspense>
