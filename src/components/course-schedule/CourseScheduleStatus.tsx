@@ -12,13 +12,7 @@ import { zhTW } from "react-day-picker/locale";
 
 import { Badge } from "@/components/ui/badge";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -45,6 +39,7 @@ function getTime(dateStr: string) {
 
 const TAIPEI_OFFSET_MS = 8 * 60 * 60 * 1000;
 const MAX_VISIBLE_DAY_SEGMENTS = 3;
+const MAX_TIMEOUT_MS = 2_147_483_647;
 
 function getTaipeiDate(time: number) {
   return new Date(time + TAIPEI_OFFSET_MS);
@@ -139,6 +134,52 @@ function getDisplayStatus(
     return "將開始";
   }
   return status;
+}
+function getNextScheduleTransition(schedules: CourseSchedule[], now: number) {
+  let nextTransition: number | null = null;
+
+  for (const schedule of schedules) {
+    const start = getTime(schedule.start_time);
+    const end = getTime(schedule.end_time);
+
+    for (const transition of [start, end === null ? null : end + 1]) {
+      if (
+        transition !== null &&
+        transition > now &&
+        (nextTransition === null || transition < nextTransition)
+      ) {
+        nextTransition = transition;
+      }
+    }
+  }
+  const taipei = getTaipeiDate(now);
+  const nextTaipeiDay =
+    Date.UTC(
+      taipei.getUTCFullYear(),
+      taipei.getUTCMonth(),
+      taipei.getUTCDate() + 1,
+    ) - TAIPEI_OFFSET_MS;
+
+  if (nextTransition === null || nextTaipeiDay < nextTransition) {
+    nextTransition = nextTaipeiDay;
+  }
+
+  return nextTransition;
+}
+
+function useScheduleTransitionTime(schedules: CourseSchedule[]) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const nextTransition = getNextScheduleTransition(schedules, now);
+    if (nextTransition === null) return;
+
+    const delay = Math.min(nextTransition - now, MAX_TIMEOUT_MS);
+    const timer = setTimeout(() => setNow(Date.now()), delay);
+    return () => clearTimeout(timer);
+  }, [now, schedules]);
+
+  return now;
 }
 
 interface ScheduleCalendarContextValue {
@@ -237,6 +278,9 @@ function ScheduleCalendarDayButton({
     </CalendarDayButton>
   );
 }
+const scheduleCalendarComponents = {
+  DayButton: ScheduleCalendarDayButton,
+};
 
 function formatCalendarDate(date: Date) {
   const chineseNums = ["日", "一", "二", "三", "四", "五", "六"];
@@ -342,16 +386,23 @@ function getDefaultSelectedDate(schedules: CourseSchedule[], now: number) {
 
 function CourseScheduleCalendar({
   schedules,
-  nextUpcomingSchedule,
-  now,
-}: ScheduleCalendarContextValue) {
+}: {
+  schedules: CourseSchedule[];
+}) {
+  const now = useScheduleTransitionTime(schedules);
+  const nextUpcomingSchedule = getNextUpcomingSchedule(schedules, now);
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const defaultDate = selectedDate ?? getDefaultSelectedDate(schedules, now);
+  const defaultDate = useMemo(
+    () => selectedDate ?? getDefaultSelectedDate(schedules, now),
+    [now, schedules, selectedDate],
+  );
+  const contextValue = useMemo<ScheduleCalendarContextValue>(
+    () => ({ schedules, nextUpcomingSchedule, now }),
+    [schedules, nextUpcomingSchedule, now],
+  );
 
   return (
-    <ScheduleCalendarContext.Provider
-      value={{ schedules, nextUpcomingSchedule, now }}
-    >
+    <ScheduleCalendarContext.Provider value={contextValue}>
       <div className="flex flex-col gap-3 sm:flex-row">
         <Calendar
           mode="single"
@@ -364,7 +415,7 @@ function CourseScheduleCalendar({
           weekStartsOn={0}
           fixedWeeks
           className="mx-auto w-full p-0 [--cell-size:--spacing(10)] sm:max-w-fit"
-          components={{ DayButton: ScheduleCalendarDayButton }}
+          components={scheduleCalendarComponents}
         />
         <ScheduleStatusPanel
           date={defaultDate}
@@ -436,13 +487,7 @@ function pickSchedule(
   if (pending) return pending;
   return "ended";
 }
-
-export default function CourseScheduleStatus({
-  schedules,
-}: {
-  schedules: CourseSchedule[];
-}) {
-  const hydrated = useHydrated();
+function CourseScheduleBadge({ schedules }: { schedules: CourseSchedule[] }) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -450,27 +495,15 @@ export default function CourseScheduleStatus({
     return () => clearInterval(timer);
   }, []);
 
-  const sortedSchedules = useMemo(
-    () =>
-      schedules.toSorted?.(compareByStartTime) ??
-      schedules.slice().sort(compareByStartTime),
-    [schedules],
-  );
-  const picked = hydrated ? pickSchedule(sortedSchedules, now) : null;
-  const nextUpcomingSchedule = getNextUpcomingSchedule(sortedSchedules, now);
-
-  if (!hydrated || picked === null) {
-    return <Skeleton className="h-5 w-32 rounded-full" />;
-  }
-
+  const picked = pickSchedule(schedules, now);
   const pickedStatus =
     picked === "ended"
       ? null
       : computeStatus(picked.start_time, picked.end_time, now);
   const isActive = pickedStatus === "開放中";
 
-  const badge =
-    picked === "ended" ? (
+  if (picked === "ended") {
+    return (
       <Badge
         variant="outline"
         className="border-foreground/10 bg-card cursor-pointer select-none"
@@ -481,36 +514,57 @@ export default function CourseScheduleStatus({
         />
         該學期選課階段已完結
       </Badge>
-    ) : (
-      <Badge
-        variant="outline"
-        className="border-foreground/10 bg-card cursor-pointer gap-1.5 select-none"
-      >
-        {isActive ? (
-          <div className="animate-ping-opacity size-2 rounded-full bg-green-500" />
-        ) : pickedStatus === "待公告" ? (
-          <div className="size-2 rounded-full bg-gray-400" />
-        ) : (
-          <div className="size-2 rounded-full bg-yellow-400" />
-        )}
-        {picked.course_stage}
-        <span className="text-muted-foreground">·</span>
-        {isActive ? (
-          <span>
-            開放中
-            <span className="text-muted-foreground text-[10px]">
-              {formatTimeLeft((getTime(picked.end_time) ?? now) - now)}
-            </span>
-          </span>
-        ) : (
-          <span className="text-muted-foreground">
-            {pickedStatus === "待公告"
-              ? "待公告"
-              : formatTimeUntilStart((getTime(picked.start_time) ?? now) - now)}
-          </span>
-        )}
-      </Badge>
     );
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      className="border-foreground/10 bg-card cursor-pointer gap-1.5 select-none"
+    >
+      {isActive ? (
+        <div className="animate-ping-opacity size-2 rounded-full bg-green-500" />
+      ) : pickedStatus === "待公告" ? (
+        <div className="size-2 rounded-full bg-gray-400" />
+      ) : (
+        <div className="size-2 rounded-full bg-yellow-400" />
+      )}
+      {picked.course_stage}
+      <span className="text-muted-foreground">·</span>
+      {isActive ? (
+        <span>
+          開放中
+          <span className="text-muted-foreground text-[10px]">
+            {formatTimeLeft((getTime(picked.end_time) ?? now) - now)}
+          </span>
+        </span>
+      ) : (
+        <span className="text-muted-foreground">
+          {pickedStatus === "待公告"
+            ? "待公告"
+            : formatTimeUntilStart((getTime(picked.start_time) ?? now) - now)}
+        </span>
+      )}
+    </Badge>
+  );
+}
+
+export default function CourseScheduleStatus({
+  schedules,
+}: {
+  schedules: CourseSchedule[];
+}) {
+  const hydrated = useHydrated();
+  const sortedSchedules = useMemo(
+    () =>
+      schedules.toSorted?.(compareByStartTime) ??
+      schedules.slice().sort(compareByStartTime),
+    [schedules],
+  );
+
+  if (!hydrated) {
+    return <Skeleton className="h-5 w-32 rounded-full" />;
+  }
 
   return (
     <div className="flex w-full flex-row items-center gap-2 sm:gap-4">
@@ -522,16 +576,12 @@ export default function CourseScheduleStatus({
               type="button"
               className="inline-flex cursor-pointer appearance-none bg-transparent p-0 text-left"
             >
-              {badge}
+              <CourseScheduleBadge schedules={sortedSchedules} />
             </button>
           }
         />
         <PopoverContent className="ring-foreground/10 bg-card/90 max-h-[min(42rem,calc(100vh-2rem))] w-[min(42rem,calc(100vw-2rem))] overflow-y-auto rounded-3xl border-none p-3 ring-1 backdrop-blur-xl">
-          <CourseScheduleCalendar
-            schedules={sortedSchedules}
-            nextUpcomingSchedule={nextUpcomingSchedule}
-            now={now}
-          />
+          <CourseScheduleCalendar schedules={sortedSchedules} />
         </PopoverContent>
       </Popover>
       <Separator className="flex-1" />
