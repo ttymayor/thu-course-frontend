@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CourseScheduleTable from "@/components/CourseScheduleTable";
+import CourseScheduleStatus from "@/components/course-schedule/CourseScheduleStatus";
 import { useHydrated } from "@/hooks/useHydrated";
 
 const h = (offset: number) =>
@@ -120,7 +120,7 @@ export default function DevCourseSchedulePage() {
       <div>
         <h1 className="text-2xl font-bold">Dev — 選課時程 Mock</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          模擬不同選課狀態，預覽 CourseScheduleTable badge 行為
+          模擬不同選課狀態，預覽 CourseScheduleStatus badge 行為
         </p>
       </div>
 
@@ -149,7 +149,7 @@ export default function DevCourseSchedulePage() {
         </p>
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold">排課模擬</span>
-          <CourseScheduleTable schedules={[...current.schedules]} />
+          <CourseScheduleStatus schedules={[...current.schedules]} />
         </div>
       </div>
 

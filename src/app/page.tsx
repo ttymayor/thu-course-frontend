@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/accordion";
 import BaseLayout from "@/components/BaseLayout";
 import { Section } from "@/components/Section";
-import CourseScheduleList from "@/components/CourseScheduleList";
-import CourseScheduleListSkeleton from "@/components/CourseScheduleListSkeleton";
+import CourseSchedule from "@/components/course-schedule/CourseSchedule";
+import CourseScheduleSkeleton from "@/components/course-schedule/CourseScheduleSkeleton";
 import ScheduleSimulatorSkeleton from "@/components/schedule-simulator/ScheduleSimulatorSkeleton";
 import HomeScheduleView from "@/components/schedule-simulator/HomeScheduleView";
 import { getSession } from "@/lib/auth";
@@ -27,8 +27,8 @@ export default function Home() {
       <WelcomeDialog />
       <div className="flex w-full flex-col items-center gap-6">
         <Section id="schedule-simulator">
-          <Suspense fallback={<CourseScheduleListSkeleton />}>
-            <CourseScheduleList />
+          <Suspense fallback={<CourseScheduleSkeleton />}>
+            <CourseSchedule />
           </Suspense>
           <Suspense fallback={<ScheduleSimulatorSkeleton />}>
             <ScheduleSimulator />
