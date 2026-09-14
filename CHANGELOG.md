@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.5.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.4.0...v2.5.0) (2026-09-14)
+
+
+### Features
+
+* **course-schedule:** add interactive schedule status view ([95eb233](https://github.com/ttymayor/thu-course-frontend/commit/95eb23379ca794972013ed324dd7d08c0bce7148))
+* **navbar:** add responsive navigation and term selector ([e93a918](https://github.com/ttymayor/thu-course-frontend/commit/e93a91834640ccad4eb55273ddb08a283a2f7635))
+* **schedule:** improve conflict handling and responsive table ([0f9bfc5](https://github.com/ttymayor/thu-course-frontend/commit/0f9bfc5d55133a943ad62c6997ebc1242bbe73a1))
+* **schedule:** improve responsive simulator layout ([0a9f525](https://github.com/ttymayor/thu-course-frontend/commit/0a9f525f17d95a2c6ddc17f30977e55e66850f4f))
+* **ui:** improve mobile navigation and course selector ([a0221a9](https://github.com/ttymayor/thu-course-frontend/commit/a0221a98b64543dc27b98a4178f823a01b3e11b6))
+* **ui:** refine homepage and alert layouts ([4c1c23c](https://github.com/ttymayor/thu-course-frontend/commit/4c1c23ca56eae78cc9a1dc1458bdc1a846e48eb4))
+
+
+### Bug Fixes
+
+* **course-schedule:** refine calendar status layout ([db3a2c8](https://github.com/ttymayor/thu-course-frontend/commit/db3a2c88f217f7ceed6a5a2d11f36b1b54e9001b))
+* **ui:** remove unused schedule icon import ([0294c2e](https://github.com/ttymayor/thu-course-frontend/commit/0294c2e6ce5e0aebb3bd9dcc8a8d5db07c0d342d))
+
 ## [2.4.0](https://github.com/ttymayor/thu-course-frontend/compare/v2.3.0...v2.4.0) (2026-09-09)
 
 
