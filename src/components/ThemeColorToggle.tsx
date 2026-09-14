@@ -29,11 +29,7 @@ export default function ThemeColorToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 cursor-pointer px-0"
-          >
+          <Button variant="ghost" size="sm" className="h-9 w-9 px-0">
             <Palette className="h-4 w-4" />
             <span className="sr-only">切換主題顏色</span>
           </Button>
@@ -44,7 +40,7 @@ export default function ThemeColorToggle() {
           <DropdownMenuItem
             key={color.name}
             onClick={() => setThemeColor(color.name)}
-            className="flex cursor-pointer items-center justify-between gap-4"
+            className="flex items-center justify-between gap-4"
           >
             <span className="flex items-center gap-2">
               <div

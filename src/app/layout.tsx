@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
@@ -102,7 +104,9 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 <div className="flex min-h-screen flex-col">
-                  <Navbar />
+                  <Suspense>
+                    <Navbar />
+                  </Suspense>
                   <div className="flex-1">{children}</div>
                   <Footer />
                 </div>

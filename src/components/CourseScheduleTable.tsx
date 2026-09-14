@@ -210,7 +210,7 @@ function TimeLeft({ endTime }: { endTime: string }) {
   }, [end, updateEverySecond]);
 
   return (
-    <span className="text-muted-foreground inline text-[10px]">
+    <span className="text-muted-foreground hidden text-[10px] sm:inline">
       {formatTimeLeft(msLeft)}
     </span>
   );

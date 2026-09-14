@@ -1,18 +1,51 @@
 "use client";
 
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import { Badge } from "@/components/ui/badge";
+import { useState, type ReactNode } from "react";
+
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import useSWR from "swr";
+import {
+  Bookmark,
+  CalendarRange,
+  Home,
+  LogIn,
+  LogOut,
+  Map,
+  Menu,
+  MessageSquarePlus,
+  User,
+  X,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, User, MessageSquarePlus, Home } from "lucide-react";
-import { Map, Bookmark } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +53,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { Field, FieldLabel } from "@/components/ui/field";
 
+import { cn } from "@/lib/utils";
+import {
+  dedupeCourseTerms,
+  getConfiguredCourseTerm,
+  parseTermParams,
+} from "@/lib/courseIdentity";
 // 導航配置
 const NAVBAR_CONFIG = {
   brand: "東海選課資訊",
@@ -42,211 +80,232 @@ const NAVBAR_CONFIG = {
   },
 };
 
-const getAcademicYearAndSemester = () => {
-  const academicYear = process.env.NEXT_PUBLIC_ACADEMIC_YEAR as string;
-  const academicSemester = process.env.NEXT_PUBLIC_ACADEMIC_SEMESTER as string;
+interface MobileNavItemProps {
+  href: string;
+  label: string;
+  active: boolean;
+  reload?: boolean;
+  children: ReactNode;
+}
 
-  if (!academicYear || !academicSemester) {
-    return null;
-  }
-
-  if (academicSemester === "1") {
-    return `${academicYear} 上學期`;
-  } else {
-    return `${academicYear} 下學期`;
-  }
-};
+function MobileNavItem({
+  href,
+  label,
+  active,
+  reload = false,
+  children,
+}: MobileNavItemProps) {
+  return (
+    <DrawerClose
+      nativeButton={false}
+      render={
+        <Link
+          href={href}
+          onClick={
+            reload
+              ? (event) => {
+                  event.preventDefault();
+                  window.location.assign(href);
+                }
+              : undefined
+          }
+          className={cn(
+            "flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium hover:bg-accent",
+            active && "bg-accent text-accent-foreground",
+          )}
+        >
+          {children}
+          {label}
+        </Link>
+      }
+    />
+  );
+}
 
 export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isTermDialogOpen, setIsTermDialogOpen] = useState(false);
+
+  const { data: termsResult } = useSWR(
+    "/api/course-terms",
+    async (url: string) => fetch(url).then((response) => response.json()),
+  );
+  const terms = dedupeCourseTerms(termsResult?.data ?? []);
+  const items = terms.map((term) => ({
+    label: `${term.academic_year} 學年度第 ${term.academic_semester} 學期`,
+    value: `${term.academic_year}-${term.academic_semester}`,
+  }));
+  const selectedTerm =
+    parseTermParams(searchParams) ??
+    getConfiguredCourseTerm() ??
+    terms[0] ??
+    null;
 
   const isActive = (href: string) => pathname === href;
 
-  return (
-    <div className="fixed bottom-0 z-50 w-full sm:sticky sm:top-0 sm:p-4">
-      <div className="border-muted bg-foreground/5 mx-auto flex h-16 max-w-7xl items-center justify-center rounded-none border-t border-t-white/10 px-4 py-2 backdrop-blur-lg sm:h-fit sm:rounded-md">
-        {/* 桌面版導航 */}
-        <div className="mr-4 hidden sm:flex">
-          <Link className="mr-6 flex items-center space-x-2" href="/">
-            <span className="flex items-center gap-2 text-lg font-bold">
-              <Badge
-                variant="default"
-                className={cn(getAcademicYearAndSemester() ? "" : "hidden")}
-              >
-                {getAcademicYearAndSemester()}
-              </Badge>
-              {NAVBAR_CONFIG.brand}
-            </span>
-          </Link>
-          <NavigationMenu>
-            <NavigationMenuList>
-              {NAVBAR_CONFIG.navigation.items.map((item, index) => (
-                <NavigationMenuItem key={index}>
-                  <NavigationMenuLink
-                    render={
-                      <Link
-                        href={item.href}
-                        onClick={
-                          item.href === "/school-map"
-                            ? (event) => {
-                                event.preventDefault();
-                                window.location.assign(item.href);
-                              }
-                            : undefined
-                        }
-                        className="flex flex-row items-center gap-2"
-                      >
-                        {item.icon}
-                        {item.label}
-                      </Link>
-                    }
-                    active={isActive(item.href)}
-                    className={cn(
-                      isActive(item.href) ? "bg-accent/50" : undefined,
-                    )}
-                  />
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
+  const handleTermChange = (value: string | null) => {
+    if (!value) return;
 
-        {/* 手機版選單 */}
-        <div className="flex items-center gap-4 sm:hidden">
-          <Button
-            variant="ghost"
-            className="gap-1 rounded-full"
-            size="icon-lg"
-            aria-label="首頁"
-            nativeButton={false}
+    const [academicYear, academicSemester] = value.split("-").map(Number);
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.delete("page");
+    current.delete("codes");
+    current.set("year", String(academicYear));
+    current.set("semester", String(academicSemester));
+    router.replace(`${pathname}?${current.toString()}`);
+    setIsTermDialogOpen(false);
+  };
+
+  return (
+    <header className="sticky top-0 z-50 w-full p-2 sm:p-4">
+      <div className="border-muted mx-auto flex h-14 max-w-7xl items-center rounded-lg border bg-white/2 px-3 shadow-sm backdrop-blur-lg sm:px-4">
+        <Dialog open={isTermDialogOpen} onOpenChange={setIsTermDialogOpen}>
+          <DialogTrigger
             render={
-              <Link href={"/"} className="flex flex-col items-center">
-                <Home className="h-4 w-4" />
-                <span className="text-[10px]">首頁</span>
-              </Link>
-            }
-          />
-          <Button
-            variant="ghost"
-            className="gap-1 rounded-full"
-            size="icon-lg"
-            aria-label="書籤"
-            nativeButton={false}
-            render={
-              <Link href={"/bookmarks"} className="flex flex-col items-center">
-                <Bookmark className="h-4 w-4" />
-                <span className="text-[10px]">書籤</span>
-              </Link>
-            }
-          />
-          <Button
-            variant="ghost"
-            className="gap-1 rounded-full"
-            size="icon-lg"
-            aria-label="地圖"
-            nativeButton={false}
-            render={
-              <Link
-                href="/school-map"
-                onClick={(event) => {
-                  event.preventDefault();
-                  window.location.assign("/school-map");
-                }}
-                className="flex flex-col items-center"
+              <Button
+                variant="default"
+                size="sm"
+                className="mr-2 max-w-28 gap-1.5 rounded-full tabular-nums sm:mr-4 sm:max-w-none"
+                aria-label="選擇學期"
+                disabled={terms.length === 0}
               >
-                <Map className="h-4 w-4" />
-                <span className="text-[10px]">地圖</span>
-              </Link>
+                <span className="truncate">
+                  {selectedTerm
+                    ? `${selectedTerm.academic_year} ${selectedTerm.academic_semester === 1 ? "上" : "下"}學期`
+                    : "選擇學期"}
+                </span>
+              </Button>
             }
           />
-          {session ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer flex-col items-center justify-center gap-1 rounded-full">
-                {session.user?.image ? (
-                  <>
-                    <Image
-                      src={session.user.image}
-                      alt="User Avatar"
-                      width={16}
-                      height={16}
-                      className="rounded-full object-cover"
-                    />
-                    <span className="text-[10px]">帳戶</span>
-                  </>
-                ) : (
-                  <>
-                    <User className="h-4 w-4" />
-                    <span className="text-[10px]">帳戶</span>
-                  </>
-                )}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="z-9999">
-                <DropdownMenuItem onClick={() => router.push("/profile")}>
-                  <User className="h-5 w-5" />
-                  個人資料
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/feedback")}>
-                  <MessageSquarePlus className="h-5 w-5" />
-                  意見回饋
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
-                  <LogOut className="h-5 w-5" />
-                  登出
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <span className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-lg">
+                  <CalendarRange className="size-5" />
+                </span>
+                選擇學期
+              </DialogTitle>
+              <DialogDescription>
+                選擇要瀏覽及編輯課表的學年度與學期。
+              </DialogDescription>
+            </DialogHeader>
+            <Field className="">
+              <FieldLabel
+                htmlFor="navbar-term-select"
+                className="text-muted-foreground text-xs"
+              >
+                學年度／學期
+              </FieldLabel>
+              <Select
+                value={
+                  selectedTerm
+                    ? `${selectedTerm.academic_year}-${selectedTerm.academic_semester}`
+                    : undefined
+                }
+                onValueChange={handleTermChange}
+                items={items}
+                disabled={terms.length === 0}
+              >
+                <SelectTrigger
+                  id="navbar-term-select"
+                  className="w-full tabular-nums"
+                >
+                  <SelectValue placeholder="選擇學期">
+                    {(value) =>
+                      items.find((item) => item.value === value)?.label ??
+                      "選擇學期"
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent
+                  align="start"
+                  alignItemWithTrigger={false}
+                  className="min-w-(--anchor-width)"
+                >
+                  <SelectGroup>
+                    {items.map((item) => (
+                      <SelectItem
+                        key={item.value}
+                        value={item.value}
+                        className="tabular-nums"
+                      >
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          </DialogContent>
+        </Dialog>
+
+        <Link className="flex min-w-0 items-center gap-2" href="/">
+          <span className="truncate text-base font-bold sm:text-lg">
+            {NAVBAR_CONFIG.brand}
+          </span>
+        </Link>
+
+        <nav
+          aria-label="主要導覽"
+          className="ml-6 hidden items-center gap-1 sm:flex"
+        >
+          {NAVBAR_CONFIG.navigation.items.map((item) => (
             <Button
-              variant="ghost"
-              className="gap-1 rounded-full"
-              size="icon-lg"
-              aria-label="登入"
+              key={item.href}
+              variant={isActive(item.href) ? "outline" : "ghost"}
               nativeButton={false}
               render={
                 <Link
-                  href={"/auth/signin"}
-                  className="flex flex-col items-center"
+                  href={item.href}
+                  onClick={
+                    item.href === "/school-map"
+                      ? (event) => {
+                          event.preventDefault();
+                          window.location.assign(item.href);
+                        }
+                      : undefined
+                  }
+                  className="gap-2"
                 >
-                  <LogIn className="h-4 w-4" />
-                  <span className="text-[10px]">登入</span>
+                  {item.icon}
+                  {item.label}
                 </Link>
               }
             />
-          )}
-        </div>
+          ))}
+        </nav>
 
-        {/* 桌面版右側區域 */}
-        <div className="ml-auto hidden items-center gap-2 sm:flex">
+        <div className="ml-auto hidden items-center sm:flex">
           {session ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex h-9 w-9 cursor-pointer items-center justify-center">
+              <DropdownMenuTrigger className="flex size-9 items-center justify-center rounded-md">
                 {session.user?.image ? (
                   <Image
                     src={session.user.image}
-                    alt="User Avatar"
-                    width={20}
-                    height={20}
+                    alt="使用者頭像"
+                    width={24}
+                    height={24}
                     className="rounded-full object-cover"
                   />
                 ) : (
-                  <User className="h-5 w-5" />
+                  <User className="size-5" />
                 )}
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="z-9999">
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
-                  <User className="h-5 w-5" />
+                  <User className="size-5" />
                   個人資料
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/feedback")}>
-                  <MessageSquarePlus className="h-5 w-5" />
+                  <MessageSquarePlus className="size-5" />
                   意見回饋
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>
-                  <LogOut className="h-5 w-5" />
+                  <LogOut className="size-5" />
                   登出
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -259,13 +318,90 @@ export default function Navbar() {
               aria-label="登入"
               render={
                 <Link href="/auth/signin">
-                  <LogIn className="h-5 w-5" />
+                  <LogIn className="size-5" />
                 </Link>
               }
             />
           )}
         </div>
+
+        <Drawer swipeDirection="right">
+          <DrawerTrigger
+            className="ml-auto flex size-9 items-center justify-center rounded-md sm:hidden"
+            aria-label="開啟導覽選單"
+          >
+            <Menu className="size-5" />
+          </DrawerTrigger>
+          <DrawerContent
+            style={{ "--drawer-inset": "10px" } as React.CSSProperties}
+          >
+            <DrawerHeader className="flex-row items-center justify-between border-b p-4">
+              <DrawerTitle>選單</DrawerTitle>
+              <DrawerDescription>前往網站各功能頁面</DrawerDescription>
+              <DrawerClose
+                className="hover:bg-accent flex size-9 items-center justify-center rounded-md"
+                aria-label="關閉導覽選單"
+              >
+                <X className="size-5" />
+              </DrawerClose>
+            </DrawerHeader>
+
+            <nav
+              aria-label="手機版主要導覽"
+              className="flex flex-col gap-1 p-3"
+            >
+              <MobileNavItem href="/" label="首頁" active={isActive("/")}>
+                <Home className="size-5" />
+              </MobileNavItem>
+              {NAVBAR_CONFIG.navigation.items.map((item) => (
+                <MobileNavItem
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  active={isActive(item.href)}
+                  reload={item.href === "/school-map"}
+                >
+                  {item.icon}
+                </MobileNavItem>
+              ))}
+              <div className="my-2 border-t" />
+              {session ? (
+                <>
+                  <MobileNavItem
+                    href="/profile"
+                    label="個人資料"
+                    active={isActive("/profile")}
+                  >
+                    <User className="size-5" />
+                  </MobileNavItem>
+                  <MobileNavItem
+                    href="/feedback"
+                    label="意見回饋"
+                    active={isActive("/feedback")}
+                  >
+                    <MessageSquarePlus className="size-5" />
+                  </MobileNavItem>
+                  <DrawerClose
+                    className="text-destructive hover:bg-accent flex h-11 items-center gap-3 rounded-md px-3 text-sm"
+                    onClick={() => signOut()}
+                  >
+                    <LogOut className="size-5" />
+                    登出
+                  </DrawerClose>
+                </>
+              ) : (
+                <MobileNavItem
+                  href="/auth/signin"
+                  label="登入"
+                  active={isActive("/auth/signin")}
+                >
+                  <LogIn className="size-5" />
+                </MobileNavItem>
+              )}
+            </nav>
+          </DrawerContent>
+        </Drawer>
       </div>
-    </div>
+    </header>
   );
 }

@@ -140,7 +140,6 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
           ) : (
             <Suspense fallback={<CourseListSkeleton />}>
               <CourseSelector
-                terms={terms}
                 selectedTerm={selectedTerm}
                 selectedCourses={selectedCourses}
                 setSelectedCourses={setSelectedCourses}
@@ -156,7 +155,7 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
               <DrawerTrigger
                 render={
                   <Button
-                    className="fixed right-4 bottom-20 z-40 size-12 cursor-pointer rounded-full shadow-lg"
+                    className="fixed right-4 bottom-4 z-40 size-12 cursor-pointer rounded-full shadow-lg"
                     size="icon-lg"
                     aria-label="開啟課程選單"
                   >
@@ -188,7 +187,6 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
               ) : (
                 <Suspense fallback={<CourseListSkeleton />}>
                   <CourseSelector
-                    terms={terms}
                     selectedTerm={selectedTerm}
                     selectedCourses={selectedCourses}
                     setSelectedCourses={setSelectedCourses}
