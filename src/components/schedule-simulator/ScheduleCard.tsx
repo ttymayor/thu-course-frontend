@@ -346,7 +346,7 @@ export default function ScheduleCard({
   };
 
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center gap-1 text-lg font-bold">
           {isViewingShared ? "預覽分享的課表" : "你的課表"}
@@ -484,8 +484,8 @@ export default function ScheduleCard({
           )}
         </CardAction>
       </CardHeader>
-      <CardContent>
-        <div className="ring-foreground/3 overflow-hidden rounded-lg ring">
+      <CardContent className="min-w-0">
+        <div className="ring-foreground/3 min-w-0 overflow-hidden rounded-lg ring">
           <ScheduleTable
             tableRef={tableRef}
             days={days}

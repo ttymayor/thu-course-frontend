@@ -47,7 +47,7 @@ export default function SignIn({ error, handleSignIn }: SignInProps) {
           )}
           <Button
             onClick={handleSignIn}
-            className="w-full cursor-pointer"
+            className="w-full"
             size="lg"
             variant="outline"
           >

@@ -1,23 +1,37 @@
 "use client";
 
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
-import { Course } from "@/types/course";
-import ScheduleCard from "@/components/schedule-simulator/ScheduleCard";
+import type { Session } from "next-auth";
+import { Search } from "lucide-react";
+import { useMediaQuery } from "usehooks-ts";
+import useSWR from "swr";
+
+import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkeleton";
 import CourseSelector from "@/components/schedule-simulator/CourseSelector";
 import Frame from "@/components/schedule-simulator/Frame";
-import CourseListSkeleton from "@/components/schedule-simulator/CourseListSkeleton";
+import ScheduleCard from "@/components/schedule-simulator/ScheduleCard";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import useSelectedCourses from "@/hooks/useSelectedCourses";
-import useSWR from "swr";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { toast } from "@/components/ui/toast";
-import type { Session } from "next-auth";
+import useSelectedCourses from "@/hooks/useSelectedCourses";
+import { useHydrated } from "@/hooks/useHydrated";
 import {
   CourseTerm,
   getConfiguredCourseTerm,
   getCourseQueryParams,
   parseTermParams,
 } from "@/lib/courseIdentity";
+import { Course } from "@/types/course";
 
 interface HomeScheduleViewProps {
   session: Session | null;
@@ -52,6 +66,10 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
     isDirty,
   } = useSelectedCourses(selectedTerm);
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
+  const isDesktop = useMediaQuery("(min-width: 768px)", {
+    initializeWithValue: false,
+  });
+  const hydrated = useHydrated();
 
   const codesParam = searchParams.get("codes");
 
@@ -107,31 +125,83 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
 
   return (
     <Frame>
-      {/* Left: course selector */}
-      <div className="w-full min-w-0 md:w-1/3">
-        {isViewingShared ? (
-          <Card className="rounded-sm">
-            <CardHeader>
-              <CardTitle className="text-center">
-                查看分享課表時無法選擇課程
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-sm">匯入到您的課表後即可編輯</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <Suspense fallback={<CourseListSkeleton />}>
-            <CourseSelector
-              terms={terms}
-              selectedTerm={selectedTerm}
-              selectedCourses={selectedCourses}
-              setSelectedCourses={setSelectedCourses}
-              onCourseHover={setHoveredCourse}
-            />
-          </Suspense>
-        )}
-      </div>
+      {isDesktop ? (
+        <div className="w-full min-w-0 md:w-1/3">
+          {isViewingShared ? (
+            <Card className="rounded-sm">
+              <CardHeader>
+                <CardTitle className="text-center">
+                  查看分享課表時無法選擇課程
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-sm">匯入到您的課表後即可編輯</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Suspense fallback={<CourseListSkeleton />}>
+              <CourseSelector
+                selectedTerm={selectedTerm}
+                selectedCourses={selectedCourses}
+                setSelectedCourses={setSelectedCourses}
+                onCourseHover={setHoveredCourse}
+              />
+            </Suspense>
+          )}
+        </div>
+      ) : (
+        <Drawer showSwipeHandle>
+          {hydrated &&
+            createPortal(
+              <DrawerTrigger
+                render={
+                  <Button
+                    className="fixed right-4 bottom-4 z-40 size-12 cursor-pointer rounded-full shadow-lg"
+                    size="icon-lg"
+                    aria-label="開啟課程選單"
+                  >
+                    <Search className="size-5" />
+                  </Button>
+                }
+              />,
+              document.body,
+            )}
+          <DrawerContent className="h-[calc(100dvh-6rem)]">
+            <DrawerHeader>
+              <DrawerTitle>課程選擇</DrawerTitle>
+              <DrawerDescription className="">
+                搜尋並選擇要加入課表的課程
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex min-h-0 flex-1 flex-col p-4">
+              {isViewingShared ? (
+                <Card className="rounded-sm">
+                  <CardHeader>
+                    <CardTitle className="text-center">
+                      查看分享課表時無法選擇課程
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-center text-sm">
+                      匯入到您的課表後即可編輯
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Suspense fallback={<CourseListSkeleton />}>
+                  <CourseSelector
+                    selectedTerm={selectedTerm}
+                    selectedCourses={selectedCourses}
+                    setSelectedCourses={setSelectedCourses}
+                    onCourseHover={setHoveredCourse}
+                    withCard={false}
+                  />
+                </Suspense>
+              )}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
 
       {/* Right: schedule grid + time info */}
       <div className="w-full min-w-0 md:w-2/3">

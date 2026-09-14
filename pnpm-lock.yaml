@@ -14,7 +14,7 @@ importers:
     dependencies:
       '@base-ui/react':
         specifier: ^1.7.0
-        version: 1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        version: 1.7.0(@date-fns/tz@1.5.0)(@types/react@19.2.18)(date-fns@4.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@next/third-parties':
         specifier: 16.3.4
         version: 16.3.4(next@16.3.4(@babel/core@7.29.7)(@types/node@25.9.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -36,6 +36,9 @@ importers:
       cn:
         specifier: ^0.2.4
         version: 0.2.4
+      date-fns:
+        specifier: ^4.4.0
+        version: 4.4.0
       effect:
         specifier: 4.0.0-rc.112
         version: 4.0.0-rc.112
@@ -81,6 +84,9 @@ importers:
       react:
         specifier: 19.2.8
         version: 19.2.8
+      react-day-picker:
+        specifier: ^10.0.1
+        version: 10.0.1(@types/react@19.2.18)(react@19.2.8)
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
@@ -102,6 +108,9 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      usehooks-ts:
+        specifier: ^3.1.1
+        version: 3.1.1(react@19.2.8)
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.4.1
@@ -360,6 +369,9 @@ packages:
   '@csstools/css-tokenizer@4.0.0':
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
+
+  '@date-fns/tz@1.5.0':
+    resolution: {integrity: sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg==}
 
   '@dotenvx/dotenvx@1.75.1':
     resolution: {integrity: sha512-/BITOC9dmS/edY2zQwZNicQ059O6RKabtQfyEafV0nGtfYRNHYy1DIPiYVcov40+tob9hfmBnbR963dS+EQ1DQ==}
@@ -1553,6 +1565,9 @@ packages:
     resolution: {integrity: sha512-23XHcCF+coGYevirZceTVD7NdJOqVn+49IHyxgszm+JIiHLoB2TkmPtsYkNWT1pvRSGkc35L6NHs0yHkN2SumA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
+  date-fns@4.4.0:
+    resolution: {integrity: sha512-+1UMbeh68lH1SegH83CGWwpb6OHHbpSgr3+s5Eww5M4CAgswBpoWS0AjTOfEJ33HiYKz1hdj/KTFprzXHmq/6w==}
+
   debounce-fn@4.0.0:
     resolution: {integrity: sha512-8pYCQiL9Xdcg0UPSD3d+0KMlOjp+KGU5EPwYddgzQ7DATsg4fuUDjQtsYLmWjnk2obnNHgV3vE2Y4jejSOJVBQ==}
     engines: {node: '>=10'}
@@ -2265,6 +2280,9 @@ packages:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
     engines: {node: '>=8'}
 
+  lodash.debounce@4.0.8:
+    resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
+
   log-symbols@6.0.0:
     resolution: {integrity: sha512-i24m8rpwhmPIS4zscNzK6MSEhk0DUWa/8iYQWxhffV8jkI4Phvs3F+quL5xvS0gdQR0FyTCMMH33Y78dDTzzIw==}
     engines: {node: '>=18'}
@@ -2728,6 +2746,16 @@ packages:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
 
+  react-day-picker@10.0.1:
+    resolution: {integrity: sha512-eNh6BlwcYInWaJtRv18mXQ06Ys/H6rdTZAnTaSdOYJuTpwP1JMCHNd1FDRadA+gbeinq+psdULN5Xnowy9mV8w==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/react': 19.2.18
+      react: '>=16.8.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   react-dom@19.2.8:
     resolution: {integrity: sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==}
     peerDependencies:
@@ -3110,6 +3138,12 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  usehooks-ts@3.1.1:
+    resolution: {integrity: sha512-I4diPp9Cq6ieSUH2wu+fDAVQO43xwtulo+fKEidHUwZPnYImbtkTjzIJYcDcJqxgmX31GVqNFURodvcgHcW0pA==}
+    engines: {node: '>=16.15.0'}
+    peerDependencies:
+      react: ^16.8.0  || ^17 || ^18 || ^19 || ^19.0.0-rc
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -3471,7 +3505,7 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@base-ui/react@1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@base-ui/react@1.7.0(@date-fns/tz@1.5.0)(@types/react@19.2.18)(date-fns@4.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@base-ui/utils': 0.3.2(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -3481,7 +3515,9 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
       use-sync-external-store: 1.6.0(react@19.2.8)
     optionalDependencies:
+      '@date-fns/tz': 1.5.0
       '@types/react': 19.2.18
+      date-fns: 4.4.0
 
   '@base-ui/utils@0.3.2(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -3521,6 +3557,8 @@ snapshots:
       css-tree: 3.2.1
 
   '@csstools/css-tokenizer@4.0.0': {}
+
+  '@date-fns/tz@1.5.0': {}
 
   '@dotenvx/dotenvx@1.75.1':
     dependencies:
@@ -4393,6 +4431,8 @@ snapshots:
     transitivePeerDependencies:
       - '@noble/hashes'
 
+  date-fns@4.4.0: {}
+
   debounce-fn@4.0.0:
     dependencies:
       mimic-fn: 3.1.0
@@ -4987,6 +5027,8 @@ snapshots:
     dependencies:
       p-locate: 4.1.0
 
+  lodash.debounce@4.0.8: {}
+
   log-symbols@6.0.0:
     dependencies:
       chalk: 5.6.2
@@ -5431,6 +5473,14 @@ snapshots:
       iconv-lite: 0.7.3
       unpipe: 1.0.0
 
+  react-day-picker@10.0.1(@types/react@19.2.18)(react@19.2.8):
+    dependencies:
+      '@date-fns/tz': 1.5.0
+      date-fns: 4.4.0
+      react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.18
+
   react-dom@19.2.8(react@19.2.8):
     dependencies:
       react: 19.2.8
@@ -5863,6 +5913,11 @@ snapshots:
 
   use-sync-external-store@1.6.0(react@19.2.8):
     dependencies:
+      react: 19.2.8
+
+  usehooks-ts@3.1.1(react@19.2.8):
+    dependencies:
+      lodash.debounce: 4.0.8
       react: 19.2.8
 
   util-deprecate@1.0.2: {}
