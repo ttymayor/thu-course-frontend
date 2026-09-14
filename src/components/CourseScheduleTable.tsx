@@ -9,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "./ui/separator";
 
 interface CourseScheduleData {
   _id: string;
@@ -210,7 +211,7 @@ function TimeLeft({ endTime }: { endTime: string }) {
   }, [end, updateEverySecond]);
 
   return (
-    <span className="text-muted-foreground hidden text-[10px] sm:inline">
+    <span className="text-muted-foreground text-[10px]">
       {formatTimeLeft(msLeft)}
     </span>
   );
@@ -313,7 +314,7 @@ export default function CourseScheduleTable({
           <div className="size-2 rounded-full bg-yellow-400" />
         )}
         {picked.course_stage}
-        <span className="text-muted-foreground hidden sm:block">·</span>
+        <span className="text-muted-foreground">·</span>
         {isActive ? (
           <>
             <span>
@@ -322,7 +323,7 @@ export default function CourseScheduleTable({
             </span>
           </>
         ) : (
-          <span className="text-muted-foreground hidden sm:block">
+          <span className="text-muted-foreground">
             {pickedStatus === "待公告" ? (
               "待公告"
             ) : (
@@ -334,30 +335,31 @@ export default function CourseScheduleTable({
     );
 
   return (
-    <Popover>
-      <PopoverTrigger
-        render={
-          <button
-            type="button"
-            className="inline-flex cursor-pointer appearance-none bg-transparent p-0 text-left"
-          >
-            {badge}
-          </button>
-        }
-      />
-      <PopoverContent
-        align="start"
-        className="ring-foreground/10 bg-card/80 w-auto max-w-[90vw] rounded-lg border-none ring-1 backdrop-blur-xl"
-      >
-        <p className="text-muted-foreground mb-2 text-sm tracking-wide uppercase">
-          選課時程表
-        </p>
-        <CourseScheduleTimeline
-          schedules={visibleSchedules}
-          nextUpcomingSchedule={nextUpcomingSchedule}
-          now={now}
+    <div className="flex w-full flex-row items-center gap-2 sm:gap-4">
+      <Separator className="flex-1" />
+      <Popover>
+        <PopoverTrigger
+          render={
+            <button
+              type="button"
+              className="inline-flex cursor-pointer appearance-none bg-transparent p-0 text-left"
+            >
+              {badge}
+            </button>
+          }
         />
-      </PopoverContent>
-    </Popover>
+        <PopoverContent className="ring-foreground/10 bg-card/80 w-auto max-w-[90vw] rounded-lg border-none ring-1 backdrop-blur-xl">
+          <p className="text-muted-foreground mb-2 text-sm tracking-wide uppercase">
+            選課時程表
+          </p>
+          <CourseScheduleTimeline
+            schedules={visibleSchedules}
+            nextUpcomingSchedule={nextUpcomingSchedule}
+            now={now}
+          />
+        </PopoverContent>
+      </Popover>
+      <Separator className="flex-1" />
+    </div>
   );
 }

@@ -26,25 +26,21 @@ export default function Home() {
     <BaseLayout>
       <WelcomeDialog />
       <div className="flex w-full flex-col items-center gap-6">
-        <Section
-          id="schedule-simulator"
-          title="排課模擬"
-          action={
-            <Suspense fallback={<CourseScheduleListSkeleton />}>
-              <CourseScheduleList />
-            </Suspense>
-          }
-        >
+        <Section id="schedule-simulator">
+          <Suspense fallback={<CourseScheduleListSkeleton />}>
+            <CourseScheduleList />
+          </Suspense>
           <Suspense fallback={<ScheduleSimulatorSkeleton />}>
             <ScheduleSimulator />
           </Suspense>
         </Section>
 
-        <Section
-          id="faq"
-          title="常見問題 FAQ"
-          icon={<HelpCircle className="size-5" />}
-        >
+        <Section id="faq">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="size-5" />
+            <h2 className="text-xl font-bold">常見問題 FAQ</h2>
+          </div>
+
           <Card className="w-full p-0">
             <CardContent>
               <Accordion className="w-full">
