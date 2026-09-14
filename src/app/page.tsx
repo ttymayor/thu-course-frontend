@@ -16,12 +16,12 @@ import { getSession } from "@/lib/auth";
 import WelcomeDialog from "@/components/WelcomeDialog";
 import { Card, CardContent } from "@/components/ui/card";
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false;
-
-export default async function Home() {
+async function ScheduleSimulator() {
   const session = await getSession();
+  return <HomeScheduleView session={session} />;
+}
+
+export default function Home() {
   return (
     <BaseLayout>
       <WelcomeDialog />
@@ -36,7 +36,7 @@ export default async function Home() {
           }
         >
           <Suspense fallback={<ScheduleSimulatorSkeleton />}>
-            <HomeScheduleView session={session} />
+            <ScheduleSimulator />
           </Suspense>
         </Section>
 

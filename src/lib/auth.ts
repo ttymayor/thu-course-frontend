@@ -1,10 +1,12 @@
 import { getServerSession } from "next-auth/next";
+import { connection } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 /**
  * 獲取當前用戶的 session（用於 Server Components）
  */
 export async function getSession() {
+  await connection();
   return await getServerSession(authOptions);
 }
 

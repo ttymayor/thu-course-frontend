@@ -410,7 +410,7 @@ export default function ScheduleTable({
                   <TableCell
                     key={`${day}-${period}`}
                     rowSpan={rowSpan}
-                    className="border-foreground/1 relative h-16 border-l p-1 align-top sm:h-20 sm:p-2"
+                    className="border-foreground/1 relative h-16 border-l p-0.5 align-top sm:h-20 sm:p-0.5"
                   >
                     {showProgressLine && (
                       <div
