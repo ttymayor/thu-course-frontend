@@ -160,8 +160,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full p-2 sm:p-4">
-      <div className="border-muted mx-auto flex h-14 max-w-7xl items-center rounded-lg border bg-white/2 px-3 shadow-sm backdrop-blur-lg sm:px-4">
+    <header className="sticky top-0 z-50 w-full p-0 sm:p-4">
+      <div className="border-muted mx-auto flex h-14 max-w-7xl items-center bg-white/2 px-3 shadow-sm backdrop-blur-lg sm:rounded-lg sm:border sm:px-4">
         <Dialog open={isTermDialogOpen} onOpenChange={setIsTermDialogOpen}>
           <DialogTrigger
             render={
@@ -335,9 +335,11 @@ export default function Navbar() {
           <DrawerContent
             style={{ "--drawer-inset": "10px" } as React.CSSProperties}
           >
-            <DrawerHeader className="flex-row items-center justify-between border-b p-4">
-              <DrawerTitle>選單</DrawerTitle>
-              <DrawerDescription>前往網站各功能頁面</DrawerDescription>
+            <DrawerHeader className="flex-row items-start justify-between border-b p-4">
+              <div>
+                <DrawerTitle>選單</DrawerTitle>
+                <DrawerDescription>前往網站各功能頁面</DrawerDescription>
+              </div>
               <DrawerClose
                 className="hover:bg-accent flex size-9 items-center justify-center rounded-md"
                 aria-label="關閉導覽選單"

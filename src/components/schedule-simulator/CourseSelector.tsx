@@ -17,6 +17,7 @@ interface CourseSelectorProps {
   selectedCourses: Course[];
   setSelectedCourses: (selectedCourses: Course[]) => void;
   onCourseHover: (hoveredCourse: Course | null) => void;
+  withCard?: boolean;
 }
 
 function CourseSelectorContent({
@@ -122,17 +123,26 @@ function CourseSelectorContent({
   );
 }
 
-export default function CourseSelector(props: CourseSelectorProps) {
+export default function CourseSelector({
+  withCard = true,
+  ...props
+}: CourseSelectorProps) {
+  const content = (
+    <Suspense fallback={<CourseListSkeleton />}>
+      <CourseSelectorContent {...props} />
+    </Suspense>
+  );
+
+  if (!withCard) {
+    return content;
+  }
+
   return (
     <Card className="min-w-0">
       <CardHeader>
         <CardTitle className="text-lg font-bold">課程選擇</CardTitle>
       </CardHeader>
-      <CardContent className="min-w-0">
-        <Suspense fallback={<CourseListSkeleton />}>
-          <CourseSelectorContent {...props} />
-        </Suspense>
-      </CardContent>
+      <CardContent className="min-w-0">{content}</CardContent>
     </Card>
   );
 }

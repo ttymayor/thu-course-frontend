@@ -4,7 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import type { Session } from "next-auth";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useMediaQuery } from "usehooks-ts";
 import useSWR from "swr";
 
@@ -18,6 +18,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
@@ -159,18 +160,20 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
                     size="icon-lg"
                     aria-label="開啟課程選單"
                   >
-                    <Plus className="size-6" />
+                    <Search className="size-5" />
                   </Button>
                 }
               />,
               document.body,
             )}
           <DrawerContent className="h-[calc(100dvh-6rem)]">
-            <DrawerTitle className="sr-only">課程選單</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              搜尋並選擇要加入課表的課程
-            </DrawerDescription>
-            <div className="min-h-0 flex-1 p-4 [&>[data-slot=card]]:h-full [&>[data-slot=card]>[data-slot=card-content]]:flex [&>[data-slot=card]>[data-slot=card-content]]:min-h-0 [&>[data-slot=card]>[data-slot=card-content]]:flex-1 [&>[data-slot=card]>[data-slot=card-content]]:flex-col">
+            <DrawerHeader>
+              <DrawerTitle>課程選擇</DrawerTitle>
+              <DrawerDescription className="">
+                搜尋並選擇要加入課表的課程
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex min-h-0 flex-1 flex-col p-4">
               {isViewingShared ? (
                 <Card className="rounded-sm">
                   <CardHeader>
@@ -191,6 +194,7 @@ export default function HomeScheduleView({ session }: HomeScheduleViewProps) {
                     selectedCourses={selectedCourses}
                     setSelectedCourses={setSelectedCourses}
                     onCourseHover={setHoveredCourse}
+                    withCard={false}
                   />
                 </Suspense>
               )}
