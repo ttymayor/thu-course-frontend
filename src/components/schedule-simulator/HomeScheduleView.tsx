@@ -4,7 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import type { Session } from "next-auth";
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useMediaQuery } from "usehooks-ts";
 import useSWR from "swr";
 
