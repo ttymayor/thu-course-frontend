@@ -239,7 +239,8 @@ function ScheduleCalendarDayButton({
 }
 
 function formatCalendarDate(date: Date) {
-  return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月 ${date.getDate()} 日`;
+  const chineseNums = ["日", "一", "二", "三", "四", "五", "六"];
+  return `${date.getMonth() + 1} 月 ${date.getDate()} 日（${chineseNums[date.getDay()]}）`;
 }
 
 function getStatusBadgeVariant(
@@ -264,10 +265,11 @@ function ScheduleStatusPanel({
   const selectedSchedules = getSchedulesForStatusDay(schedules, date);
 
   return (
-    <Card size="sm" className="min-h-64 min-w-0 flex-1">
+    <Card size="sm" className="min-h-fit min-w-0 flex-1">
       <CardHeader className="border-b">
-        <CardTitle>當日活動狀態</CardTitle>
-        <CardDescription>{formatCalendarDate(date)}</CardDescription>
+        <CardTitle className="text-center">
+          {formatCalendarDate(date)}
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {selectedSchedules.length === 0 ? (
@@ -290,7 +292,7 @@ function ScheduleStatusPanel({
             return (
               <div key={schedule._id} className="flex flex-col gap-4">
                 {index > 0 && <Separator />}
-                <section className="flex flex-col gap-3 rounded-md">
+                <section className="flex flex-col gap-2 rounded-md">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <h3 className="font-medium">
                       {schedule.course_stage}
@@ -350,7 +352,7 @@ function CourseScheduleCalendar({
     <ScheduleCalendarContext.Provider
       value={{ schedules, nextUpcomingSchedule, now }}
     >
-      <div className="flex flex-col gap-3 md:flex-row">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <Calendar
           mode="single"
           required
@@ -361,7 +363,7 @@ function CourseScheduleCalendar({
           locale={zhTW}
           weekStartsOn={0}
           fixedWeeks
-          className="mx-auto p-0 [--cell-size:--spacing(10)]"
+          className="mx-auto w-full p-0 [--cell-size:--spacing(10)] sm:max-w-fit"
           components={{ DayButton: ScheduleCalendarDayButton }}
         />
         <ScheduleStatusPanel
